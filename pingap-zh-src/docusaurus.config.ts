@@ -4,7 +4,7 @@ import type * as Preset from "@docusaurus/preset-classic";
 
 const config: Config = {
   title: "Pingap",
-  tagline: "基于pingora构建的，类似nginx反向代理，简单且高效",
+  tagline: "基于pingora构建，类似nginx的反向代理，简单且高效",
   favicon: "img/pingap.png",
 
   // Set the production url of your site here
@@ -72,7 +72,7 @@ const config: Config = {
           type: "docSidebar",
           sidebarId: "tutorialSidebar",
           position: "left",
-          label: "入门教程",
+          label: "文档说明",
         },
         {
           href: "https://github.com/vicanso/pingap",

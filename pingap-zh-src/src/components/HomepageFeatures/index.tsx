@@ -28,7 +28,7 @@ const FeatureList: FeatureItem[] = [
   {
     title: "高性能",
     Svg: require("@site/static/img/undraw_docusaurus_react.svg").default,
-    description: <>基于rust与pingora构建，性能表达可圈可点，且安全可靠</>,
+    description: <>基于rust与pingora构建，性能表现可圈可点，且安全可靠</>,
   },
 ];
 
