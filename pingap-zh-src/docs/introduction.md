@@ -104,26 +104,26 @@ for name in locations.iter() {
 }
 ```
 
-[Location的详细说明](./location)
+[Location的详细说明](/pingap-zh/docs/location)
 
 ## 插件体系
 
 Pingap的插件主要分为两类，请求前或响应后的处理，提供压缩、缓存、认证、流控等各种不同场景的应用需求。插件是添加至location的，可根据不同需求参数配置各种不同的插件后，在location添加对应的插件，实现不同的功能组合。注意不同的插件是按顺序执行的，因此需要按需调整其顺序。
 
-[插件体系](./plugin)
+[插件体系](/pingap-zh/docs/plugin)
 
 ## Upstream的处理逻辑
 
 Upstream的逻辑比较简单，在匹配location后，根据该location配置的upstream节点列表，按算法选择可用节点，并将请求转发至该节点即可。upstream有各种超时以及tcp相关的配置，建议按需配置而非使用默认值。
 
-[Upstream的详细说明](./upstream)
+[Upstream的详细说明](/pingap-zh/docs/upstream)
 
 ## 访问日志格式化
 
 现在日志是按server来配置，因此该server下的所有location共用，已支持各种不同的占位符，按需配置不同的访问日志输出。
 
-[日志格式化详细说明](./log)
+[日志格式化详细说明](/pingap-zh/docs/log)
 
 ## 应用配置
 
-[应用配置详细说明](./config)
+[应用配置详细说明](/pingap-zh/docs/config)

@@ -5,7 +5,7 @@ sidebar_position: 6
 # Location说明
 
 
-Location主要配置请求的匹配、请求头响应头的插入，以及各种插件的关联，是整个流程中的最重要组成部分。下面是相关参数的详细说明：
+Location主要配置请求的匹配规则、请求头响应头的插入，以及各种插件的关联，是整个流程中的最重要组成部分。下面是相关参数的详细说明：
 
 - `upstream`: 配置该location对应的upstream，若该location所有的处理均由插件完成，则可不配置。如针对http重定向至https的逻辑，则只需要添加中间件即可
 - `path`: 匹配的路径，具体使用方法后续内容细说
@@ -13,7 +13,7 @@ Location主要配置请求的匹配、请求头响应头的插入，以及各种
 - `proxy_set_headers`: 转发至upstream时设置的请求头，若该请求头已存在则覆盖
 - `proxy_add_headers`: 转发至upstream时添加的请求头
 - `rewrite`: 请求路径的重写规则
-- `weight`: 自定义的权重，可以调整该location的权重，例如mock为服务不可用后，再调整该权重最高，则可禁用所有请求
+- `weight`: 自定义的权重，可以调整该location的权重，例如mock为服务不可用后，再调整该权重最高，则可禁用所有请求。如非特别则不需要设置，权重会自动计算
 - `plugins`: 添加至该location的插件列表，按顺序执行
 - `client_max_body_size`: 客户端请求的body最大长度
 
@@ -34,7 +34,7 @@ pub fn get_weight(&self) -> u16 {
     // = 1024
     // prefix(default) 512
     // ~ 256
-    // host exist 128
+    // host exists 128
     let mut weight: u16 = 0;
     if let Some(path) = &self.path {
         if path.starts_with('=') {

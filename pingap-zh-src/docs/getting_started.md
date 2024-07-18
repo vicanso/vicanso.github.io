@@ -4,13 +4,13 @@ sidebar_position: 2
 
 # 入门教程
 
-本章节介绍从零开始如何创建反向代理，由于pingora的热更新重启会关闭当前进程，暂时pingap也只能使用此方式,因此以下的示例均是以后台进程的形式运行。pingap在针对常变更的upstream与location增加了准实时刷新机制且无需重启，建议启动时添加`--autoreload`参数。
+本章节介绍从零开始如何创建反向代理，由于pingora的热更新重启会关闭当前进程，暂时pingap也只能使用此方式,因此以下的示例均是以后台进程的形式运行。pingap对于经常变更的upstream与location增加了准实时刷新机制且无需重启，建议启动时添加`--autoreload`参数。
 
-## 选择存储目录
+## 选择配置存储目录
 
 pingap支持etcd方式存储配置，而文件与etcd的形式仅是启动参数上的差异，因此示例选择使用文件方式存储，方便大家尝试。
 
-pingap保存文件配置中，若指定的是目录则会按类别生成不同的toml配置，若指定的是文件，则所有配置均保存至该文件中，建议使用目录的形式(web admin管理配置时使用此形式)。
+pingap以文件保存配置时，若指定的是目录则会按类别生成不同的toml配置，若指定的是文件，则所有配置均保存至该文件中，建议使用目录的形式(web admin管理配置时使用此形式)。
 
 ```bash
 RUST_LOG=INFO pingap -c /opt/pingap/conf
@@ -20,7 +20,7 @@ RUST_LOG=INFO pingap -c /opt/pingap/conf
 
 ## 启用WEB管理后台配置
 
-toml的相关配置可以查阅[应用配置详细说明](./config)，建议可以使用WEB管理后台的方式配置。WEB管理后台支持basic auth的方式鉴权（可选），下面通过127.0.0.1:3018端口提供管理后台服务，账号为：pingap，密码为：123123，`cGluZ2FwOjEyMzEyMw==`为base64("pingap:123123")。
+toml的相关配置可以查阅[应用配置详细说明](/pingap-zh/docs/config)，建议可以使用WEB管理后台的方式配置。WEB管理后台支持basic auth的方式鉴权（可选），下面通过127.0.0.1:3018端口提供管理后台服务，账号为：pingap，密码为：123123，`cGluZ2FwOjEyMzEyMw==`为base64("pingap:123123")。
 
 ```bash
 RUST_LOG=INFO pingap -c /opt/pingap/conf --admin=cGluZ2FwOjEyMzEyMw==@127.0.0.1:3018
@@ -45,7 +45,7 @@ RUST_LOG=INFO pingap -c /opt/pingap/conf --admin=cGluZ2FwOjEyMzEyMw==@127.0.0.1:
 
 地址配置的是`ip:端口`的形式，无需指定协议，默认为http，若有配置`sni`则认为是以https的形式访问上游节点。
 
-大部分的配置均可不配置，建议展开更多配置，按需设置各超时的值，默认值无超时不建议使用。`sni`与`是否校验证书`用于该upstream的节点使用https时设置，若非https忽略即可。健康检查的`http://charts/ping`其中charts为指定请求时的Host，真正检测时会连接配置upstream地址连接。
+虽然大部分的配置均可不配置，但建议展开更多配置，按需设置各超时的值，默认值无超时不建议使用。`sni`与`是否校验证书`用于该upstream的节点使用https时设置，若非https忽略即可。健康检查的`http://charts/ping`其中charts为指定请求时的Host，真正检测时会连接配置upstream地址连接。
 
 ![Pingap Upstream Detail](./img/upstream-detail-zh.jpg)
 
