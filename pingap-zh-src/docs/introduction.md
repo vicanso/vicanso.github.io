@@ -19,6 +19,8 @@ Pingap是基于[pingora](https://github.com/cloudflare/pingora)开发的，pingo
 - 支持各种事件的推送：`lets_encrypt`, `backend_status`, `diff_config`, `restart`等等
 - 丰富的http插件：`compression`, `static serve`, `limit`, `stats`, `mock`, 等等
 - 提供了不同阶段的统计数据，如`upstream_connect_time`, `upstream_processing_time`, `compression_time`, `cache_lookup_time` 与 `cache_lock_time`等
+- 提供pull或push形式的prometheus指标收集
+
 
 ## 处理流程
 
