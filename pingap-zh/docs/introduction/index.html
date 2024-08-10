@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="generator" content="Docusaurus v3.4.0">
 <title data-rh="true">Pingap简述 | Pingap</title><meta data-rh="true" name="viewport" content="width=device-width,initial-scale=1"><meta data-rh="true" name="twitter:card" content="summary_large_image"><meta data-rh="true" property="og:image" content="https://vicanso.github.io/pingap-zh/img/docusaurus-social-card.jpg"><meta data-rh="true" name="twitter:image" content="https://vicanso.github.io/pingap-zh/img/docusaurus-social-card.jpg"><meta data-rh="true" property="og:url" content="https://vicanso.github.io/pingap-zh/docs/introduction"><meta data-rh="true" property="og:locale" content="zh_Hans"><meta data-rh="true" name="docusaurus_locale" content="zh-Hans"><meta data-rh="true" name="docsearch:language" content="zh-Hans"><meta data-rh="true" name="docusaurus_version" content="current"><meta data-rh="true" name="docusaurus_tag" content="docs-default-current"><meta data-rh="true" name="docsearch:version" content="current"><meta data-rh="true" name="docsearch:docusaurus_tag" content="docs-default-current"><meta data-rh="true" property="og:title" content="Pingap简述 | Pingap"><meta data-rh="true" name="description" content="Pingap是基于pingora开发的，pingora提供了各类模块便于rust开发者使用，但并不方便非rust开发者，因此pingap提供了以toml的形式配置简单易用的反向代理，单服务支持多location转发，通过插件的形式支持更多的需求场景。已预编译好各架构上使用的可执行文件，在releases下载即可。特性如下："><meta data-rh="true" property="og:description" content="Pingap是基于pingora开发的，pingora提供了各类模块便于rust开发者使用，但并不方便非rust开发者，因此pingap提供了以toml的形式配置简单易用的反向代理，单服务支持多location转发，通过插件的形式支持更多的需求场景。已预编译好各架构上使用的可执行文件，在releases下载即可。特性如下："><link data-rh="true" rel="icon" href="/pingap-zh/img/pingap.png"><link data-rh="true" rel="canonical" href="https://vicanso.github.io/pingap-zh/docs/introduction"><link data-rh="true" rel="alternate" href="https://vicanso.github.io/pingap-zh/docs/introduction" hreflang="zh-Hans"><link data-rh="true" rel="alternate" href="https://vicanso.github.io/pingap-zh/docs/introduction" hreflang="x-default"><link rel="stylesheet" href="/pingap-zh/assets/css/styles.926889b3.css">
-<script src="/pingap-zh/assets/js/runtime~main.d72e4280.js" defer="defer"></script>
+<script src="/pingap-zh/assets/js/runtime~main.256f05e2.js" defer="defer"></script>
 <script src="/pingap-zh/assets/js/main.6569e780.js" defer="defer"></script>
 </head>
 <body class="navigation-with-keyboard">
@@ -13,23 +13,24 @@
 <ul>
 <li>服务支持配置多个Location，通过host与path筛选对应的location，按权重逐一匹配选择</li>
 <li>支持正则形式配置重写Path，方便应用按前缀区分转发</li>
-<li>HTTP 1/2 的全链路支持，包括h2c</li>
+<li>HTTP 1/2 的全链路支持，包括h2c的支持</li>
 <li>基于TOML格式的配置，配置方式非常简洁，可保存至文件或etcd</li>
+<li>支持10多个Prometheus指标，可以使用pull与push的形式收集相关指标</li>
+<li>Opentelemetry支持w3c context trace与jaeger trace的形式</li>
 <li>频繁更新的Upstream与Location相关配置调整准实时生效(30秒)，其它应用配置更新后，无中断式的优雅重启程序</li>
 <li>访问日志的模板化配置，已支30多个相关属性的配置，可按需指定输出各种参数与指标</li>
 <li>WEB形式的管理后台界面，无需学习，简单易用</li>
 <li>开箱即用的<code>let&#x27;s encrypt</code>tls证书，仅需配置对应域名即可</li>
 <li>不同域名的tls证书可使用在同一服务端口中，按servername自动选择匹配证书</li>
 <li>支持各种事件的推送：<code>lets_encrypt</code>, <code>backend_status</code>, <code>diff_config</code>, <code>restart</code>等等</li>
-<li>丰富的http插件：<code>compression</code>, <code>static serve</code>, <code>limit</code>, <code>stats</code>, <code>mock</code>, 等等</li>
+<li>丰富的http插件，如高效的缓存服务组件、多种压缩算法的压  缩组件、不同种类的认证组件、不同形式的限流组件等等</li>
 <li>提供了不同阶段的统计数据，如<code>upstream_connect_time</code>, <code>upstream_processing_time</code>, <code>compression_time</code>, <code>cache_lookup_time</code> 与 <code>cache_lock_time</code>等</li>
-<li>提供pull或push形式的prometheus指标收集</li>
 </ul>
 <h2 class="anchor anchorWithStickyNavbar_LWe7" id="处理流程">处理流程<a class="hash-link" aria-label="处理流程的直接链接" title="处理流程的直接链接" href="/pingap-zh/docs/introduction#处理流程">​</a></h2>
 <!-- -->
 <p>Pingap核心部分功能主要处理以下逻辑(由插件实现更丰富的功能)：</p>
 <ul>
-<li>根据path与host选择对应的location</li>
+<li>根据path与host选择对应的location，path支持前缀、正则以及全匹配三种模式</li>
 <li>location根据配置重写path以及添加相应的请求头</li>
 <li>执行相应的转发中间件</li>
 <li>执行相应的响应中间件</li>

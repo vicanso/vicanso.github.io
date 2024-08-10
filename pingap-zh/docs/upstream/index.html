@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="generator" content="Docusaurus v3.4.0">
 <title data-rh="true">Upsteam说明 | Pingap</title><meta data-rh="true" name="viewport" content="width=device-width,initial-scale=1"><meta data-rh="true" name="twitter:card" content="summary_large_image"><meta data-rh="true" property="og:image" content="https://vicanso.github.io/pingap-zh/img/docusaurus-social-card.jpg"><meta data-rh="true" name="twitter:image" content="https://vicanso.github.io/pingap-zh/img/docusaurus-social-card.jpg"><meta data-rh="true" property="og:url" content="https://vicanso.github.io/pingap-zh/docs/upstream"><meta data-rh="true" property="og:locale" content="zh_Hans"><meta data-rh="true" name="docusaurus_locale" content="zh-Hans"><meta data-rh="true" name="docsearch:language" content="zh-Hans"><meta data-rh="true" name="docusaurus_version" content="current"><meta data-rh="true" name="docusaurus_tag" content="docs-default-current"><meta data-rh="true" name="docsearch:version" content="current"><meta data-rh="true" name="docsearch:docusaurus_tag" content="docs-default-current"><meta data-rh="true" property="og:title" content="Upsteam说明 | Pingap"><meta data-rh="true" name="description" content="Upstream配置为节点地址列表，配置为域名则会根据解析后的IP添加所有节点地址（之后并不会再次刷新域名解析），需要注意节点会使用默认的tcp health check的形式检测节点是否可用，建议配置为http health check。下面针对相关参数详细说明："><meta data-rh="true" property="og:description" content="Upstream配置为节点地址列表，配置为域名则会根据解析后的IP添加所有节点地址（之后并不会再次刷新域名解析），需要注意节点会使用默认的tcp health check的形式检测节点是否可用，建议配置为http health check。下面针对相关参数详细说明："><link data-rh="true" rel="icon" href="/pingap-zh/img/pingap.png"><link data-rh="true" rel="canonical" href="https://vicanso.github.io/pingap-zh/docs/upstream"><link data-rh="true" rel="alternate" href="https://vicanso.github.io/pingap-zh/docs/upstream" hreflang="zh-Hans"><link data-rh="true" rel="alternate" href="https://vicanso.github.io/pingap-zh/docs/upstream" hreflang="x-default"><link rel="stylesheet" href="/pingap-zh/assets/css/styles.926889b3.css">
-<script src="/pingap-zh/assets/js/runtime~main.d72e4280.js" defer="defer"></script>
+<script src="/pingap-zh/assets/js/runtime~main.256f05e2.js" defer="defer"></script>
 <script src="/pingap-zh/assets/js/main.6569e780.js" defer="defer"></script>
 </head>
 <body class="navigation-with-keyboard">
@@ -12,6 +12,8 @@
 <p>Upstream配置为节点地址列表，配置为域名则会根据解析后的IP添加所有节点地址（之后并不会再次刷新域名解析），需要注意节点会使用默认的tcp health check的形式检测节点是否可用，建议配置为http health check。下面针对相关参数详细说明：</p>
 <ul>
 <li><code>addrs</code>: 节点地址列表，地址为<code>ip:port weight</code>的形式，<code>weight</code>权重可不指定，默认为1</li>
+<li><code>discovery</code>: 指定服务发现形式，如果地址配置为域名则建议使用此形式，定期解析对应的ip地址</li>
+<li><code>update_frequency</code>: 设置服务发现的更新间隔</li>
 <li><code>algo</code>: 节点的选择算法，支持<code>hash</code>与<code>round_robin</code>两种形式，如<code>hash:ip</code>表示按ip hash选择节点。默认为<code>round_robin</code></li>
 <li><code>sni</code>: 若配置的是https，需要设置对应的SNI</li>
 <li><code>verify_cert</code>: 若配置的是https，是否需要校验证书有效性</li>
@@ -22,7 +24,7 @@
 <li><code>connection_timeout</code>: tcp连接超时，默认为无</li>
 <li><code>total_connection_timeout</code>: 连接超时，对于https包括tls握手部分，默认为无</li>
 <li><code>read_timeout</code>: 读取超时，默认为无</li>
-<li><code>idle_timeout</code>: 空闲超时，指定连接空闲多久后会自动回收，如果设置为0，则连接不复用，需要注意有些网络设备对于无数据的tcp连接会过期自动关闭，因此可根据需要设置对应的值。默认为无</li>
+<li><code>idle_timeout</code>: 空闲超时，指定连接空闲多久后会自动回收，如果设置为0，则连接不复用，需要注意有些网络设备对于无数据的tcp连接会过期 自动关闭，因此可根据需要设置对应的值。默认为无</li>
 <li><code>write_timeout</code>: 写超时，默认为无</li>
 <li><code>tcp_idle</code>: tcp连接keepalive空闲回收时长</li>
 <li><code>tcp_interval</code>: tcp连接keepavlie检测时长</li>
@@ -52,7 +54,7 @@
 <li><code>failure</code>: 失败次数多少次为失败，默认为2次</li>
 <li><code>reuse</code>: 检测时是否复用连接，默认为否</li>
 </ul>
-<h3 class="anchor anchorWithStickyNavbar_LWe7" id="algo的hash">Algo的hash<a class="hash-link" aria-label="Algo 的hash的直接链接" title="Algo的hash的直接链接" href="/pingap-zh/docs/upstream#algo的hash">​</a></h3>
+<h3 class="anchor anchorWithStickyNavbar_LWe7" id="algo的hash">Algo的hash<a class="hash-link" aria-label="Algo的hash的直接链接" title="Algo的hash的直接链接" href="/pingap-zh/docs/upstream#algo的hash">​</a></h3>
 <p>若指定通过hash的方式选择upstream的backend，则可使用如下方式：</p>
 <ul>
 <li><code>hash:url</code>: 根据url转发，主要用于upstream为基于url缓存的服务</li>

@@ -16,6 +16,20 @@ Pingap的大部分参数均是toml配置文件来指定，而有一些参数则�
 - `autorestart`或`a`: 可选，是否在配置有更新时自动重启，建议使用此方式达到准实时更新配置的效果(需要在daemon模式下)，其包括了autoreload的逻辑
 - `autoreload`: 可选，是否自动更新配置，仅适用于upstream与location的配置变更，若程序基本只变更upstream与location则可启用此参数，而非`autorestart`
 
+也可通过环境变量指定，对照关系如下：
+
+`PINGAP_CONFI`: 等同于`--conf`
+`PINGAP_DAEMON`: 等同于`--daemon`，只要有设置则表示`true`
+`PINGAP_UPGRADE`: 等同于`--upgrade`，只要有设置则表示`true`
+`PINGAP_LOG`: `--log`
+`PINGAP_ADMIN_ADDR`: 设置指定的管理后台监听地址
+`PINGAP_ADMIN_USER`: 设置指定的管理后台的用户名(需要与密码一起设置)
+`PINGAP_ADMIN_PASSWORD`: 设置指定的管理后台的用户名
+`PINGAP_CP`: 等同于`--cp`，只要有设置则表示`true`
+`PINGAP_AUTORESTART`: 等同于`--autorestart`，只要有设置则表示`true`
+`PINGAP_AUTORELOAD`: 等同于`--autoreload`，只要有设置则表示`true`
+
+
 
 ## 配置以文件形式的启用命令
 

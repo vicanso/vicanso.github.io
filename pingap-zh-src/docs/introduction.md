@@ -9,17 +9,18 @@ Pingap是基于[pingora](https://github.com/cloudflare/pingora)开发的，pingo
 
 - 服务支持配置多个Location，通过host与path筛选对应的location，按权重逐一匹配选择
 - 支持正则形式配置重写Path，方便应用按前缀区分转发
-- HTTP 1/2 的全链路支持，包括h2c
+- HTTP 1/2 的全链路支持，包括h2c的支持
 - 基于TOML格式的配置，配置方式非常简洁，可保存至文件或etcd
+- 支持10多个Prometheus指标，可以使用pull与push的形式收集相关指标
+- Opentelemetry支持w3c context trace与jaeger trace的形式
 - 频繁更新的Upstream与Location相关配置调整准实时生效(30秒)，其它应用配置更新后，无中断式的优雅重启程序
 - 访问日志的模板化配置，已支30多个相关属性的配置，可按需指定输出各种参数与指标
 - WEB形式的管理后台界面，无需学习，简单易用
 - 开箱即用的`let's encrypt`tls证书，仅需配置对应域名即可
 - 不同域名的tls证书可使用在同一服务端口中，按servername自动选择匹配证书
 - 支持各种事件的推送：`lets_encrypt`, `backend_status`, `diff_config`, `restart`等等
-- 丰富的http插件：`compression`, `static serve`, `limit`, `stats`, `mock`, 等等
+- 丰富的http插件，如高效的缓存服务组件、多种压缩算法的压缩组件、不同种类的认证组件、不同形式的限流组件等等
 - 提供了不同阶段的统计数据，如`upstream_connect_time`, `upstream_processing_time`, `compression_time`, `cache_lookup_time` 与 `cache_lock_time`等
-- 提供pull或push形式的prometheus指标收集
 
 
 ## 处理流程
@@ -75,7 +76,7 @@ graph TD;
 
 Pingap核心部分功能主要处理以下逻辑(由插件实现更丰富的功能)：
 
-- 根据path与host选择对应的location
+- 根据path与host选择对应的location，path支持前缀、正则以及全匹配三种模式
 - location根据配置重写path以及添加相应的请求头
 - 执行相应的转发中间件
 - 执行相应的响应中间件

@@ -8,6 +8,8 @@ sidebar_position: 51
 Upstream配置为节点地址列表，配置为域名则会根据解析后的IP添加所有节点地址（之后并不会再次刷新域名解析），需要注意节点会使用默认的tcp health check的形式检测节点是否可用，建议配置为http health check。下面针对相关参数详细说明：
 
 - `addrs`: 节点地址列表，地址为`ip:port weight`的形式，`weight`权重可不指定，默认为1
+- `discovery`: 指定服务发现形式，如果地址配置为域名则建议使用此形式，定期解析对应的ip地址
+- `update_frequency`: 设置服务发现的更新间隔
 - `algo`: 节点的选择算法，支持`hash`与`round_robin`两种形式，如`hash:ip`表示按ip hash选择节点。默认为`round_robin`
 - `sni`: 若配置的是https，需要设置对应的SNI
 - `verify_cert`: 若配置的是https，是否需要校验证书有效性
