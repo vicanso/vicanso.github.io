@@ -135,7 +135,104 @@ Transfer/sec:    320.01MB
 
 ### 压缩
 
-TODO
+测试客户端压缩各种不同压缩格式时的处理性能（主要耗时在压缩处理），所有压缩算法的压缩级别均选择9，实际使用按需设置。
+
+客户端不支持压缩(响应数据24KB)
+
+```bash
+wrk 'http://localhost:6118/' --latency
+Running 10s test @ http://localhost:6118/
+  2 threads and 10 connections
+  Thread Stats   Avg      Stdev     Max   +/- Stdev
+    Latency   110.61us   62.30us   3.71ms   87.06%
+    Req/Sec    44.96k     1.13k   46.16k    93.07%
+  Latency Distribution
+     50%  117.00us
+     75%  125.00us
+     90%  133.00us
+     99%  164.00us
+  903688 requests in 10.10s, 22.26GB read
+Requests/sec:  89474.79
+Transfer/sec:      2.20GB
+```
+
+客户端支持gzip压缩(响应数据2.87KB)
+
+```bash
+wrk -H "accept-encoding: gzip" 'http://localhost:6118/' --latency
+Running 10s test @ http://localhost:6118/
+  2 threads and 10 connections
+  Thread Stats   Avg      Stdev     Max   +/- Stdev
+    Latency     1.59ms  525.65us   7.55ms   86.09%
+    Req/Sec     3.16k   156.64     3.36k    93.56%
+  Latency Distribution
+     50%    1.72ms
+     75%    1.80ms
+     90%    1.88ms
+     99%    2.25ms
+  63484 requests in 10.10s, 182.42MB read
+Requests/sec:   6285.12
+Transfer/sec:     18.06MB
+```
+
+客户端支持br压缩(响应数据2.46KB)
+
+```bash
+wrk -H "accept-encoding: br" 'http://localhost:6118/' --latency
+Running 10s test @ http://localhost:6118/
+  2 threads and 10 connections
+  Thread Stats   Avg      Stdev     Max   +/- Stdev
+    Latency    16.62ms    5.41ms  54.96ms   88.28%
+    Req/Sec   302.12     24.46   353.00     83.00%
+  Latency Distribution
+     50%   18.03ms
+     75%   18.61ms
+     90%   19.47ms
+     99%   21.99ms
+  6023 requests in 10.01s, 14.85MB read
+Requests/sec:    601.55
+Transfer/sec:      1.48MB
+```
+
+客户端支持zstd压缩(响应数据2.73KB)
+
+```bash
+wrk -H "accept-encoding: zstd" 'http://localhost:6118/' --latency
+Running 10s test @ http://localhost:6118/
+ 2 threads and 10 connections
+ Thread Stats   Avg      Stdev     Max   +/- Stdev
+   Latency     2.19ms    0.93ms  23.19ms   85.73%
+   Req/Sec     2.32k   169.74     2.50k    92.50%
+ Latency Distribution
+    50%    2.32ms
+    75%    2.46ms
+    90%    2.59ms
+    99%    3.53ms
+ 46183 requests in 10.01s, 126.27MB read
+Requests/sec:   4612.25
+Transfer/sec:     12.61MB
+```
+
+客户端支持zstd压缩，服务设置为2个线程
+
+```bash
+wrk -H "accept-encoding: zstd" 'http://localhost:6118/' --latency
+
+Running 10s test @ http://localhost:6118/
+  2 threads and 10 connections
+  Thread Stats   Avg      Stdev     Max   +/- Stdev
+    Latency     1.33ms  540.17us   9.68ms   69.88%
+    Req/Sec     3.79k   201.55     4.21k    77.72%
+  Latency Distribution
+     50%    1.30ms
+     75%    1.72ms
+     90%    1.97ms
+     99%    2.47ms
+  76162 requests in 10.10s, 208.24MB read
+Requests/sec:   7540.73
+Transfer/sec:     20.62MB
+```
+
 
 ### 缓存
 
