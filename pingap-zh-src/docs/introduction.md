@@ -5,7 +5,7 @@ sidebar_position: 1
 # Pingap简述
 
 
-Pingap是基于[pingora](https://github.com/cloudflare/pingora)开发的，pingora提供了各类模块便于rust开发者使用，但并不方便非rust开发者，因此pingap提供了以toml的形式配置简单易用的反向代理，单服务支持多location转发，通过插件的形式支持更多的需求场景。已预编译好各架构上使用的可执行文件，在[releases](https://github.com/vicanso/pingap/releases)下载即可。特性如下：
+Pingap是基于[pingora](https://github.com/cloudflare/pingora)开发的，pingora提供了各类模块便于rust开发者使用，但并不方便非rust开发者，因此pingap支持toml的形式配置简单易用的反向代理，单服务支持多location转发，通过插件的形式支持更多的需求场景。已预编译好各架构上使用的可执行文件，在[releases](https://github.com/vicanso/pingap/releases)下载即可。特性如下：
 
 - 服务支持配置多个Location，通过host与path筛选对应的location，按权重逐一匹配选择
 - 支持正则形式配置重写Path，方便应用按前缀区分转发
@@ -14,10 +14,10 @@ Pingap是基于[pingora](https://github.com/cloudflare/pingora)开发的，pingo
 - 基于TOML格式的配置，配置方式非常简洁，可保存至文件或etcd
 - 支持10多个Prometheus指标，可以使用pull与push的形式收集相关指标
 - Opentelemetry支持w3c context trace与jaeger trace的形式
-- 频繁更新的Upstream与Location相关配置调整准实时生效(30秒)，其它应用配置更新后，无中断式的优雅重启程序
+- 频繁更新的Upstream、Location以及Plugin相关配置调整准实时生效(10秒)，其它应用配置更新后，无中断式的优雅重启程序
 - 访问日志的模板化配置，已支30多个相关属性的配置，可按需指定输出各种参数与指标
 - WEB形式的管理后台界面，无需学习，简单易用
-- 开箱即用的`let's encrypt`tls证书，仅需配置对应域名即可
+- 开箱即用的`let's encrypt`tls证书，仅需配置对应域名即可，可在单一配置中使用多个子域名
 - 不同域名的tls证书可使用在同一服务端口中，按servername自动选择匹配证书
 - 支持各种事件的推送：`lets_encrypt`, `backend_status`, `diff_config`, `restart`等等
 - 丰富的http插件，如高效的缓存服务组件、多种压缩算法的压缩组件、不同种类的认证组件、不同形式的限流组件等等
@@ -75,7 +75,7 @@ graph TD;
 ```
 
 
-Pingap核心部分功能主要处理以下逻辑(由插件实现更丰富的功能)：
+Pingap核心部分功能主要处理以下逻辑(更丰富的功能则由各种不同的插件实现)：
 
 - 根据path与host选择对应的location，path支持前缀、正则以及全匹配三种模式
 - location根据配置重写path以及添加相应的请求头
@@ -89,21 +89,23 @@ Pingap核心部分功能主要处理以下逻辑(由插件实现更丰富的功�
 该Server下的所有location在初始化时根据权重按高至低排序，接收到请求时按顺序一个个匹配到符合的location为止，若无符合的则返回出错。在选择对应的location之后，判断是否有配置重写path(若无则不需要)，添加请求头(若无则不需要)。
 
 ```rust
-let mut location = None;
+// set perometheus stats
+if let Some(prom) = &self.prometheus {
+    prom.before();
+}
+
 // locations not found
 let Some(locations) = get_server_locations(&self.name) else {
     return Ok(());
 };
-let header = session.req_header_mut();
-let host = util::get_host(header).unwrap_or_default();
-let path = header.uri.path();
+
 for name in locations.iter() {
-    if let Some(lo) = get_location(name) {
-        if lo.matched(host, path) {
-            ctx.location = name.to_string();
-            location = Some(lo);
-            break;
-        }
+    let Some(location) = get_location(name) else {
+        continue;
+    };
+    if location.matched(host, path) {
+        ctx.location = Some(location);
+        break;
     }
 }
 ```
@@ -112,7 +114,7 @@ for name in locations.iter() {
 
 ## 插件体系
 
-Pingap的插件主要分为两类，请求前或响应后的处理，提供压缩、缓存、认证、流控等各种不同场景的应用需求。插件是添加至location的，可根据不同需求参数配置各种不同的插件后，在location添加对应的插件，实现不同的功能组合。注意不同的插件是按顺序执行的，因此需要按需调整其顺序。
+Pingap的插件主要分为两类，请求前或响应后的处理，提供压缩、缓存、认证、流控等各种不同场景的应用需求。插件是添加至location的，可根据不同需求配置各种不同的插件后，在location添加对应的插件，实现不同的功能组合。注意插件是按顺序执行的，按需调整其顺序。
 
 [插件体系](/pingap-zh/docs/plugin)
 

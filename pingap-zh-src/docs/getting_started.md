@@ -4,7 +4,7 @@ sidebar_position: 11
 
 # 入门教程
 
-本章节介绍从零开始如何创建反向代理，由于pingora的热更新重启会关闭当前进程，暂时pingap也只能使用此方式,因此以下的示例均是以后台进程的形式运行。pingap对于经常变更的upstream与location增加了准实时刷新机制且无需重启，建议启动时添加`--autoreload`参数。
+本章节介绍从零开始如何创建反向代理，由于pingora的热更新重启会关闭当前进程，暂时pingap也只能使用此方式,因此以下的示例均是以后台进程的形式运行。pingap对于经常变更的upstream、location以及plugin等增加了准实时刷新机制且无需重启，建议若经常变更配置支持热更新则使用`--autoreload`启用，而server等配置也经常变化则加`--autoreload`参数。
 
 ## 选择配置存储目录
 
@@ -20,7 +20,7 @@ RUST_LOG=INFO pingap -c /opt/pingap/conf
 
 ## 启用WEB管理后台配置
 
-toml的相关配置可以查阅[应用配置详细说明](/pingap-zh/docs/config)，建议可以使用WEB管理后台的方式配置。WEB管理后台支持basic auth的方式鉴权（可选），下面通过127.0.0.1:3018端口提供管理后台服务，账号为：pingap，密码为：123123，`cGluZ2FwOjEyMzEyMw==`为base64("pingap:123123")。
+toml的相关配置可以查阅[应用配置详细说明](/pingap-zh/docs/config)，建议使用WEB管理后台的方式配置。WEB管理后台支持basic auth的方式鉴权（可选），下面通过127.0.0.1:3018端口提供管理后台服务，账号为：pingap，密码为：123123，`cGluZ2FwOjEyMzEyMw==`为base64("pingap:123123")。
 
 ```bash
 RUST_LOG=INFO pingap -c /opt/pingap/conf --admin=cGluZ2FwOjEyMzEyMw==@127.0.0.1:3018
@@ -55,7 +55,7 @@ Location主要配置其对应的host与path，以及选择关联对应的上游�
 
 ![Pingap Location Detail](./img/location-detail-zh.jpg)
 
-host根据提供服务的域名设置，如果多个域名则使用`,`分隔，若所有服务均使用同一域名，也可不设置。 path则是因为一般会基于不同的前缀转发至不同的服务，因此会设置对应的path匹配规则（更多的规则可查询location的详细说明）。需要注意支持的两种请求头处理方式，`设置转发请求头`会覆盖原有的值，例如对于设置`Host`等唯一请求头使用。`添加转发请求头`则不影响原有的值，而是新添加请求头。路由重写则是以正则表达式的形式配置，匹配值与替换值以` `空格分开。
+host根据提供服务的域名设置，如果多个域名则使用`,`分隔，若所有服务均使用同一域名，也可不设置。 path则是基于不同的前缀转发至不同的服务，因此会设置对应的path匹配规则（更多的规则可查询location的详细说明）。需要注意支持的两种请求头处理方式，`设置转发请求头`会覆盖原有的值，例如对于设置`Host`等唯一请求头使用。`添加转发请求头`则不影响原有的值，而是新添加请求头。路由重写则是以正则表达式的形式配置，匹配值与替换值以` `空格分开。
 
 对于转发至upstream时，有些upstream本身也是反向代理，且基于host匹配，那么则需要在location此处设置对应的`Host`请求头。
 
@@ -72,7 +72,7 @@ host根据提供服务的域名设置，如果多个域名则使用`,`分隔，�
 最后调整后的程序启动命令为包括以下方面：
 
 - 程序以后台服务运行
-- 程序自动检测配置是否更新，若有更新则重启。若只是upstream与location的更新，则准实时刷新，无需重启
+- 程序自动检测配置是否更新，若有更新则重启。若只是upstream与location等的更新，则准实时刷新，无需重启
 - 日志写入至/opt/pingap/pingap.log
 
 ```bash
@@ -92,4 +92,4 @@ RUST_LOG=INFO pingap -c /opt/pingap/conf \
 2024-06-30T13:04:28.524079+08:00  INFO reload location success
 ```
 
-需要注意，因为避免频繁更新配置时导致重复的重启，配置检测只会定时检测(现默认为90秒，reload则为30秒检测一次)，程序重启也避免过于频繁，因此需要配置更新后，大概需要等待2分钟才会真正触发upgrade操作。部分配置，如`upstream`与`location`等已实现热更新，程序无需重启即可实现配置更新。完成后打`http://127.0.0.1:6188/charts/`，需要注意在linux才可正常的触发upgrade的更新切换。
+需要注意，因为避免频繁更新配置时导致重复的重启，配置检测只会定时检测(现默认为90秒，reload则为10秒检测一次)，程序重启也避免过于频繁，因此需要配置更新后，大概需要等待2分钟才会真正触发upgrade操作。部分配置，如`upstream`与`location`等已实现热更新，程序无需重启即可实现配置更新。完成后打`http://127.0.0.1:6188/charts/`，需要注意在linux才可正常的触发upgrade的更新切换。

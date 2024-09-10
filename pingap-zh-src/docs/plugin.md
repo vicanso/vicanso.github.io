@@ -46,7 +46,7 @@ pub trait Plugin: Sync + Send {
 - `category`: 插件类型，用于区分该插件是哪类形式的插件
 - `step`: 插件的执行阶段，现只支持在`request_filter`与`proxy_upstream_filter`阶段执行
 - `handle_request`: 插件的转发前执行逻辑，若返回的是`Ok(Some(HttpResponse))`，则表示请求已处理完成，不再转发到上游节点，并将该响应传输至请求端
-- `handle_response`: 插件的响应前执逻辑，若返回的是Ok(Some(Bytes))`，则表示要重写响应数据
+- `handle_response`: 插件的响应前执逻辑，若返回的是`Ok(Some(Bytes))`，则表示要重写响应数据
 
 ## Stats
 
