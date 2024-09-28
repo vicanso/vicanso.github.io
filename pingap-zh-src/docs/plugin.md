@@ -105,7 +105,7 @@ remark = "管理后台"
 [plugins.downloadsServe]
 category = "directory"
 charset = "utf-8"
-chunk_size = 4096
+chunk_size = "4kb"
 index = "index.html"
 max_age = "1h"
 path = "~/Downloads"
@@ -133,19 +133,23 @@ path = "~/Downloads"
 ```toml
 [plugins.errorMock]
 category = "mock"
-data = "{\"message\": \"error message\"}"
+data = '{"error": "error message"}'
+delay = "1s"
 headers = [
     "X-Error:CustomRrror",
     "Content-Type:application/json",
 ]
+name = "errorMock"
 path = "/"
 status = 500
+step = "request"
 ```
 
 - `data`: Mock的响应数据
 - `headers`: Mock的响应头
 - `path`: Mock请求的路径，如果不配置则匹配所有
 - `status`: Mock响应的状态码
+- `delay`: 延时响应
 
 界面配置如图所示，配置对应响应数据既可，需要注意如果指定响应类型，如json等：
 
@@ -159,7 +163,9 @@ http重定向，可在重定向时添加前缀或指定为https。
 [plugins.http2https]
 category = "redirect"
 http_to_https = true
+name = "http2https"
 prefix = "/api"
+step = "request"
 ```
 
 - `http_to_https`: 是否从http重定向至https
@@ -237,6 +243,21 @@ zstd_level = 5
 
 ![Pingap Plugin Compression](./img/plugin-compression.jpg)
 
+## AcceptEncoding
+
+调整客户端接受编码的方式，可设置支持的编码，根据客户端与设置的编码调整相应的编码顺序。
+
+```toml
+[plugins.acceptEncoding]
+category = "accept_encoding"
+encodings = "zstd, br, gzip"
+only_one_encoding = true
+step = "request"
+```
+
+- `encodings`: 支持的编码
+- `only_one_encoding`: 是否只使用单一编码
+
 ## KeyAuth
 
 KeyAuth用于提供简单的认证方式，支持配置从query或header中获取值，可配置多个校验值，方便多系统接入。
@@ -244,14 +265,15 @@ KeyAuth用于提供简单的认证方式，支持配置从query或header中获�
 从query中的app字段中获取校验：
 
 ```toml
-[plugins.appAuth]
 category = "key_auth"
+delay = "1s"
 hide_credentials = true
 keys = [
     "KOXQaw",
     "GKvXY2",
 ]
 query = "app"
+step = "request"
 ```
 
 从header中的X-App字段中获取校验：
@@ -259,12 +281,14 @@ query = "app"
 ```toml
 [plugins.appAuth]
 category = "key_auth"
+delay = "1s"
 hide_credentials = true
-header = "X-App"
 keys = [
     "KOXQaw",
     "GKvXY2",
 ]
+header = "X-App"
+step = "request"
 ```
 
 - `hide_credentials`: 转发至upstream时是否删除认证信息
@@ -287,7 +311,9 @@ authorizations = [
     "YWRtaW46MTIzMTIz",
 ]
 category = "basic_auth"
+delay = "1s"
 hide_credentials = true
+step = "request"
 ```
 
 - `authorizations`: Basic认证的信息，它使用的是base64(user:password)后的数据，可以配置多个
@@ -306,9 +332,10 @@ hide_credentials = true
 algorithm = "HS256"
 auth_path = "/jwt-sign"
 category = "jwt"
-cookie = ""
+delay = "1s"
 header = "X-Jwt"
 secret = "123123"
+step = "request"
 ```
 
 - `header`: jwt认证时从header中获取的请求头名（与cookie，query三选一，优先级为header > cookie -> query)
@@ -330,8 +357,10 @@ secret = "123123"
 ```toml
 [plugins.cookieBigTreeLimit]
 category = "limit"
+interval = "1m"
 key = "bigtree"
 max = 10
+step = "request"
 tag = "cookie"
 type = "inflight"
 ```
@@ -392,6 +421,7 @@ ip_list = [
     "1.1.1.0/24",
 ]
 message = "禁止该IP访问"
+step = "request"
 type = "deny"
 ```
 
@@ -410,8 +440,9 @@ Referer限制分为两种模式，允许或禁止，配置时可使用*前缀匹
 ```toml
 [plugins.referer]
 category = "referer_restriction"
-message = ""
+message = "禁止访问"
 referer_list = ["*.github.com"]
+step = "request"
 type = "allow"
 ```
 
@@ -433,7 +464,7 @@ Csrf校验，校验请求时的cookie与请求头的是否一致，若不一致�
 [plugins.csrf]
 category = "csrf"
 key = "WjrXUG47wu"
-name = "x-csrf-toekn"
+name = "x-csrf-token"
 token_path = "/csrf-token"
 ttl = "1h"
 ```
@@ -452,13 +483,14 @@ Cors插件，用于设置跨域请求相关配置。
 ```toml
 [plugins.cors]
 allow_credentials = true
-allow_headers = 'Content-Type, X-User-Id"'
-allow_methods = "GET, POST"
+allow_headers = "Content-Type, X-User-Id"
+allow_methods = "GET, POST, OPTIONS"
 allow_origin = "$http_origin"
 category = "cors"
+expose_headers = "Content-Type, X-Device"
 max_age = "1h"
 path = "^/api"
-expose_headers = "Content-Type, X-Device"
+step = "request"
 ```
 
 - `allow_credentials`: 是否允许携带认证信息

@@ -14,7 +14,7 @@ Pingap使用toml来配置相关参数，对于时间类的配置，格式为`1s`
 - `upgrade_sock`: 参数可选，默认为`/tmp/pingap_upgrade.sock`，此参数配置程序无中断式更新时的socket路径，用于新的pingap进程与旧进程之间切换时使用
 - `user`: 参数可选，默认为空，用于设置守护进程的执行用户
 - `group`: 参数可选，默认为空，与`user`类似
-- `threads`: 参数可选，默认为1，用于设置每个服务(如server监控的tcp连接)使用的线程数，如果设置为0，则使用cpu或cgroup限制核数
+- `threads`: 参数可选，默认为1，用于设置每个服务(如server监听的tcp连接)使用的线程数，如果设置为0，则使用cpu或cgroup限制核数
 - `work_stealing`: 参数可选，默认为`true`，是否允许同服务中的不同线程的抢占工作
 - `grace_period`: 设置优雅退出的等待周期，默认为5分钟
 - `graceful_shutdown_timeout`: 设置优雅退出关闭超时时长，默认为5秒

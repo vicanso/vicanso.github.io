@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="generator" content="Docusaurus v3.5.2">
 <title data-rh="true">配置说明 | Pingap</title><meta data-rh="true" name="viewport" content="width=device-width,initial-scale=1"><meta data-rh="true" name="twitter:card" content="summary_large_image"><meta data-rh="true" property="og:image" content="https://vicanso.github.io/pingap-zh/img/docusaurus-social-card.jpg"><meta data-rh="true" name="twitter:image" content="https://vicanso.github.io/pingap-zh/img/docusaurus-social-card.jpg"><meta data-rh="true" property="og:url" content="https://vicanso.github.io/pingap-zh/docs/config"><meta data-rh="true" property="og:locale" content="zh_Hans"><meta data-rh="true" name="docusaurus_locale" content="zh-Hans"><meta data-rh="true" name="docsearch:language" content="zh-Hans"><meta data-rh="true" name="docusaurus_version" content="current"><meta data-rh="true" name="docusaurus_tag" content="docs-default-current"><meta data-rh="true" name="docsearch:version" content="current"><meta data-rh="true" name="docsearch:docusaurus_tag" content="docs-default-current"><meta data-rh="true" property="og:title" content="配置说明 | Pingap"><meta data-rh="true" name="description" content="Pingap使用toml来配置相关参数，对于时间类的配置，格式为1s, 1m, 1h这种时间表示形式。而对于存储大小类的配置，格式为1kb, 1mb, 1gb这种表示方式。具体参数说明如下："><meta data-rh="true" property="og:description" content="Pingap使用toml来配置相关参数，对于时间类的配置，格式为1s, 1m, 1h这种时间表示形式。而对于存储大小类的配置，格式为1kb, 1mb, 1gb这种表示方式。具体参数说明如下："><link data-rh="true" rel="icon" href="/pingap-zh/img/pingap.png"><link data-rh="true" rel="canonical" href="https://vicanso.github.io/pingap-zh/docs/config"><link data-rh="true" rel="alternate" href="https://vicanso.github.io/pingap-zh/docs/config" hreflang="zh-Hans"><link data-rh="true" rel="alternate" href="https://vicanso.github.io/pingap-zh/docs/config" hreflang="x-default"><link rel="stylesheet" href="/pingap-zh/assets/css/styles.b987bcf3.css">
-<script src="/pingap-zh/assets/js/runtime~main.6373d3b4.js" defer="defer"></script>
+<script src="/pingap-zh/assets/js/runtime~main.d4f34f04.js" defer="defer"></script>
 <script src="/pingap-zh/assets/js/main.e852a73f.js" defer="defer"></script>
 </head>
 <body class="navigation-with-keyboard">
@@ -18,7 +18,7 @@
 <li><code>upgrade_sock</code>: 参数可选，默认为<code>/tmp/pingap_upgrade.sock</code>，此参数配置程序无中断式更新时的socket路径，用于新的pingap进程与旧进程之间切换时使用</li>
 <li><code>user</code>: 参数可选，默认为空，用于设置守护进程的执行用户</li>
 <li><code>group</code>: 参数可选，默认为空，与<code>user</code>类似</li>
-<li><code>threads</code>: 参数可选，默认为1，用于设置每个服务(如server监控的tcp连接)使用的线程数，如果设置为0，则使用cpu或cgroup限制核数</li>
+<li><code>threads</code>: 参数可选，默认为1，用于设置每个服务(如server监听的tcp连接)使用的线程数，如果设置为0，则使用cpu或cgroup限制核数</li>
 <li><code>work_stealing</code>: 参数可选，默认为<code>true</code>，是否允许同服务中的不同线程的抢占  工作</li>
 <li><code>grace_period</code>: 设置优雅退出的等待周期，默认为5分钟</li>
 <li><code>graceful_shutdown_timeout</code>: 设置优雅退出关闭超时时长，默认为5秒</li>

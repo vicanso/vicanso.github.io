@@ -14,7 +14,7 @@ Pingap的大部分参数均是toml配置文件来指定，而有一些参数则�
 - `admin`: 可选，配置admin的监听地址，形式为`base64(user:pass)@ip:port`，其中认证部分是basic auth，若不配置则不校验，建议配置
 - `cp`: 可选，是否为控制面板节点，对于使用etcd存储配置的部署使用，设置后此节点只用于配置参数，避免配置有误导致节点无法启动，其它节点则加载对应配置运行。
 - `autorestart`或`a`: 可选，是否在配置有更新时自动重启，建议使用此方式达到准实时更新配置的效果(需要在daemon模式下)，其包括了autoreload的逻辑
-- `autoreload`: 可选，是否自动更新配置，仅适用于upstream与location的配置变更，若程序基本只变更upstream与location则可启用此参数，而非`autorestart`
+- `autoreload`: 可选，是否自动更新配置，仅适用于upstream、location、plugin以及certificate的配置变更，若程序基本只变更此类配置可仅启用此参数，而非`autorestart`
 - `sync`: 可选，是否将当前配置同步至其它存储，需要注意指定后仅运行同步，完成后程序即退出
 
 也可通过环境变量指定，对照关系如下：

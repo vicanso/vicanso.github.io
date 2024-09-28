@@ -33,7 +33,7 @@ RUST_LOG=INFO pingap -c /opt/pingap/conf --admin=cGluZ2FwOjEyMzEyMw==@127.0.0.1:
 
 ## 基础配置
 
-基础配置中一般不需要如何调整，若在同一机器运行多个pingap，则需要设置`进程id文件`与`upgrade sock`这两个配置，避免冲突。若非必要不建议同一机器启动多个pingap实例，若需要监听多端口可通过配置不同的server来实现。
+基础配置中一般不需要如何调整，大部分默认配置即可满足应用需求。若在同一机器运行多个pingap，则需要设置`进程id文件`与`upgrade sock`这两个配置，避免冲突。若非必要不建议同一机器启动多个pingap实例，若需要监听多端口可通过配置不同的server来实现。
 
 ![Pingap Basic Config](./img/basic-info-zh.jpg)
 
