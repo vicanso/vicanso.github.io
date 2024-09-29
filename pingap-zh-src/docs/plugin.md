@@ -347,6 +347,43 @@ step = "request"
 
 ![Pingap Plugin Jwt](./img/plugin-jwt.jpg)
 
+## CombinedAuth
+
+基于应用id+密钥，并使用时间戳生成摘要的组合式认证方式
+
+```toml
+[plugins.appAuth]
+category = "combined_auth"
+step = "request"
+
+[[plugins.appAuth.authorizations]]
+app_id = "pingap"
+deviation = 10
+ip_list = [
+    "192.168.1.1/24",
+    "127.0.0.1",
+]
+secret = "123123"
+```
+
+- `app_id`: 鉴权使用的id
+- `deviation`: 客户端参数的时间戳与服务器的偏差时间
+- `ip_list`: 允许的ip列表
+- `secret`: 密钥
+
+请求的query参数如下：`app_id=pingap&ts=1727582506&digest=85c623c389177a69860adfd572212507ef98c197ba5105677919e0663eeae091`，`digest`通过sha256计算密钥与时间戳的hash值得出。
+
+```rust
+let mut hasher = Sha256::new();
+hasher.update(format!("{}:{ts}", auth_param.secret).as_bytes());
+let hash256 = hasher.finalize();
+if digest.to_lowercase() != hash256.encode_hex::<String>() {
+    return Err(Error::Invalid {
+        category: category.to_string(),
+        message: "digest is invalid".to_string(),
+    });
+}
+```
 
 ## Limit
 

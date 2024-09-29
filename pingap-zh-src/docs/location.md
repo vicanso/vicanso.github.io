@@ -26,6 +26,7 @@ Location支持配置对应host(支持多个）与path规则，path支持以下�
 在server中会根据所添加的所有location列表，计算对应的权重重新排序，也可自定义权重，location的计算权限逻辑如下：
 
 ```rust
+/// Get weight of location, which is calculated from the domain name, path and path length
 pub fn get_weight(&self) -> u16 {
     if let Some(weight) = self.weight {
         return weight;
@@ -47,7 +48,7 @@ pub fn get_weight(&self) -> u16 {
         }
         weight += path.len().min(64) as u16;
     };
-    if self.host.is_some() {
+    if !self.host.clone().unwrap_or_default().is_empty() {
         weight += 128;
     }
     weight
