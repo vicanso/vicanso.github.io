@@ -14,7 +14,7 @@ const FeatureList: FeatureItem[] = [
     Svg: require("@site/static/img/undraw_docusaurus_mountain.svg").default,
     description: (
       <>
-        单一可执行文件，无其它动态库等的依赖，并提供Web界面式的配置管理，快速配置启用
+        单一可执行文件，支持arm与x86架构，提供musl版本的构建版本，可使用于各种老旧版本的linux，并提供Web界面式的配置管理，快速配置启用
       </>
     ),
   },
@@ -22,13 +22,19 @@ const FeatureList: FeatureItem[] = [
     title: "强大的插件体系",
     Svg: require("@site/static/img/undraw_docusaurus_tree.svg").default,
     description: (
-      <>基于插件体系可满足各种应用场景，如应用鉴权、数据压缩以及缓存等</>
+      <>
+        基于插件体系可满足各种应用场景，如应用鉴权、数据压缩、静态文件目录服务以及缓存等
+      </>
     ),
   },
   {
     title: "高性能",
     Svg: require("@site/static/img/undraw_docusaurus_react.svg").default,
-    description: <>基于rust与pingora构建，性能表现可圈可点，且安全可靠</>,
+    description: (
+      <>
+        基于rust与pingora构建，得益于rust高性能的表现，pingap性能表现可圈可点，且安全可靠
+      </>
+    ),
   },
 ];
 

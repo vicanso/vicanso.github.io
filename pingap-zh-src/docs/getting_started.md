@@ -4,7 +4,7 @@ sidebar_position: 11
 
 # 入门教程
 
-本章节介绍从零开始如何创建反向代理，由于pingora的热更新重启会关闭当前进程，暂时pingap也只能使用此方式,因此以下的示例均是以后台进程的形式运行。pingap对于经常变更的upstream、location以及plugin等增加了准实时刷新机制且无需重启，建议若经常变更配置支持热更新则使用`--autoreload`启用，而server等配置也经常变化则加`--autoreload`参数。
+本章节介绍从零开始如何创建反向代理，由于pingora的热更新重启会关闭当前进程，暂时pingap也只能使用此方式,因此以下的示例均是以后台进程的形式运行。pingap对于经常变更的upstream、location、certificate以及plugin等增加了准实时刷新机制且无需重启，建议若变更配置支持热更新则使用`--autoreload`启用，而server等配置也经常变化则加`--autoreload`参数。
 
 ## 选择配置存储目录
 
@@ -33,7 +33,7 @@ RUST_LOG=INFO pingap -c /opt/pingap/conf --admin=cGluZ2FwOjEyMzEyMw==@127.0.0.1:
 
 ## 基础配置
 
-基础配置中一般不需要如何调整，大部分默认配置即可满足应用需求。若在同一机器运行多个pingap，则需要设置`进程id文件`与`upgrade sock`这两个配置，避免冲突。若非必要不建议同一机器启动多个pingap实例，若需要监听多端口可通过配置不同的server来实现。
+基础配置中一般不需要如何调整，大部分默认配置即可满足应用需求。若在同一机器运行多个pingap，则需要设置`进程id文件`与`upgrade sock`这两个配置，避免冲突。若非必要不建议同一机器启动多个pingap实例，需要监听多端口可通过配置不同的server来实现。
 
 ![Pingap Basic Config](./img/basic-info-zh.jpg)
 

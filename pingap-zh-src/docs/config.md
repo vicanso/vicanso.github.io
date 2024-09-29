@@ -51,7 +51,7 @@ Location的相关配置说明可查看[Location的详细说明](./location)
 - `tls_min_version`: 指定tls的最低版本，默认为1.2
 - `tls_max_version`: 指定tls的最低版本，默认为1.3
 - `global_certificates`: 启用全局证书配置
-- `enabled_h2`: 是否启用http2，默认为不启用，需要注意只有https下才有效
+- `enabled_h2`: 是否启用http2，默认为不启用，需要注意，如果是http则使用h2c的形式
 - `tcp_idle`: tcp连接keepalive空闲回收时长
 - `tcp_interval`: tcp连接keepavlie检测时长
 - `tcp_probe_count`: tcp连接keepalvie探针检测次数
