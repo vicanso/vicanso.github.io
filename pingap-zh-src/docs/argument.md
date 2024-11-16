@@ -56,7 +56,7 @@ RUST_LOG=INFO pingap \
   --admin=cGluZ2FwOjEyMzEyMw==@127.0.0.1:3018
 ```
 
-etcd的连接参数：`etcd://ip1:port1,ip2:port2/path?user=xx&password=xx`的形式，需要注意`/path`部分按需要对应不同的应用配置。
+etcd的连接参数：`etcd://ip1:port1,ip2:port2/path?user=xx&password=xx`的形式，需要注意`/path`部分按需要对应不同的应用实例。
 admin的配置参数：`cGluZ2FwOjEyMzEyMw==`对应base64(pingap:123123)，指定后访问管理后台会使用basic auth校验，若不配置则无需校验，建议配置。
 
 应用节点：

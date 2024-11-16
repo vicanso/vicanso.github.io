@@ -4,7 +4,7 @@ sidebar_position: 11
 
 # 入门教程
 
-本章节介绍从零开始如何创建反向代理，由于pingora的热更新重启会关闭当前进程，暂时pingap也只能使用此方式,因此以下的示例均是以后台进程的形式运行。pingap对于经常变更的upstream、location、certificate以及plugin等增加了准实时刷新机制且无需重启，建议若变更配置支持热更新则使用`--autoreload`启用，而server等配置也经常变化则加`--autoreload`参数。
+本章节介绍从零开始如何创建反向代理，由于pingora的热更新重启会关闭当前进程，暂时pingap也只能使用此方式，因此以下的示例均是以后台进程的形式运行。pingap对于经常变更的upstream、location、certificate以及plugin等增加了准实时刷新机制且无需重启，建议若变更配置支持热更新则使用`--autoreload`启用，而server等配置也经常变化则加`--autorestart`参数。
 
 ## 选择配置存储目录
 
@@ -45,7 +45,7 @@ RUST_LOG=INFO pingap -c /opt/pingap/conf --admin=cGluZ2FwOjEyMzEyMw==@127.0.0.1:
 
 地址配置的是`ip:端口`的形式，无需指定协议，默认为http，若有配置`sni`则认为是以https的形式访问上游节点。
 
-虽然大部分的配置均可不配置，但建议展开更多配置，按需设置各超时的值，默认值无超时不建议使用。`sni`与`是否校验证书`用于该upstream的节点使用https时设置，若非https忽略即可。健康检查的`http://charts/ping`其中charts为指定请求时的Host，真正检测时会连接配置upstream地址连接。
+虽然大部分的配置均可不配置，但建议展开更多配置，按需设置各超时的值，默认值无超时不建议使用。`sni`与`是否校验证书`用于该upstream的节点使用https时设置，若非https忽略即可。健康检查的`http://charts/ping`其中charts为指定请求时的Host，真正检测时会连接配置upstream地址连接，并不会真正解析域名。
 
 ![Pingap Upstream Detail](./img/upstream-detail-zh.jpg)
 

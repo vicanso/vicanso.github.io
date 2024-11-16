@@ -11,10 +11,11 @@ Pingap是基于[pingora](https://github.com/cloudflare/pingora)开发的，pingo
 - 支持正则形式配置重写Path，方便应用按前缀区分转发
 - HTTP 1/2 的全链路支持，包括h2c的支持
 - 支持静态配置、DNS以及docker label的三种服务发现形式
+- 支持grpc-web反向代理
 - 基于TOML格式的配置，配置方式非常简洁，可保存至文件或etcd
 - 支持10多个Prometheus指标，可以使用pull与push的形式收集相关指标
 - Opentelemetry支持w3c context trace与jaeger trace的形式
-- 频繁更新的Upstream、Location以及Plugin相关配置调整准实时生效(10秒)，其它应用配置更新后，无中断式的优雅重启程序
+- 频繁更新的Upstream、Location以及Plugin相关配置调整准实时生效(10秒)且无任何中断请求，其它应用配置更新后，无中断式的优雅重启程序
 - 访问日志的模板化配置，已支30多个相关属性的配置，可按需指定输出各种参数与指标
 - WEB形式的管理后台界面，无需学习，简单易用
 - 开箱即用的`let's encrypt`tls证书，仅需配置对应域名即可，可在单一配置中使用多个子域名
@@ -89,12 +90,7 @@ Pingap核心部分功能主要处理以下逻辑(更丰富的功能则由各种�
 该Server下的所有location在初始化时根据权重按高至低排序，接收到请求时按顺序一个个匹配到符合的location为止，若无符合的则返回出错。在选择对应的location之后，判断是否有配置重写path(若无则不需要)，添加请求头(若无则不需要)。
 
 ```rust
-// set perometheus stats
-if let Some(prom) = &self.prometheus {
-    prom.before();
-}
 
-// locations not found
 let Some(locations) = get_server_locations(&self.name) else {
     return Ok(());
 };
@@ -103,8 +99,14 @@ for name in locations.iter() {
     let Some(location) = get_location(name) else {
         continue;
     };
-    if location.matched(host, path) {
+    let (matched, variables) = location.matched(host, path);
+    if matched {
         ctx.location = Some(location);
+        if let Some(variables) = variables {
+            for (key, value) in variables.iter() {
+                ctx.add_variable(key, value);
+            }
+        };
         break;
     }
 }
