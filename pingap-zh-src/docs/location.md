@@ -23,6 +23,8 @@ Location支持配置对应host(支持多个）与path规则，path支持以下�
 - 正则模式，配置以`~`开始，如`~^/(api|rest)`表示匹配path以`/api`或`/rest`开始请求
 - 前缀模式，如`/api`表示匹配path为`/api`开始的请求
 
+Host也支持正则模式匹配，配置为`~`开始则表示以正则表达式匹配
+
 在server中会根据所添加的所有location列表，计算对应的权重重新排序，也可自定义权重，location的计算权限逻辑如下：
 
 ```rust

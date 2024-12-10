@@ -198,6 +198,7 @@ predictor = true
 - `max_ttl`: 设置缓存的最长有效期，一般建议由upstream服务响应时，若`Cache-Control`的`max-age`较长，则设置较短的`s-maxage`，若`upstream`未设置`s-maxage`，可通过此配置限制缓存的最大有效期
 - `eviction`: 当缓存超限时，触发缓存清除，需要注意，如tinyufo暂时不支持主动清除
 - `predictor`: 是否记录无法缓存的请求，可避免后续重复的等待确认请求是否可缓存
+- `headers`: 如果响应数据依赖于请求头，则可需设置对应的请求头作为key的一部分，例如对应的upstream支持不同的压缩算法，则需设置`Accept-Encoding`为key的一部分
 
 
 ![Pingap Plugin Cache](./img/plugin-cache.jpg)
