@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="generator" content="Docusaurus v3.5.2">
 <title data-rh="true">Pingap简述 | Pingap</title><meta data-rh="true" name="viewport" content="width=device-width,initial-scale=1"><meta data-rh="true" name="twitter:card" content="summary_large_image"><meta data-rh="true" property="og:image" content="https://vicanso.github.io/pingap-zh/img/docusaurus-social-card.jpg"><meta data-rh="true" name="twitter:image" content="https://vicanso.github.io/pingap-zh/img/docusaurus-social-card.jpg"><meta data-rh="true" property="og:url" content="https://vicanso.github.io/pingap-zh/docs/introduction"><meta data-rh="true" property="og:locale" content="zh_Hans"><meta data-rh="true" name="docusaurus_locale" content="zh-Hans"><meta data-rh="true" name="docsearch:language" content="zh-Hans"><meta data-rh="true" name="docusaurus_version" content="current"><meta data-rh="true" name="docusaurus_tag" content="docs-default-current"><meta data-rh="true" name="docsearch:version" content="current"><meta data-rh="true" name="docsearch:docusaurus_tag" content="docs-default-current"><meta data-rh="true" property="og:title" content="Pingap简述 | Pingap"><meta data-rh="true" name="description" content="Pingap是基于pingora开发的，pingora提供了各类模块便于rust开发者使用，但并不方便非rust开发者，因此pingap支持toml的形式配置简单易用的反向代理，单服务支持多location转发，通过插件的形式支持更多的需求场景。已预编译好各架构上使用的可执行文件，在releases下载即可。特性如下："><meta data-rh="true" property="og:description" content="Pingap是基于pingora开发的，pingora提供了各类模块便于rust开发者使用，但并不方便非rust开发者，因此pingap支持toml的形式配置简单易用的反向代理，单服务支持多location转发，通过插件的形式支持更多的需求场景。已预编译好各架构上使用的可执行文件，在releases下载即可。特性如下："><link data-rh="true" rel="icon" href="/pingap-zh/img/pingap.png"><link data-rh="true" rel="canonical" href="https://vicanso.github.io/pingap-zh/docs/introduction"><link data-rh="true" rel="alternate" href="https://vicanso.github.io/pingap-zh/docs/introduction" hreflang="zh-Hans"><link data-rh="true" rel="alternate" href="https://vicanso.github.io/pingap-zh/docs/introduction" hreflang="x-default"><link rel="stylesheet" href="/pingap-zh/assets/css/styles.b987bcf3.css">
-<script src="/pingap-zh/assets/js/runtime~main.d074294e.js" defer="defer"></script>
+<script src="/pingap-zh/assets/js/runtime~main.26851762.js" defer="defer"></script>
 <script src="/pingap-zh/assets/js/main.e852a73f.js" defer="defer"></script>
 </head>
 <body class="navigation-with-keyboard">
@@ -13,14 +13,15 @@
 <ul>
 <li>服务支持配置多个Location，通过host与path筛选对应的location，按权重逐一匹配选择</li>
 <li>支持正则形式配置重写Path，方便应用按前缀区分转发</li>
+<li>HTTP透明代理，支持http与https的代理转发</li>
 <li>HTTP 1/2 的全链路支持，包括h2c的支持</li>
 <li>支持静态配置、DNS以及docker label的三种服务发现形式</li>
 <li>支持grpc-web反向代理</li>
 <li>基于TOML格式的配置，配置方式非常简洁，可保存至文件或etcd</li>
-<li>支持10多个Prometheus指标，可以使用pull与push的形式收集相关指标</li>
+<li>已有10多个Prometheus指标，可以使用pull与push的形式收集相关指标</li>
 <li>Opentelemetry支持w3c context trace与jaeger trace的形式</li>
 <li>频繁更新的Upstream、Location以及Plugin相关配置调整准实时生效(10秒)且无任何中断请求，其它应用配置更新后，无中断式的优雅重启程序</li>
-<li>访问日志的模板化配置，已支30多个相关属性的配置，可按需指定输出各种参数与指标</li>
+<li>访问日志的模板化配置，已支持30多个相关属性的配置，可按需指定输出各种参数与指标</li>
 <li>WEB形式的管理后台界面，无需学习，简单易用</li>
 <li>开箱即用的<code>let&#x27;s encrypt</code>tls证书，仅需配置对应域名即可，可在单一配置中使用多个子域名</li>
 <li>不同域名的tls证书可使用在同一服务端口中，按servername自动选择匹配证书</li>
@@ -49,7 +50,7 @@
 <p>Upstream的逻辑比较简单，在匹配location后，根据该location配置的upstream节点列表，按算法选择可用节点，并将请求转发至该节点即可。upstream有各种超时以及tcp相关的配置，建议按需配置而非使用默认值。</p>
 <p><a href="/pingap-zh/docs/upstream">Upstream的详细说明</a></p>
 <h2 class="anchor anchorWithStickyNavbar_LWe7" id="访问日志格式化">访问日志格式化<a href="#访问日志格式化" class="hash-link" aria-label="访问日志格式化的直接链接" title="访问日志格式化的直接链接">​</a></h2>
-<p>现在日志是按server来配置，因此该server下的所有location共用，已支持各种不同的占位符，按需配置不同的访问日志输出。</p>
+<p>现在日志是按server来配置，因此该server下的所有location共用，已支持各种不同的占位符， 按需配置不同的访问日志输出。</p>
 <p><a href="/pingap-zh/docs/log">日志格式化详细说明</a></p>
 <h2 class="anchor anchorWithStickyNavbar_LWe7" id="应用配置">应用配置<a href="#应用配置" class="hash-link" aria-label="应用配置的直接链接" title="应用配置的直接链接">​</a></h2>
 <p><a href="/pingap-zh/docs/config">应用配置详细说明</a></p></div><footer class="theme-doc-footer docusaurus-mt-lg"><div class="row margin-top--sm theme-doc-footer-edit-meta-row"><div class="col"><a href="https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/docs/introduction.md" target="_blank" rel="noopener noreferrer" class="theme-edit-this-page"><svg fill="currentColor" height="20" width="20" viewBox="0 0 40 40" class="iconEdit_Z9Sw" aria-hidden="true"><g><path d="m34.5 11.7l-3 3.1-6.3-6.3 3.1-3q0.5-0.5 1.2-0.5t1.1 0.5l3.9 3.9q0.5 0.4 0.5 1.1t-0.5 1.2z m-29.5 17.1l18.4-18.5 6.3 6.3-18.4 18.4h-6.3v-6.2z"></path></g></svg>编辑此页</a></div><div class="col lastUpdated_JAkA"></div></div></footer></article><nav class="pagination-nav docusaurus-mt-lg" aria-label="文件选项卡"><a class="pagination-nav__link pagination-nav__link--next" href="/pingap-zh/docs/getting_started"><div class="pagination-nav__sublabel">下一页</div><div class="pagination-nav__label">入门教程</div></a></nav></div></div><div class="col col--3"><div class="tableOfContents_bqdL thin-scrollbar theme-doc-toc-desktop"><ul class="table-of-contents table-of-contents__left-border"><li><a href="#处理流程" class="table-of-contents__link toc-highlight">处理流程</a></li><li><a href="#location的处理逻辑" class="table-of-contents__link toc-highlight">Location的处理逻辑</a></li><li><a href="#插件体系" class="table-of-contents__link toc-highlight">插件体系</a></li><li><a href="#upstream的处理逻辑" class="table-of-contents__link toc-highlight">Upstream的处理逻辑</a></li><li><a href="#访问日志格式化" class="table-of-contents__link toc-highlight">访问日志格式化</a></li><li><a href="#应用配置" class="table-of-contents__link toc-highlight">应用配置</a></li></ul></div></div></div></div></main></div></div></div><footer class="footer"><div class="container container-fluid"><div class="footer__bottom text--center"><div class="footer__copyright">Copyright © 2024 Tree Xie.</div></div></div></footer></div>
