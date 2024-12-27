@@ -39,6 +39,8 @@ Pingap格式化可以使用以下几种默认形式`combined`，`common`，`shor
 
 现已支持获取context中记录的以下相关属性：
 
+
+- `connection_id`: 当前连接的id
 - `upstream_reused`: 与upstream的连接是否为复用请求
 - `upstream_addr`: 连接的upstream地址
 - `processing`: 该服务当前正在处理的请求数
@@ -53,7 +55,7 @@ Pingap格式化可以使用以下几种默认形式`combined`，`common`，`shor
 - `connection_reused`: 当前connection是否复用
 - `tls_version`: tls的版本(http连接则为空)
 - `tls_cipher`: tls的加解密算法(http连接则为空)
-- `tls_handshake_time`: tls握手耗时
+- `tls_handshake_time`: tls握手耗时(http连接则为空)
 - `compression_time`: 数据压缩的耗时
 - `compression_ratio`: 数据压缩比
 - `cache_lookup_time`: 缓存的查询耗时

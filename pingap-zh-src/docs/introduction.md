@@ -86,46 +86,12 @@ Pingap核心部分功能主要处理以下逻辑(更丰富的功能则由各种�
 - 根据配置的日志格式输出对应的访问日志
 
 
-## Location的处理逻辑
-
-该Server下的所有location在初始化时根据权重按高至低排序，接收到请求时按顺序一个个匹配到符合的location为止，若无符合的则返回出错。在选择对应的location之后，判断是否有配置重写path(若无则不需要)，添加请求头(若无则不需要)。
-
-```rust
-
-let Some(locations) = get_server_locations(&self.name) else {
-    return Ok(());
-};
-
-for name in locations.iter() {
-    let Some(location) = get_location(name) else {
-        continue;
-    };
-    let (matched, variables) = location.matched(host, path);
-    if matched {
-        ctx.location = Some(location);
-        if let Some(variables) = variables {
-            for (key, value) in variables.iter() {
-                ctx.add_variable(key, value);
-            }
-        };
-        break;
-    }
-}
-```
-
-[Location的详细说明](/pingap-zh/docs/location)
-
 ## 插件体系
 
 Pingap的插件主要分为两类，请求前或响应后的处理，提供压缩、缓存、认证、流控等各种不同场景的应用需求。插件是添加至location的，可根据不同需求配置各种不同的插件后，在location添加对应的插件，实现不同的功能组合。注意插件是按顺序执行的，按需调整其顺序。
 
 [插件体系](/pingap-zh/docs/plugin)
 
-## Upstream的处理逻辑
-
-Upstream的逻辑比较简单，在匹配location后，根据该location配置的upstream节点列表，按算法选择可用节点，并将请求转发至该节点即可。upstream有各种超时以及tcp相关的配置，建议按需配置而非使用默认值。
-
-[Upstream的详细说明](/pingap-zh/docs/upstream)
 
 ## 访问日志格式化
 

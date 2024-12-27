@@ -10,12 +10,15 @@ Pingap提供了已构建好的docker镜像，可以直接运行，需要注意�
 ```bash
 docker run -it -d --restart=always \
   -v $PWD/pingap:/opt/pingap \
-  -p 3018:3018 \
   -p 80:80 \
   -p 443:443 \
-  vicanso/pingap -c /opt/pingap/conf \
-  --autoreload \
-  --admin=cGluZ2FwOjEyMzEyMw==@0.0.0.0:3018
+  -e PINGAP_CONF=/opt/pingap/conf \
+  -e PINGAP_ADMIN_ADDR=0.0.0.0:80/pingap \
+  -e PINGAP_ADMIN_USER=pingap \
+  -e PINGAP_ADMIN_PASSWORD=123123 \
+  -e PINGAP_AUTORELOAD=true \
+  vicanso/pingap
 ```
 
-其中`cGluZ2FwOjEyMzEyMw==`是base64("pingap:123123")对应的值，用于启用WEB管理后台时的鉴权使用。`80`与`443`端口则是后续监听服务时使用，`autoreload`是用于`upstream`与`location`的热更新使用，此两类配置不需要重启应用程序。
+`80`与`443`端口则是后续监听服务时使用，管理后台通过`/pingap/`前缀访问，`autoreload`是用于`upstream`、`location`以及`certifcate`等的热更新使用，此类配置不需要重启应用程序。
+
