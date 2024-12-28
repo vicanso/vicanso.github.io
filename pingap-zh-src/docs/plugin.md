@@ -5,7 +5,7 @@ sidebar_position: 71
 # 插件体系
 
 
-Pingap中通过Locaton添加各种插件支持更多的应用场景，如鉴权、流控、设置响应头等场景。
+Location添加各种插件支持更多的应用场景，如鉴权、流控、设置响应头等场景。
 
 ## 插件执行时点
 
@@ -44,13 +44,13 @@ pub trait Plugin: Sync + Send {
 主要分三个实现：
 
 - `category`: 插件类型，用于区分该插件是哪类形式的插件
-- `step`: 插件的执行阶段，现只支持在`request_filter`与`proxy_upstream_filter`阶段执行
+- `step`: 插件的执行时序，按需选择插件的执行时序，不同的插件可选择的选择不一样
 - `handle_request`: 插件的转发前执行逻辑，若返回的是`Ok(Some(HttpResponse))`，则表示请求已处理完成，不再转发到上游节点，并将该响应传输至请求端
 - `handle_response`: 插件的响应前执逻辑，若返回的是`Ok(Some(Bytes))`，则表示要重写响应数据
 
 ## Stats
 
-获取应用性能指标等统计性能，配置是指定对应的访问路径即可，也可直接使用自带的`pingap:stats`。如配置为`/stats`后，访问该location的`/stats`目录即可获取到应用的统计指标。具体配置如下：
+获取应用性能指标等统计性能，方便其它系统定时采集应用指标，配置时指定对应的访问路径即可，也可直接使用自带的`pingap:stats`。如配置为`/stats`后，访问该location的`/stats`目录即可获取到应用的统计指标。具体配置如下：
 
 ```toml
 [plugins.stats]
@@ -60,6 +60,7 @@ remark = "用于获取性能指标"
 ```
 
 - `path`: 响应性能指标的路径
+- `step`: 插件可选的执行位置为`request`或`proxy_upstream`
 
 界面配置如图所示，主要是配置其对应的请求路径即可：
 
@@ -68,7 +69,7 @@ remark = "用于获取性能指标"
 
 ## Ping
 
-Ping->pong的响应处理，可用于判断程序是否正常运行等。
+Ping->pong的响应处理，可用于判断程序是否正常运行，若前置还有反向代理可通过此方式作为pingap的health check。
 
 ```toml
 [plugins.pingpong]
@@ -77,16 +78,18 @@ path = "/ping"
 ```
 
 - `path`: 响应pong的路径
+- `step`: 插件可选的执行位置为`request`
 
 ## Admin
 
-管理后台配置，可在现在的现有的location中添加支持管理后台服务，`YWRtaW46MTIzMTIz`为`base64(admin:123123)`，将该配置关联至对应location后，即可使用该location的/pingap/访问管理后台，账号为`admin`，密码为`123123`
+管理后台配置，可在现在的现有的location中添加支持管理后台服务，`YWRtaW46MTIzMTIz`为`base64(admin:123123)`，将该配置关联至对应location后，即可使用该location的`/pingap/`访问管理后台，账号为`admin`，密码为`123123`
 
 ```toml
 [plugins.admin]
 authorizations = ["YWRtaW46MTIzMTIz"]
 category = "admin"
 ip_fail_limit = 10
+max_age = "7d"
 path = "/pingap"
 remark = "管理后台"
 ```
@@ -94,12 +97,14 @@ remark = "管理后台"
 - `authorizations`: Basic认证的密钥列表
 - `ip_fail_limit`: 认证失败时的IP限制次数
 - `path`: 管理后台的路径
+- `max_age`: 设置登录状态的有效期，默认为2天
+- `step`: 插件可选的执行位置为`request`或`proxy_upstream`
 
 ![Pingap Plugin Admin](./img/plugin-admin.jpg)
 
 ## Directory
 
-静态文件目录服务，为指定目录提供静态文件服务，说明如下：
+静态文件目录服务，为指定目录提供静态文件服务，也可提供目录文件浏览以及下载服务，说明如下：
 
 ```toml
 [plugins.downloadsServe]
@@ -109,10 +114,17 @@ chunk_size = "4kb"
 index = "index.html"
 max_age = "1h"
 path = "~/Downloads"
+private = true
+charset = "utf-8"
+autoindex = true
+download = true
+headers = [
+    "X-Server:pingap",
+]
 ```
 
 - `path`: 静态文件目录路径
-- `chunk_size`: Http chunk的大小，默认为`8192`
+- `chunk_size`: Http chunk的大小，默认为`8kb`
 - `max_age`: 设置http响应的的缓存时间，默认无。此值对于`text/html`无效，html均设置为不可缓存。如设置为`1h`表示缓存有效期1小时
 - `private`: 缓存是否设置为`private`，默认为`public`
 - `index`: 设置默认的index文件，默认为`index.html`
@@ -120,6 +132,7 @@ path = "~/Downloads"
 - `autoindex`: 是否允许目录以浏览形式展示，需要注意若指定了目录允许浏览，则`index`参数无效
 - `download`: 是否支持下载，指定该参数后响应时会设置响应头`Content-Disposition`
 - `headers`: 需要添加的http响应头列表
+- `step`: 插件可选的执行位置为`request`或`proxy_upstream`
 
 
 界面配置如图所示，配置对应的静态文件目录，并按需要添加对应的query参数即可：
@@ -145,11 +158,12 @@ status = 500
 step = "request"
 ```
 
-- `data`: Mock的响应数据
+- `data`: Mock的响应数据，需要注意对于不同类型的数据需要在headers中指定`Content-Type`
 - `headers`: Mock的响应头
 - `path`: Mock请求的路径，如果不配置则匹配所有
 - `status`: Mock响应的状态码
 - `delay`: 延时响应
+- `step`: 插件可选的执行位置为`request`或`proxy_upstream`
 
 界面配置如图所示，配置对应响应数据既可，需要注意如果指定响应类型，如json等：
 
@@ -170,6 +184,7 @@ step = "request"
 
 - `http_to_https`: 是否从http重定向至https
 - `prefix`: 重定向时添加的前缀
+- `step`: 插件可选的执行位置为`request`
 
 
 界面配置如图所示，若需要重定向时添加前缀，可配置对应的前缀，若无需要调整则不配置值即可：
@@ -178,7 +193,7 @@ step = "request"
 
 ## Cache
 
-缓存中间件，用于缓存http请求，由于缓存模块是全局使用，因此如果不同的Location均使用缓存，则需要设置不同的namespace。
+缓存中间件，用于缓存http请求，由于缓存模块是全局使用，因此如果不同的Location均使用缓存，避免相同url的冲突，建议每个location使用不同的插件并设置不同的namespace。
 
 ```toml
 [plugins.chartsCache]
@@ -190,15 +205,23 @@ max_file_size = "100kb"
 max_ttl = "1h"
 namespace = "charts"
 predictor = true
+purge_ip_list = [
+    "127.0.0.1",
+    "192.168.1.1/24"
+]
 ```
 
-- `lock`: 缓存不存在时，相同请求的等待时长
-- `max_file_size`: 单个缓存文件的最大长度，建议设置合理的值，避免过大的响应缓存在内存中导致内存占用过高
-- `namespace`: 由于缓存是应用共享，而缓存的key是基于path+querystring，因此如果是多域名共享时，不同的域名使用不同的缓存中间件，并设置对应的namespace
+- `lock`: 缓存不存在时，相同请求的等待时长，默认为1秒，用于避免缓存击穿
+- `max_file_size`: 单个缓存文件的最大长度，建议设置合理的值，避免过大的响应缓存在内存中导致内存占用过高，默认为1mb
+- `namespace`: 由于缓存是应用共享，而缓存的key是基于path+querystring，因此如果是多域名共享时，不同的域名使用不同的缓存中间件，并设置对应的namespace。对于文件缓存，namespace对应单独的文件目录
 - `max_ttl`: 设置缓存的最长有效期，一般建议由upstream服务响应时，若`Cache-Control`的`max-age`较长，则设置较短的`s-maxage`，若`upstream`未设置`s-maxage`，可通过此配置限制缓存的最大有效期
-- `eviction`: 当缓存超限时，触发缓存清除，需要注意，如tinyufo暂时不支持主动清除
+- `eviction`: 当缓存超限时，触发缓存清除。文件缓存会定时清除过长时间未访问缓存，因此可不设置
 - `predictor`: 是否记录无法缓存的请求，可避免后续重复的等待确认请求是否可缓存
 - `headers`: 如果响应数据依赖于请求头，则可需设置对应的请求头作为key的一部分，例如对应的upstream支持不同的压缩算法，则需设置`Accept-Encoding`为key的一部分
+- `purge_ip_list`: 允许执行purge请求的ip列表，默认为空
+- `skip`: 跳过缓存的正则表达式，默认为空，用于某些请求快速跳过缓存判断
+- `step`: 插件可选的执行位置为`request`
+  
 
 
 ![Pingap Plugin Cache](./img/plugin-cache.jpg)
@@ -217,6 +240,7 @@ size = 8
 
 - `algorithm`: 生成请求id的算法
 - `size`: 请求id的长度，只对于`nanoid`有效。
+- `step`: 插件可选的执行位置为`request`或`proxy_upstream`
 
 界面配置如图所示：
 
@@ -224,7 +248,7 @@ size = 8
 
 ## Compression
 
-压缩中间件，处理从上游返回的相关数据压缩，由于`pingora`对于压缩的匹配顺序为`gzip --> br --> zstd`，官方暂未支持调整优先级，而对于现代浏览器，基本都支持`gzip`，大部分支持`br`，少部分支持`zstd`，为了使用更好的压缩方式，此插件会调整请求的`Accept-Encoding`，让压缩的顺序调整为`zstd --> br --> gzip`。配置如下：
+压缩中间件，处理从上游返回的相关数据压缩，由于`pingora`对于压缩的匹配顺序为`gzip --> br --> zstd`，官方暂未支持调整优先级，而对于现代浏览器，基本都支持`gzip`，大部分支持`br`，少部分支持`zstd`，为了使用更好的压缩方式，此插件会调整请求的`Accept-Encoding`，压缩算法选择顺序调整为`zstd --> br --> gzip`。此插件无需要指定执行阶段，只能在`early_request`阶段执行。配置如下：
 
 ```toml
 [plugins.commonCompression]
@@ -232,11 +256,13 @@ br_level = 6
 category = "compression"
 gzip_level = 6
 zstd_level = 5
+decompression = true
 ```
 
 - `br_level`: brotli压缩算法的压缩级别
 - `gzip_level`: gzip压缩算法的压缩级别
 - `zstd_level`: zstd压缩算法的压缩级别
+- `decompression`: 是否启用解压upstream返回的数据
 
 需要注意三种压缩算法的压缩级别不一样，按需选择即可，也可使用自带的`pingap:compression`，它的压缩级别配置为`gzip_level = 6`, `br_level = 6`, `zstd_level = 3`。
 
@@ -246,14 +272,13 @@ zstd_level = 5
 
 ## AcceptEncoding
 
-调整客户端接受编码的方式，可设置支持的编码，根据客户端与设置的编码调整相应的编码顺序。
+调整客户端接受编码的方式，可设置支持的编码，根据客户端与设置的编码调整相应的编码顺序，此插件无需要指定执行阶段，只能在`early_request`阶段执行。
 
 ```toml
 [plugins.acceptEncoding]
 category = "accept_encoding"
 encodings = "zstd, br, gzip"
 only_one_encoding = true
-step = "request"
 ```
 
 - `encodings`: 支持的编码
@@ -292,10 +317,12 @@ header = "X-App"
 step = "request"
 ```
 
+- `delay`: 校验失败时延时响应
 - `hide_credentials`: 转发至upstream时是否删除认证信息
 - `query`: 从query中获取认证信息
 - `header`: 从请求头中获取认证信息（与query二选一,，使用使用query)
 - `keys`: 认证的key列表
+- `step`: 插件可选的执行位置为`request`或`proxy_upstream`
 
 界面配置如图所示，配置key的名称，再配置符合的值即可：
 
@@ -317,8 +344,10 @@ hide_credentials = true
 step = "request"
 ```
 
+- `delay`: 校验失败时延时响应
 - `authorizations`: Basic认证的信息，它使用的是base64(user:password)后的数据，可以配置多个
 - `hide_credentials`: 转发至upstream时是否删除认证信息
+- `step`: 插件可选的执行位置为`request`
 
 界面配置如图所示，配置basic auth的值，需要注意配置已做base64处理后的值即可：
 
@@ -345,12 +374,13 @@ step = "request"
 - `auth_path`: 生成jwt认证信息的路径
 - `algorithm`: 认证使用的算法
 - `secret`: 认证使用的密钥
+- `step`: 插件可选的执行位置为`request`
 
 ![Pingap Plugin Jwt](./img/plugin-jwt.jpg)
 
 ## CombinedAuth
 
-基于应用id+密钥，并使用时间戳生成摘要的组合式认证方式
+基于应用id+密钥，并使用时间戳生成摘要的组合式认证方式，每个应用鉴权均为单独配置
 
 ```toml
 [plugins.appAuth]
@@ -367,8 +397,9 @@ ip_list = [
 secret = "123123"
 ```
 
+- `step`: 插件可选的执行位置为`request`
 - `app_id`: 鉴权使用的id
-- `deviation`: 客户端参数的时间戳与服务器的偏差时间
+- `deviation`: 客户端参数的时间戳与服务器的偏差时间(秒)
 - `ip_list`: 允许的ip列表
 - `secret`: 密钥
 
@@ -442,6 +473,7 @@ type = "rate"
 - `key`: 限制使用的key，对于`ip`类型无需指定
 - `max`: 限流最大值
 - `interval`: 限流间隔，用于`rate`类型
+- `step`: 插件可选的执行位置为`request`或`proxy_upstream`
 
 界面配置如图所示，主要是配置限制条件以及对应的最大并发访问量：
 
@@ -466,6 +498,7 @@ type = "deny"
 - `type`: 类型，是允许还是禁止
 - `ip_list`: IP或IP网段列表
 - `message`: 拦截时的出错信息
+- `step`: 插件可选的执行位置为`request`
 
 界面配置如图所示，配置IP列表后，填写是允许还是禁止即可：
 
@@ -487,6 +520,7 @@ type = "allow"
 - `type`: 类型，是允许还是禁止
 - `referer_list`: referer列表
 - `message`: 拦截时的出错信息
+- `step`: 插件可选的执行位置为`request`
 
 界面配置如图所示，配置Referer列表后，填写是允许还是禁止即可：
 
@@ -509,8 +543,9 @@ ttl = "1h"
 
 - `key`: 生成csrf信息时使用的key
 - `name`: csrf的名称
-- `token_path`: 生成token的目录
+- `token_path`: 生成token的路径
 - `ttl`: 有效期
+- `step`: 插件可选的执行位置为`request`
 
 ![Pingap Plugin Csrf](./img/plugin-csrf.jpg)
 
@@ -538,6 +573,7 @@ step = "request"
 - `max_age`: 设置有效期
 - `path`: 设置允许cors的路径，可为正则表达式
 - `expose_headers`: 暴露给浏览器访问的响应头
+- `step`: 插件可选的执行位置为`request`
 
 ![Pingap Plugin Cors](./img/plugin-cors.jpg)
 
@@ -557,6 +593,8 @@ step = "response"
 - `add_headers`: 需要添加的响应头
 - `set_headers`: 需要设置的响应头，会覆盖原有值
 - `remove_headers`: 需要删除的响应头
+- `step`: 插件可选的执行位置为`response`
+
 
 执行顺序为`add_headers --> remove_headers --> set_headers`。界面配置如图所示，按需要配置要设置、添加或删除的响应头，若不需要则不设置即可：
 

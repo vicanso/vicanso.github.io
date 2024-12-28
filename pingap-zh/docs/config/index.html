@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="generator" content="Docusaurus v3.6.3">
 <title data-rh="true">配置说明 | Pingap</title><meta data-rh="true" name="viewport" content="width=device-width,initial-scale=1"><meta data-rh="true" name="twitter:card" content="summary_large_image"><meta data-rh="true" property="og:image" content="https://vicanso.github.io/pingap-zh/img/docusaurus-social-card.jpg"><meta data-rh="true" name="twitter:image" content="https://vicanso.github.io/pingap-zh/img/docusaurus-social-card.jpg"><meta data-rh="true" property="og:url" content="https://vicanso.github.io/pingap-zh/docs/config"><meta data-rh="true" property="og:locale" content="zh_Hans"><meta data-rh="true" name="docusaurus_locale" content="zh-Hans"><meta data-rh="true" name="docsearch:language" content="zh-Hans"><meta data-rh="true" name="docusaurus_version" content="current"><meta data-rh="true" name="docusaurus_tag" content="docs-default-current"><meta data-rh="true" name="docsearch:version" content="current"><meta data-rh="true" name="docsearch:docusaurus_tag" content="docs-default-current"><meta data-rh="true" property="og:title" content="配置说明 | Pingap"><meta data-rh="true" name="description" content="Pingap使用toml来配置相关参数，对于时间类的配置，格式为1s, 1m, 1h这种时间表示形式。而对于存储大小类的配置，格式为1kb, 1mb, 1gb这种表示方式。具体参数说明如下："><meta data-rh="true" property="og:description" content="Pingap使用toml来配置相关参数，对于时间类的配置，格式为1s, 1m, 1h这种时间表示形式。而对于存储大小类的配置，格式为1kb, 1mb, 1gb这种表示方式。具体参数说明如下："><link data-rh="true" rel="icon" href="/pingap-zh/img/pingap.png"><link data-rh="true" rel="canonical" href="https://vicanso.github.io/pingap-zh/docs/config"><link data-rh="true" rel="alternate" href="https://vicanso.github.io/pingap-zh/docs/config" hreflang="zh-Hans"><link data-rh="true" rel="alternate" href="https://vicanso.github.io/pingap-zh/docs/config" hreflang="x-default"><link rel="stylesheet" href="/pingap-zh/assets/css/styles.b0d5c055.css">
-<script src="/pingap-zh/assets/js/runtime~main.6d831285.js" defer="defer"></script>
+<script src="/pingap-zh/assets/js/runtime~main.024ba0f9.js" defer="defer"></script>
 <script src="/pingap-zh/assets/js/main.4f18cd3c.js" defer="defer"></script>
 </head>
 <body class="navigation-with-keyboard">
@@ -32,10 +32,16 @@
 <li><code>sentry</code>: Sentry的DSN配置，sentry需要使用<code>full feature</code>版本</li>
 <li><code>pyroscope</code>: Pyroscope连接地址，需要注意默认版本并未编译支持pyroscpe，需要使用perf的版本</li>
 <li><code>auto_restart_check_interval</code>: 检测配置更新的间隔，默认为每90秒检测一次，若配置为小于1秒的值，则不检测</li>
-<li><code>cache_directory</code>: 设置缓存目录，设置之后则使用文件形式缓存，文件目录缓存会定期清除过长时间未被访问文件</li>
-<li><code>cache_max_size</code>: 缓存空间的最大限制，缓存是程序中所有服务共用，对于文件缓存此限制无效</li>
+<li><code>cache_directory</code>: 设置缓存目录，设置之后则使用文件形式缓存，文件目录缓存会定期清除过长时间未被访问文件，文件缓存的配置形式如<code>/opt/pingap/cache?reading_max=1000&amp;writing_max=500&amp;cache_max=200</code>
+<ul>
+<li><code>reading_max</code>: 限制最大正在读取缓存的数据（只对于文件缓存有效）</li>
+<li><code>writing_max</code>: 限制最大正在写入缓存的数据（只对于文件缓存有效）</li>
+<li><code>cache_max</code>: 文件缓存中对于热点数据的缓存数量限制，内存缓存为tinyufo，默认为100，若设置为0则表示不使用内存热点缓存</li>
 </ul>
-<h2 class="anchor anchorWithStickyNavbar_LWe7" id="upstreams">upstreams<a href="#upstreams" class="hash-link" aria-label="upstreams的直接链接" title="upstreams的直接链接">​</a></h2>
+</li>
+<li><code>cache_max_size</code>: 缓存空间的最大 限制，缓存是程序中所有服务共用，对于文件缓存此限制无效</li>
+</ul>
+<h2 class="anchor anchorWithStickyNavbar_LWe7" id="upstream">Upstream<a href="#upstream" class="hash-link" aria-label="Upstream的直接链接" title="Upstream的直接链接">​</a></h2>
 <p>Upstream配置为节点地址列表，配置为域名则会根据解析后的IP添加所有节点地址（需要选择对应的服务发现方式，否则并不会再次刷新域名解析），需要注意节点会使用默认的tcp health check的形式检测节点是否可用，建议配置为http health check。下面针对相关参数详细说明：</p>
 <ul>
 <li><code>addrs</code>: 节点地址列表，地址为<code>ip:port weight</code>的形式，<code>weight</code>权重可不指定，默认为1</li>
@@ -53,7 +59,7 @@
 <li><code>read_timeout</code>: 读取超时，默认为无</li>
 <li><code>idle_timeout</code>: 空闲超时，指定连接空闲多久后会自动回收，如果设置为0，则连接不复用，需要注意有些网络设备对于无数据的tcp连接会过期自动关闭，因此可根据需要设置对应的值。默认为无</li>
 <li><code>write_timeout</code>: 写超时，默认为无</li>
-<li><code>tcp_idle</code>: tcp连接keepalive空  闲回收时长</li>
+<li><code>tcp_idle</code>: tcp连接keepalive空闲回收时长</li>
 <li><code>tcp_interval</code>: tcp连接keepavlie检测时长</li>
 <li><code>tcp_probe_count</code>: tcp连接keepalvie探针检测次数</li>
 <li><code>tcp_recv_buf</code>: tcp接收缓存区大小</li>
@@ -117,7 +123,7 @@
 <li>前缀模式，如<code>/api</code>表示匹配path为<code>/api</code>开始的请求</li>
 </ul>
 <h3 class="anchor anchorWithStickyNavbar_LWe7" id="path重写请求路径">Path重写请求路径<a href="#path重写请求路径" class="hash-link" aria-label="Path重写请求路径的直接链接" title="Path重写请求路径的直接链接">​</a></h3>
-<p>可按需配置请求路径重写规则，支持正则匹配处理(与nginx类似)，仅支持配置一个重写规则，若逻辑过于复杂建议可配置多个location来分开实现。配置通过空格分隔为前后两部分，处理逻辑则是按正则匹配将前部分替换为后部分，下面是常用的一些例如：</p>
+<p>可按需配置请求  路径重写规则，支持正则匹配处理(与nginx类似)，仅支持配置一个重写规则，若逻辑过于复杂建议可配置多个location来分开实现。配置通过空格分隔为前后两部分，处理逻辑则是按正则匹配将前部分替换为后部分，下面是常用的一些例如：</p>
 <ul>
 <li><code>^/api/ /</code>: 表示将请求前缀的<code>/api/</code>替换为<code>/</code></li>
 <li><code>^/(\S*?)/ /api/$1/</code>: 表示在请求路径添加前缀<code>/api</code></li>
@@ -134,7 +140,7 @@
 <li><code>tls_ciphersuites</code>: 指定tls1.3版本使用的加密套件，可以参考nginx等软件的配置</li>
 <li><code>tls_min_version</code>: 指定tls的最低版本，默认为1.2</li>
 <li><code>tls_max_version</code>: 指定tls的最低版本，默认为1.3</li>
-<li><code>global_certificates</code>: 启用全局证书配置，用于无法匹配到符合server name的https请求使用</li>
+<li><code>global_certificates</code>: 启用全局证书配置，用  于无法匹配到符合server name的https请求使用</li>
 <li><code>enabled_h2</code>: 是否启用http2，建议配置为启用，需要注意，如果是http则使用h2c的形式</li>
 <li><code>tcp_idle</code>: tcp连接keepalive空闲回收时长</li>
 <li><code>tcp_interval</code>: tcp连接keepavlie检测时长</li>
@@ -143,6 +149,6 @@
 <li><code>prometheus_metrics</code>: 设置启用prometheus，如果配置为http形式的则为push的形式，如果只配置路径则提供pull的请求路径，如<code>/metrics</code>则表示<code>http://ip:port/metrics</code>可获取对应的metrics数据(需要注意full futures版本才支持)</li>
 <li><code>otlp_exporter</code>: 设置opentemletry数据收集器的地址(需要注意full futures版本才支持)</li>
 <li><code>modules</code>: 选择要启用的模块，对于web-grpc需要勾选对应模块</li>
-</ul></div><footer class="theme-doc-footer docusaurus-mt-lg"><div class="row margin-top--sm theme-doc-footer-edit-meta-row"><div class="col"><a href="https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/docs/config.md" target="_blank" rel="noopener noreferrer" class="theme-edit-this-page"><svg fill="currentColor" height="20" width="20" viewBox="0 0 40 40" class="iconEdit_Z9Sw" aria-hidden="true"><g><path d="m34.5 11.7l-3 3.1-6.3-6.3 3.1-3q0.5-0.5 1.2-0.5t1.1 0.5l3.9 3.9q0.5 0.4 0.5 1.1t-0.5 1.2z m-29.5 17.1l18.4-18.5 6.3 6.3-18.4 18.4h-6.3v-6.2z"></path></g></svg>编辑此页</a></div><div class="col lastUpdated_JAkA"></div></div></footer></article><nav class="pagination-nav docusaurus-mt-lg" aria-label="文件选项卡"><a class="pagination-nav__link pagination-nav__link--prev" href="/pingap-zh/docs/argument"><div class="pagination-nav__sublabel">上一页</div><div class="pagination-nav__label">命令行参数</div></a><a class="pagination-nav__link pagination-nav__link--next" href="/pingap-zh/docs/log"><div class="pagination-nav__sublabel">下一页</div><div class="pagination-nav__label">日志格式化</div></a></nav></div></div><div class="col col--3"><div class="tableOfContents_bqdL thin-scrollbar theme-doc-toc-desktop"><ul class="table-of-contents table-of-contents__left-border"><li><a href="#基础配置" class="table-of-contents__link toc-highlight">基础配置</a></li><li><a href="#upstreams" class="table-of-contents__link toc-highlight">upstreams</a><ul><li><a href="#节点健康检测" class="table-of-contents__link toc-highlight">节点健康检测</a></li><li><a href="#algo的hash" class="table-of-contents__link toc-highlight">Algo的hash</a></li></ul></li><li><a href="#location" class="table-of-contents__link toc-highlight">Location</a><ul><li><a href="#path匹配规则" class="table-of-contents__link toc-highlight">Path匹配规则</a></li><li><a href="#path重写请求路径" class="table-of-contents__link toc-highlight">Path重写请求路径</a></li></ul></li><li><a href="#server" class="table-of-contents__link toc-highlight">Server</a></li></ul></div></div></div></div></main></div></div></div><footer class="footer"><div class="container container-fluid"><div class="footer__bottom text--center"><div class="footer__copyright">Copyright © 2024 Tree Xie.</div></div></div></footer></div>
+</ul></div><footer class="theme-doc-footer docusaurus-mt-lg"><div class="row margin-top--sm theme-doc-footer-edit-meta-row"><div class="col"><a href="https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/docs/config.md" target="_blank" rel="noopener noreferrer" class="theme-edit-this-page"><svg fill="currentColor" height="20" width="20" viewBox="0 0 40 40" class="iconEdit_Z9Sw" aria-hidden="true"><g><path d="m34.5 11.7l-3 3.1-6.3-6.3 3.1-3q0.5-0.5 1.2-0.5t1.1 0.5l3.9 3.9q0.5 0.4 0.5 1.1t-0.5 1.2z m-29.5 17.1l18.4-18.5 6.3 6.3-18.4 18.4h-6.3v-6.2z"></path></g></svg>编辑此页</a></div><div class="col lastUpdated_JAkA"></div></div></footer></article><nav class="pagination-nav docusaurus-mt-lg" aria-label="文件选项卡"><a class="pagination-nav__link pagination-nav__link--prev" href="/pingap-zh/docs/argument"><div class="pagination-nav__sublabel">上一页</div><div class="pagination-nav__label">命令行参数</div></a><a class="pagination-nav__link pagination-nav__link--next" href="/pingap-zh/docs/log"><div class="pagination-nav__sublabel">下一页</div><div class="pagination-nav__label">日志格式化</div></a></nav></div></div><div class="col col--3"><div class="tableOfContents_bqdL thin-scrollbar theme-doc-toc-desktop"><ul class="table-of-contents table-of-contents__left-border"><li><a href="#基础配置" class="table-of-contents__link toc-highlight">基础配置</a></li><li><a href="#upstream" class="table-of-contents__link toc-highlight">Upstream</a><ul><li><a href="#节点健康检测" class="table-of-contents__link toc-highlight">节点健康检测</a></li><li><a href="#algo的hash" class="table-of-contents__link toc-highlight">Algo的hash</a></li></ul></li><li><a href="#location" class="table-of-contents__link toc-highlight">Location</a><ul><li><a href="#path匹配规则" class="table-of-contents__link toc-highlight">Path匹配规则</a></li><li><a href="#path重写请求路径" class="table-of-contents__link toc-highlight">Path重写请求路径</a></li></ul></li><li><a href="#server" class="table-of-contents__link toc-highlight">Server</a></li></ul></div></div></div></div></main></div></div></div><footer class="footer"><div class="container container-fluid"><div class="footer__bottom text--center"><div class="footer__copyright">Copyright © 2024 Tree Xie.</div></div></div></footer></div>
 </body>
 </html>
