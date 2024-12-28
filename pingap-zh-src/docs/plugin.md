@@ -504,6 +504,31 @@ type = "deny"
 
 ![Pingap Plugin Ip Restriction](./img/plugin-ip-restriction.jpg)
 
+
+## UaRestriction
+
+UserAgent限制分为两种模式，允许或禁止，配置时可使用正则表达式匹配，配置如下：
+
+
+```toml
+[plugins.userAgentDeny]
+category = "ua_restriction"
+message = "禁止访问"
+ua_list = [
+    "go-http-client/1.1",
+    "(Twitterspider)/(\\d+)\\.(\\d+)"
+]
+step = "request"
+type = "deny"
+```
+
+- `type`: 类型，是允许还是禁止
+- `ua_list`: UserAgent列表
+- `message`: 拦截时的出错信息
+- `step`: 插件可选的执行位置为`request`
+
+![Pingap Plugin User Agent Restriction](./img/plugin-ua-restriction.jpg)
+
 ## RefererRestriction
 
 Referer限制分为两种模式，允许或禁止，配置时可使用*前缀匹配，配置如下：
