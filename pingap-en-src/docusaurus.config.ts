@@ -75,6 +75,11 @@ const config: Config = {
           label: "Documentation",
         },
         {
+          href: "http://pingap.io/pingap-zh/",
+          label: "中文",
+          position: "right",
+        },
+        {
           href: "https://github.com/vicanso/pingap",
           label: "GitHub",
           position: "right",
@@ -82,7 +87,7 @@ const config: Config = {
       ],
     },
     footer: {
-      copyright: `Copyright © ${new Date().getFullYear()} Tree Xie.`,
+      copyright: `Copyright © 2024-${new Date().getFullYear()} Tree Xie.`,
     },
     prism: {
       theme: prismThemes.github,

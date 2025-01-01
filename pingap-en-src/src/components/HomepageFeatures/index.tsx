@@ -10,29 +10,29 @@ type FeatureItem = {
 
 const FeatureList: FeatureItem[] = [
   {
-    title: "简单易用",
+    title: "Easy to Use",
     Svg: require("@site/static/img/undraw_docusaurus_mountain.svg").default,
     description: (
       <>
-        单一可执行文件，支持arm与x86架构，提供musl版本的构建版本，可使用于各种老旧版本的linux，并提供Web界面式的配置管理，快速配置启用
+        Single executable file, supporting both ARM and x86 architectures. Provides musl builds for compatibility with older Linux versions, and offers web-based configuration management for quick setup.
       </>
     ),
   },
   {
-    title: "强大的插件体系",
+    title: "Powerful Plugin System",
     Svg: require("@site/static/img/undraw_docusaurus_tree.svg").default,
     description: (
       <>
-        基于插件体系可满足各种应用场景，如应用鉴权、数据压缩、静态文件目录服务以及缓存等
+        Plugin-based architecture to meet various application scenarios, such as application authentication, data compression, static file directory service, and caching.
       </>
     ),
   },
   {
-    title: "高性能",
+    title: "High Performance",
     Svg: require("@site/static/img/undraw_docusaurus_react.svg").default,
     description: (
       <>
-        基于rust与pingora构建，得益于rust高性能的表现，pingap性能表现可圈可点，且安全可靠
+        Built with Rust and Pingora, benefiting from Rust's high-performance characteristics, Pingap delivers impressive performance while maintaining safety and reliability.
       </>
     ),
   },

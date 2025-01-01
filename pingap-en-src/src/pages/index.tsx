@@ -21,7 +21,7 @@ function HomepageHeader() {
             className="button button--secondary button--lg"
             to="/docs/getting_started"
           >
-            Pingap 10分钟入门教程 ⏱️
+            Pingap 10-Minute Getting Started Tutorial ⏱️
           </Link>
         </div>
       </div>
