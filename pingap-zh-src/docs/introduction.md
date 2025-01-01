@@ -4,26 +4,33 @@ sidebar_position: 1
 
 # Pingap简述
 
+Pingap是基于[pingora](https://github.com/cloudflare/pingora)开发的反向代理服务。虽然pingora为Rust开发者提供了丰富的模块，但对非Rust开发者并不友好。因此，Pingap通过TOML配置文件提供了简单易用的反向代理功能，支持单服务多location转发，并可通过插件扩展更多功能。各架构的预编译可执行文件可在[releases](https://github.com/vicanso/pingap/releases)页面下载。
 
-Pingap是基于[pingora](https://github.com/cloudflare/pingora)开发的，pingora提供了各类模块便于rust开发者使用，但并不方便非rust开发者，因此pingap支持toml的形式配置简单易用的反向代理，单服务支持多location转发，通过插件的形式支持更多的需求场景。已预编译好各架构上使用的可执行文件，在[releases](https://github.com/vicanso/pingap/releases)下载即可。特性如下：
+主要特性：
 
-- 服务支持配置多个Location，通过host与path筛选对应的location，按权重逐一匹配选择
-- 支持正则形式配置重写Path，方便应用按前缀区分转发
-- HTTP透明代理，支持http与https的代理转发
-- HTTP 1/2 的全链路支持，包括h2c的支持
-- 支持静态配置、DNS以及docker label的三种服务发现形式
-- 支持grpc-web反向代理
-- 基于TOML格式的配置，配置方式非常简洁，可保存至文件或etcd
-- 已有10多个Prometheus指标，可以使用pull与push的形式收集相关指标
-- Opentelemetry支持w3c context trace与jaeger trace的形式
-- 频繁更新的Upstream、Location以及Plugin相关配置调整准实时生效(10秒)且无任何中断请求，其它应用配置更新后，无中断式的优雅重启程序
-- 访问日志的模板化配置，已支持30多个相关属性的配置，可按需指定输出各种参数与指标
-- WEB形式的管理后台界面，无需学习，简单易用
-- 开箱即用的`let's encrypt`tls证书，仅需配置对应域名即可，可在单一配置中使用多个子域名
-- 不同域名的tls证书可使用在同一服务端口中，按servername自动选择匹配证书
-- 支持各种事件的推送：`lets_encrypt`, `backend_status`, `diff_config`, `restart`等等
-- 丰富的http插件，如高效的缓存服务组件、多种压缩算法的压缩组件、不同种类的认证组件、不同形式的限流组件等等
-- 提供了不同阶段的统计数据，如`upstream_connect_time`, `upstream_processing_time`, `compression_time`, `cache_lookup_time` 与 `cache_lock_time`等
+- 多Location支持：每个服务可配置多个Location，通过host与path匹配，按权重选择
+- 灵活的路径重写：支持正则表达式配置Path重写，便于基于前缀的转发
+- 完整的HTTP支持：
+  - HTTP/HTTPS透明代理
+  - HTTP 1.0/1.1/2.0全链路支持(含h2c)
+  - grpc-web反向代理
+- 多样化的服务发现：支持静态配置、DNS和docker label三种方式
+- 简洁的配置方式：基于TOML格式，可存储于文件或etcd
+- 丰富的监控指标：
+  - 内置10+个Prometheus指标
+  - 支持pull和push两种收集方式
+  - OpenTelemetry支持(w3c context trace与jaeger trace)
+- 动态配置更新：
+  - Upstream、Location和Plugin配置10秒内生效，无请求中断
+  - 其它配置更新通过优雅重启完成，确保服务连续性
+- 可定制的访问日志：支持30+属性的模板配置
+- 便捷的管理界面：提供Web管理后台，操作简单直观
+- 完善的TLS支持：
+  - 开箱即用的Let's Encrypt证书
+  - 支持多域名证书
+  - 单端口多域名证书按SNI自动匹配
+- 事件通知机制：支持`lets_encrypt`、`backend_status`、`diff_config`、`restart`等事件推送
+- 丰富的插件生态：提供缓存、压缩、认证、限流等多种功能组件
 
 
 ## 处理流程

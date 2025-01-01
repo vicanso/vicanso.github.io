@@ -4,8 +4,7 @@ sidebar_position: 75
 
 # Docker
 
-
-Pingap提供了已构建好的docker镜像，可以直接运行，需要注意由于upgrade操作需要使用daemon的模式才可以使用，因此若使用docker运行则无法使用`--autorestart`，建议使用`--autoreload`可满足常用配置的自动刷新。
+Pingap提供了预构建的Docker镜像，可直接使用。需要注意的是，由于升级操作需要以daemon模式运行，因此在Docker环境中无法使用`--autorestart`参数。不过对于配置的自动更新需求，可以使用`--autoreload`参数来实现。
 
 ```bash
 docker run -it -d --restart=always \
@@ -20,5 +19,7 @@ docker run -it -d --restart=always \
   vicanso/pingap
 ```
 
-`80`与`443`端口则是后续监听服务时使用，管理后台通过`/pingap/`前缀访问，`autoreload`是用于`upstream`、`location`以及`certifcate`等的热更新使用，此类配置不需要重启应用程序。
-
+端口说明：
+- `80`和`443`端口用于服务监听
+- 管理后台通过`/pingap/`路径访问
+- `autoreload`参数用于支持`upstream`、`location`和`certificate`等配置的热更新，使用该特性可以在不重启应用的情况下更新这些配置

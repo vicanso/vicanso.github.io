@@ -33,14 +33,17 @@ Pingap使用toml来配置相关参数，对于时间类的配置，格式为`1s`
   - `writing_max`: 限制最大正在写入缓存的数据（只对于文件缓存有效）
   - `cache_max`: 文件缓存中对于热点数据的缓存数量限制，内存缓存为tinyufo，默认为100，若设置为0则表示不使用内存热点缓存
 - `cache_max_size`: 缓存空间的最大限制，缓存是程序中所有服务共用，对于文件缓存此限制无效
+- `tcp_fast_open`: 是否启用TCP Fast Open功能，可以减少TCP连接建立时的延迟。启用时需要指定backlog大小
 
 ## Upstream
 
-Upstream配置为节点地址列表，配置为域名则会根据解析后的IP添加所有节点地址（需要选择对应的服务发现方式，否则并不会再次刷新域名解析），需要注意节点会使用默认的tcp health check的形式检测节点是否可用，建议配置为http health check。下面针对相关参数详细说明：
+Upstream配置用于定义后端服务节点列表。如果配置域名，系统会根据DNS解析结果添加所有节点地址（需要配置相应的服务发现方式才会自动更新DNS解析）。建议配置HTTP健康检查来监控节点状态。
 
-- `addrs`: 节点地址列表，地址为`ip:port weight`的形式，`weight`权重可不指定，默认为1
-- `discovery`: 指定服务发现形式，如果地址配置为域名则建议选择dns形式，定期解析对应的ip地址。若是部署在同一机器的docker服务则可考虑使用`docker label`的形式
-- `update_frequency`: 设置服务发现的更新间隔，对于dns与docker形式均建议设置，否则无法实现定时更新节点
+主要参数说明：
+
+- `addrs`: 节点地址列表，格式为 `ip:port [weight]`，weight为可选的权重值(默认为1)
+- `discovery`: 服务发现方式。推荐域名使用dns方式，docker服务可使用docker label方式
+- `update_frequency`: 服务发现的更新间隔，建议配置以实现节点的动态更新
 - `algo`: 节点的选择算法，支持`hash`与`round_robin`两种形式，如`hash:ip`表示按ip hash选择节点。默认为`round_robin`
 - `sni`: 若配置的是https，需要设置对应的SNI
 - `verify_cert`: 若配置的是https，是否需要校验证书有效性
@@ -57,26 +60,24 @@ Upstream配置为节点地址列表，配置为域名则会根据解析后的IP�
 - `tcp_interval`: tcp连接keepavlie检测时长
 - `tcp_probe_count`: tcp连接keepalvie探针检测次数
 - `tcp_recv_buf`: tcp接收缓存区大小
-- `tcp_fast_open`: **是否启用tcp快速连接**
 
 需要注意，若要设置tcp的keepalive，`tcp_idle`，`tcp_interval`以及`tcp_probe_count`均需要设置。
 
-### 节点健康检测
+### 健康检查配置
 
-- `health_check`: 建议配置为health check的形式，根据服务的检测路径配置为`http://upstream名称/路径`，如对于upstream需要设置Host为test的的服务，其检测路径为`/ping`，即可设置为`http://test/ping`
+支持以下三种健康检查方式：
 
-- `TCP`: tcp://upstreamname?connection_timeout=3s&success=2&failure=1&check_frequency=10s
-- `HTTP(S)`: http://upstreamname/ping?connection_timeout=3s&read_timeout=1s&success=2&failure=1&check_frequency=10s
-- `GRPC`: grpc://upstreamname?service=service_name&connection_timeout=3s&success=2&failure=1&check_frequency=10s
+- `HTTP(S)`: `http://upstream名称/检查路径?参数`
+- `TCP`: `tcp://upstream名称?参数` 
+- `gRPC`: `grpc://upstream名称?service=服务名&参数`
 
-健康检测参数说明：
-
-- `connection_timeout`: 连接超时，默认为3秒
-- `read_timeout`: 读取超时，默认为3少
-- `check_frequency`: 检测间隔，默认为10秒
-- `success`: 成功次数多少次为成功，默认为1次
-- `failure`: 失败次数多少次为失败，默认为2次
-- `reuse`: 检测时是否复用连接，默认为否
+通用参数说明：
+- `connection_timeout`: 连接超时时间，默认3秒
+- `read_timeout`: 读取超时时间，默认3秒
+- `check_frequency`: 检查间隔，默认10秒
+- `success`: 判定为健康所需的连续成功次数，默认1次
+- `failure`: 判定为不健康所需的连续失败次数，默认2次
+- `reuse`: 是否复用检查连接，默认否
 
 ### Algo的hash
 
@@ -122,6 +123,18 @@ Location的path匹配支持以下的规则，权重由高至低：
 - `^/api/ /`: 表示将请求前缀的`/api/`替换为`/`
 - `^/(\S*?)/ /api/$1/`: 表示在请求路径添加前缀`/api`
 - `^/(\S*?)/api/(\S*?) /$1/$2`: 表示将请求路径中的`/api`部分删除
+
+### 请求头设置支持的变量名
+
+- `$hostname`: 表示处理该请求主机的hostname
+- `$host`: 表示请求的host
+- `$scheme`: 表示请求的scheme, 如http或https
+- `$remote_addr`: 表示请求的客户端地址
+- `$remote_port`: 表示请求的客户端端口
+- `$server_addr`: 表示请求的server地址
+- `$server_port`: 表示请求的server端口
+- `$proxy_add_x_forwarded_for`: 表示请求的代理地址，按x-forwarded-for的格式添加
+- `$upstream_addr`: 表示请求的upstream地址
 
 
 ## Server
