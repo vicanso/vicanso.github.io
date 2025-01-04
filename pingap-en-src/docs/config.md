@@ -105,6 +105,12 @@ Location configures request matching rules, header insertion, and plugin associa
 - `client_max_body_size`: Maximum client request body size
 - `max_processing`: Maximum concurrent request limit (0 for unlimited)
 - `grpc_web`: Enable grpc-web support
+- `enable_reverse_proxy_headers`: Whether to enable reverse proxy request headers. When enabled, the following headers will be added:
+  - `X-Real-IP`: Indicates the client's IP address
+  - `X-Forwarded-For`: Indicates proxy addresses, added according to x-forwarded-for format
+  - `X-Forwarded-Proto`: Indicates the request scheme, such as http or https
+  - `X-Forwarded-Host`: Indicates the request host
+  - `X-Forwarded-Port`: Indicates the server port
 
 ### Path Matching Rules
 

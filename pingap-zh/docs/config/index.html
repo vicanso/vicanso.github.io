@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="generator" content="Docusaurus v3.6.3">
 <title data-rh="true">配置说明 | Pingap</title><meta data-rh="true" name="viewport" content="width=device-width,initial-scale=1"><meta data-rh="true" name="twitter:card" content="summary_large_image"><meta data-rh="true" property="og:image" content="https://vicanso.github.io/pingap-zh/img/docusaurus-social-card.jpg"><meta data-rh="true" name="twitter:image" content="https://vicanso.github.io/pingap-zh/img/docusaurus-social-card.jpg"><meta data-rh="true" property="og:url" content="https://vicanso.github.io/pingap-zh/docs/config"><meta data-rh="true" property="og:locale" content="zh_Hans"><meta data-rh="true" name="docusaurus_locale" content="zh-Hans"><meta data-rh="true" name="docsearch:language" content="zh-Hans"><meta data-rh="true" name="docusaurus_version" content="current"><meta data-rh="true" name="docusaurus_tag" content="docs-default-current"><meta data-rh="true" name="docsearch:version" content="current"><meta data-rh="true" name="docsearch:docusaurus_tag" content="docs-default-current"><meta data-rh="true" property="og:title" content="配置说明 | Pingap"><meta data-rh="true" name="description" content="Pingap使用toml来配置相关参数，对于时间类的配置，格式为1s, 1m, 1h这种时间表示形式。而对于存储大小类的配置，格式为1kb, 1mb, 1gb这种表示方式。具体参数说明如下："><meta data-rh="true" property="og:description" content="Pingap使用toml来配置相关参数，对于时间类的配置，格式为1s, 1m, 1h这种时间表示形式。而对于存储大小类的配置，格式为1kb, 1mb, 1gb这种表示方式。具体参数说明如下："><link data-rh="true" rel="icon" href="/pingap-zh/img/pingap.png"><link data-rh="true" rel="canonical" href="https://vicanso.github.io/pingap-zh/docs/config"><link data-rh="true" rel="alternate" href="https://vicanso.github.io/pingap-zh/docs/config" hreflang="zh-Hans"><link data-rh="true" rel="alternate" href="https://vicanso.github.io/pingap-zh/docs/config" hreflang="x-default"><link rel="stylesheet" href="/pingap-zh/assets/css/styles.b0d5c055.css">
-<script src="/pingap-zh/assets/js/runtime~main.42d78cd3.js" defer="defer"></script>
+<script src="/pingap-zh/assets/js/runtime~main.b669b34c.js" defer="defer"></script>
 <script src="/pingap-zh/assets/js/main.eb8d4509.js" defer="defer"></script>
 </head>
 <body class="navigation-with-keyboard">
@@ -107,6 +107,15 @@
 <li><code>client_max_body_size</code>: 客户端请求的body最大长度</li>
 <li><code>max_processing</code>: 最大处理请求数，若设置为0则表示不限制</li>
 <li><code>grpc_web</code>: 是否启用支持grpc-web</li>
+<li><code>enable_reverse_proxy_headers</code>: 是否启用反向代理的请求头，启用后会添加以下的请求头<!-- -->
+<ul>
+<li><code>X-Real-IP</code>: 表示请求的客户端地址</li>
+<li><code>X-Forwarded-For</code>: 表示请求的代理地址，按x-forwarded-for的格式添加</li>
+<li><code>X-Forwarded-Proto</code>: 表示请求的scheme, 如http或https</li>
+<li><code>X-Forwarded-Host</code>: 表示请求的host</li>
+<li><code>X-Forwarded-Port</code>: 表示请求的server端口</li>
+</ul>
+</li>
 </ul>
 <h3 class="anchor anchorWithStickyNavbar_LWe7" id="path匹配规则">Path匹配规则<a href="#path匹配规则" class="hash-link" aria-label="Path匹配规则的直接链接" title="Path匹配规则的直接链接">​</a></h3>
 <p>Location的path匹配支持以下的规则，权重由高至低：</p>
@@ -116,7 +125,7 @@
 <li>前缀模式，如<code>/api</code>表示匹配path为<code>/api</code>开始的请求</li>
 </ul>
 <h3 class="anchor anchorWithStickyNavbar_LWe7" id="path重写请求路径">Path重写请求路径<a href="#path重写请求路径" class="hash-link" aria-label="Path重写请求路径的直接链接" title="Path重写请求路径的直接链接">​</a></h3>
-<p>可按需配置请求路径重写规则，支持正则匹配处理(与nginx类似)，仅支持配置一个重写规则，若逻辑过于复杂建议可配置多个location来分开实现。配置通过空格分隔为前后两部分，处理逻辑则是按正则匹配将前部分替换为后部分，下面是常用的一些例如：</p>
+<p>可按需配置请求路径重写规则，支持正则匹配处理(与nginx类似)，仅支持配置一个重写规则，若逻辑过于复杂建议可配置多个location来分开实现。配置通过空格分隔为前后两部分，处理逻辑则是按正则匹配将前部分替换为后部 分，下面是常用的一些例如：</p>
 <ul>
 <li><code>^/api/ /</code>: 表示将请求前缀的<code>/api/</code>替换为<code>/</code></li>
 <li><code>^/(\S*?)/ /api/$1/</code>: 表示在请求路径添加前缀<code>/api</code></li>
@@ -143,7 +152,7 @@
 <li><code>threads</code>: 设置服务默认的线程数，设置为0则等于cpu核数，默认为1</li>
 <li><code>tls_cipher_list</code>: 指定tls1.3之前版本使用的加密套件，可以参考nginx等软件的配置</li>
 <li><code>tls_ciphersuites</code>: 指定tls1.3版本使用的加密套件，可以参考nginx等软件的配置</li>
-<li><code>tls_min_version</code>: 指定tls的最低版本，默 认为1.2</li>
+<li><code>tls_min_version</code>: 指定tls的最低版本，默认为1.2</li>
 <li><code>tls_max_version</code>: 指定tls的最低版本，默认为1.3</li>
 <li><code>global_certificates</code>: 启用全局证书配置，用于无法匹配到符合server name的https请求使用</li>
 <li><code>enabled_h2</code>: 是否启用http2，建议配置为启用，需要注意，如果是http则使用h2c的形式</li>

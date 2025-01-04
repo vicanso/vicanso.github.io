@@ -106,7 +106,12 @@ Location主要配置请求的匹配规则、请求头响应头的插入，以及
 - `client_max_body_size`: 客户端请求的body最大长度
 - `max_processing`: 最大处理请求数，若设置为0则表示不限制
 - `grpc_web`: 是否启用支持grpc-web
-
+- `enable_reverse_proxy_headers`: 是否启用反向代理的请求头，启用后会添加以下的请求头
+  - `X-Real-IP`: 表示请求的客户端地址
+  - `X-Forwarded-For`: 表示请求的代理地址，按x-forwarded-for的格式添加
+  - `X-Forwarded-Proto`: 表示请求的scheme, 如http或https
+  - `X-Forwarded-Host`: 表示请求的host
+  - `X-Forwarded-Port`: 表示请求的server端口
 
 ### Path匹配规则
 
