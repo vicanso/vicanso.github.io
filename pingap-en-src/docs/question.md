@@ -32,3 +32,7 @@ When using HTTPS protocol for Upstream, you need to:
 To provide HTTPS services for multiple domains on the same Server, simply:
 1. Add the corresponding certificates in certificate management
 2. Configure the service to "Use global certificates of the application"
+
+## Disable ACME
+
+Pingap supports using ACME to automatically obtain certificates. If the domain name resolves to multiple IPs, only one instance needs to enable ACME. If you need to disable ACME, set the environment variable `PINGAP_DISABLE_ACME=true`.

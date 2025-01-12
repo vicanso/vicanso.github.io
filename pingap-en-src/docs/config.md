@@ -26,12 +26,13 @@ Pingap uses TOML for parameter configuration. For time-related configurations, u
 - `log_buffered_size`: Log buffer size, defaults to 0. If set below 4096, no buffer is used
 - `log_format_json`: Sets JSON formatted logging
 - `sentry`: Sentry DSN configuration, requires `full feature` version
-- `pyroscope`: Pyroscope connection address, requires perf version as default version doesn't include pyroscope support
+- `pyroscope`: Pyroscope connection address(`http://ip:port?app=pingap&tag:a=A&tag:b=B`), requires perf version as default version doesn't include pyroscope support
 - `auto_restart_check_interval`: Configuration update check interval, defaults to 90 seconds. If set below 1 second, checks are disabled
-- `cache_directory`: Sets cache directory. When set, uses file-based caching. File cache periodically removes long-unused files. Format: `/opt/pingap/cache?reading_max=1000&writing_max=500&cache_max=200`
+- `cache_directory`: Sets cache directory. When set, uses file-based caching. File cache periodically removes long-unused files. Format: `/opt/pingap/cache?reading_max=1000&writing_max=500&cache_max=200&cache_file_max_weight=256`
   - `reading_max`: Maximum concurrent cache reads (file cache only)
   - `writing_max`: Maximum concurrent cache writes (file cache only)
   - `cache_max`: Hot data cache limit in file cache, uses tinyufo for memory cache, defaults to 100. Set to 0 to disable memory hot cache
+  - `cache_file_max_weight`: Maximum cache file weight for tinyufo, defaults to 256, which means 256 * 4096 bytes, files larger than this value will not be cached to tinyufo
 - `cache_max_size`: Maximum cache space limit, shared by all services. Not applicable to file cache
 - `tcp_fast_open`: Enables TCP Fast Open to reduce TCP connection establishment latency. Requires specifying backlog size
 

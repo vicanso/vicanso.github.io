@@ -32,3 +32,7 @@ Pingap 的线程配置是基于 Server 级别的，默认值为 1。您可以：
 要在同一个 Server 上提供多个域名的 HTTPS 服务，只需：
 1. 在证书管理中添加相应的证书
 2. 将服务配置为"使用应用的全局证书"
+
+## 禁用 ACME
+
+Pingap 支持使用 ACME 自动获取证书，若域名解析到多个 IP，则只需要其中一个实例启用 ACME 即可。若需要禁用 ACME，则需要设置环境变量`PINGAP_DISABLE_ACME=true`即可。

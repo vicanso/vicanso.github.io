@@ -26,12 +26,13 @@ Pingap使用toml来配置相关参数，对于时间类的配置，格式为`1s`
 - `log_buffered_size`: 日志缓存区大小，默认为0，若设置小于4096则表示不使用buffer
 - `log_format_json`: 设置为json格式化日志
 - `sentry`: Sentry的DSN配置，sentry需要使用`full feature`版本
-- `pyroscope`: Pyroscope连接地址，需要注意默认版本并未编译支持pyroscpe，需要使用perf的版本
+- `pyroscope`: Pyroscope连接地址(`http://ip:port?app=pingap&tag:a=A&tag:b=B`)，需要注意默认版本并未编译支持pyroscpe，需要使用perf的版本
 - `auto_restart_check_interval`: 检测配置更新的间隔，默认为每90秒检测一次，若配置为小于1秒的值，则不检测
 - `cache_directory`: 设置缓存目录，设置之后则使用文件形式缓存，文件目录缓存会定期清除过长时间未被访问文件，文件缓存的配置形式如`/opt/pingap/cache?reading_max=1000&writing_max=500&cache_max=200`
   - `reading_max`: 限制最大正在读取缓存的数据（只对于文件缓存有效）
   - `writing_max`: 限制最大正在写入缓存的数据（只对于文件缓存有效）
   - `cache_max`: 文件缓存中对于热点数据的缓存数量限制，内存缓存为tinyufo，默认为100，若设置为0则表示不使用内存热点缓存
+  - `cache_file_max_weight`: 设置文件缓存中热点缓存tinyufo单个文件的最大权重，默认为256，表示256 * 4096字节，大于该值的文件不会缓存至tinyufo
 - `cache_max_size`: 缓存空间的最大限制，缓存是程序中所有服务共用，对于文件缓存此限制无效
 - `tcp_fast_open`: 是否启用TCP Fast Open功能，可以减少TCP连接建立时的延迟。启用时需要指定backlog大小
 
