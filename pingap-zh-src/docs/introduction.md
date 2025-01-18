@@ -4,33 +4,50 @@ sidebar_position: 1
 
 # Pingap简述
 
-Pingap是基于[pingora](https://github.com/cloudflare/pingora)开发的反向代理服务。虽然pingora为Rust开发者提供了丰富的模块，但对非Rust开发者并不友好。因此，Pingap通过TOML配置文件提供了简单易用的反向代理功能，支持单服务多location转发，并可通过插件扩展更多功能。各架构的预编译可执行文件可在[releases](https://github.com/vicanso/pingap/releases)页面下载。
+Pingap是一个基于[pingora](https://github.com/cloudflare/pingora)的反向代理服务。它通过简单的TOML配置文件，让非Rust开发者也能轻松使用pingora的强大功能。Pingap支持单服务多location转发，并提供丰富的插件扩展机制。你可以在[releases](https://github.com/vicanso/pingap/releases)页面下载各种架构的预编译版本。
 
 主要特性：
 
-- 多Location支持：每个服务可配置多个Location，通过host与path匹配，按权重选择
-- 灵活的路径重写：支持正则表达式配置Path重写，便于基于前缀的转发
-- 完整的HTTP支持：
-  - HTTP/HTTPS透明代理
-  - HTTP 1.0/1.1/2.0全链路支持(含h2c)
-  - grpc-web反向代理
-- 多样化的服务发现：支持静态配置、DNS和docker label三种方式
-- 简洁的配置方式：基于TOML格式，可存储于文件或etcd
-- 丰富的监控指标：
-  - 内置10+个Prometheus指标
-  - 支持pull和push两种收集方式
-  - OpenTelemetry支持(w3c context trace与jaeger trace)
-- 动态配置更新：
-  - Upstream、Location和Plugin配置10秒内生效，无请求中断
-  - 其它配置更新通过优雅重启完成，确保服务连续性
-- 可定制的访问日志：支持30+属性的模板配置
-- 便捷的管理界面：提供Web管理后台，操作简单直观
-- 完善的TLS支持：
-  - 开箱即用的Let's Encrypt证书
-  - 支持多域名证书
-  - 单端口多域名证书按SNI自动匹配
-- 事件通知机制：支持`lets_encrypt`、`backend_status`、`diff_config`、`restart`等事件推送
-- 丰富的插件生态：提供缓存、压缩、认证、限流等多种功能组件
+- 多路由配置：
+  - 支持单服务多Location配置
+  - 基于host与path的精确匹配
+  - 支持按权重的负载均衡
+- 路由重写能力：
+  - 支持正则表达式匹配
+  - 灵活的路径重写规则
+  - 便捷的前缀转发配置
+- HTTP全协议支持：
+  - HTTP/HTTPS反向代理
+  - HTTP/1.0、1.1、2.0协议支持
+  - h2c与grpc-web代理能力
+- 服务发现机制：
+  - 静态配置服务发现
+  - DNS服务发现
+  - Docker Label服务发现
+- 配置管理：
+  - 基于TOML的配置格式
+  - 支持文件与etcd存储
+  - 配置变更实时生效
+- 可观测性支持：
+  - Prometheus指标集成
+  - 支持指标拉取与推送
+  - OpenTelemetry分布式追踪
+- 动态更新能力：
+  - 核心配置热更新(10s内生效)
+  - 优雅重启机制
+  - 零停机配置更新
+- 运维友好特性：
+  - 可定制的访问日志(30+模板属性)
+  - Web管理控制台
+  - 完善的事件通知机制
+- SSL/TLS支持：
+  - 自动化Let's Encrypt证书
+  - 多域名证书管理
+  - 基于SNI的证书分发
+- 扩展性设计：
+  - 丰富的插件生态
+  - 模块化的中间件体系
+  - 完整的认证与安全机制
 
 
 ## 处理流程
@@ -95,7 +112,7 @@ Pingap核心部分功能主要处理以下逻辑(更丰富的功能则由各种�
 
 ## 插件体系
 
-Pingap的插件主要分为两类，请求前或响应后的处理，提供压缩、缓存、认证、流控等各种不同场景的应用需求。插件是添加至location的，可根据不同需求配置各种不同的插件后，在location添加对应的插件，实现不同的功能组合。注意插件是按顺序执行的，按需调整其顺序。
+Pingap的插件主要分为两类，请求前或响应后的处理，提供压缩、缓存、认证、限流等多种不同场景的应用需求。插件是添加至location的，可根据不同需求配置各种不同的插件后，在location添加对应的插件，实现不同的功能组合。注意插件是按顺序执行的，按需调整其顺序。
 
 [插件体系](/pingap-zh/docs/plugin)
 
