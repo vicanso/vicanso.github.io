@@ -14,8 +14,9 @@ Pingap使用toml来配置相关参数，对于时间类的配置，格式为`1s`
 - `upgrade_sock`: 参数可选，默认为`/tmp/pingap_upgrade.sock`，此参数配置程序无中断式更新时的socket路径，用于新的pingap进程与旧进程之间切换时使用，若单机部署多实例，则需要配置不同的路径
 - `user`: 参数可选，默认为空，用于设置守护进程的执行用户
 - `group`: 参数可选，默认为空，与`user`类似
-- `threads`: 参数可选，默认为1，用于设置每个服务(如server监听的tcp连接)使用的线程数，如果设置为0，则使用cpu核数或cgroup限制核数
+- `threads`: 参数可选，默认为1，用于设置每个服务(如server监听的tcp连接)使用的线程数，如果设置为0，则使用cgroup限制核数或cpu核数
 - `work_stealing`: 参数可选，默认为`true`，是否允许同服务中的不同线程的抢占工作
+- `listener_tasks_per_fd`: 参数可选，默认为`1`，设置每个文件描述符使用的监听任务数量，设置大于1允许并行接受连接。
 - `grace_period`: 设置优雅退出的等待周期，默认为5分钟
 - `graceful_shutdown_timeout`: 设置优雅退出关闭超时时长，默认为5秒
 - `upstream_keepalive_pool_size`: 设置upstream保持连接的连接池大小，默认为`128`
@@ -34,7 +35,6 @@ Pingap使用toml来配置相关参数，对于时间类的配置，格式为`1s`
   - `cache_max`: 文件缓存中对于热点数据的缓存数量限制，内存缓存为tinyufo，默认为100，若设置为0则表示不使用内存热点缓存
   - `cache_file_max_weight`: 设置文件缓存中热点缓存tinyufo单个文件的最大权重，默认为256，表示256 * 4096字节，大于该值的文件不会缓存至tinyufo
 - `cache_max_size`: 缓存空间的最大限制，缓存是程序中所有服务共用，对于文件缓存此限制无效
-- `tcp_fast_open`: 是否启用TCP Fast Open功能，可以减少TCP连接建立时的延迟。启用时需要指定backlog大小
 
 ## Upstream
 
@@ -61,6 +61,7 @@ Upstream配置用于定义后端服务节点列表。如果配置域名，系统
 - `tcp_interval`: tcp连接keepavlie检测时长
 - `tcp_probe_count`: tcp连接keepalvie探针检测次数
 - `tcp_recv_buf`: tcp接收缓存区大小
+- `tcp_fast_open`: 是否启用tcp快速打开
 
 需要注意，若要设置tcp的keepalive，`tcp_idle`，`tcp_interval`以及`tcp_probe_count`均需要设置。
 
@@ -68,7 +69,7 @@ Upstream配置用于定义后端服务节点列表。如果配置域名，系统
 
 支持以下三种健康检查方式：
 
-- `HTTP(S)`: `http://upstream名称/检查路径?参数`
+- `HTTP(S)`: `http(s)://upstream名称/检查路径?参数`
 - `TCP`: `tcp://upstream名称?参数` 
 - `gRPC`: `grpc://upstream名称?service=服务名&参数`
 
@@ -148,13 +149,13 @@ Location的path匹配支持以下的规则，权重由高至低：
 - `server.x`: server的配置，其中`x`为server的名称，需要注意名称不要相同，相同名称的配置会被覆盖。
 - `addr`: 监控的端口地址，地址格式为`ip:port`的形式，若需要监听多地址则以`,`分隔
 - `access_log`: 可选，默认为不输出访问日志。请求日志格式化，指定输出访问日志的形式。提供了以下几种常用的日志输出格式`combined`, `common`, `short`, `tiny`
-- `locations`: location的列表，指定该server使用的location
+- `locations`: location的列表，指定该server使用的location，location的匹配顺序为按权重排序
 - `threads`: 设置服务默认的线程数，设置为0则等于cpu核数，默认为1
 - `tls_cipher_list`: 指定tls1.3之前版本使用的加密套件，可以参考nginx等软件的配置
 - `tls_ciphersuites`: 指定tls1.3版本使用的加密套件，可以参考nginx等软件的配置
 - `tls_min_version`: 指定tls的最低版本，默认为1.2
 - `tls_max_version`: 指定tls的最低版本，默认为1.3
-- `global_certificates`: 启用全局证书配置，用于无法匹配到符合server name的https请求使用
+- `global_certificates`: 启用全局证书配置，若服务为https服务则需要勾选
 - `enabled_h2`: 是否启用http2，建议配置为启用，需要注意，如果是http则使用h2c的形式
 - `tcp_idle`: tcp连接keepalive空闲回收时长
 - `tcp_interval`: tcp连接keepavlie检测时长

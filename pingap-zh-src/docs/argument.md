@@ -4,7 +4,7 @@ sidebar_position: 21
 
 # 命令行参数
 
-Pingap 主要通过 toml 文件进行配置，但某些启动参数需要通过命令行或环境变量指定：
+Pingap 主要通过 toml 文件进行配置，部分启动参数需要通过命令行或环境变量指定：
 
 ## 命令行参数
 
@@ -15,7 +15,7 @@ Pingap 主要通过 toml 文件进行配置，但某些启动参数需要通过�
 | `upgrade`     | `u`  | 无中断更新模式，通过 unix socket 接收原程序请求                                                                                                                                                                                                |
 | `test`        | `t`  | 仅测试配置有效性                                                                                                                                                                                                                               |
 | `log`         | -    | 日志输出目录                                                                                                                                                                                                                                   |
-| `admin`       | -    | 管理后台地址，支持认证格式：<br />- Base64：`base64(user:pass)@ip:port`<br />- 明文：`user:pass@ip:port/prefix`                                                                                                                                |
+| `admin`       | -    | 管理后台地址，支持认证格式：<br />- Base64：`base64(user:pass)@ip:port/prefix`<br />- 明文：`user:pass@ip:port/prefix`                                                                                                                         |
 | `cp`          | -    | 标记为控制面板节点（仅用于 etcd 模式）                                                                                                                                                                                                         |
 | `autorestart` | `a`  | 配置更新时自动重启（包含 autoreload 功能）                                                                                                                                                                                                     |
 | `autoreload`  | -    | 自动更新部分配置（仅支持 upstream、location、plugin、certificate）                                                                                                                                                                             |

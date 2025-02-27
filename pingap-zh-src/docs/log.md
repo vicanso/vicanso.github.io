@@ -18,7 +18,7 @@ Pingap提供了多种日志格式化选项，包括以下预设格式：`combine
 - `{uri}`: 完整请求URI
 
 ## 请求相关
-- `{referer}`: HTTP Referer头
+- `{referer}`: HTTP Referrer头
 - `{user_agent}`: User-Agent头
 - `{request_id}`: 请求ID（需配置相应中间件）
 - `{payload_size}`: 请求体大小（字节）

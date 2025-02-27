@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="generator" content="Docusaurus v3.7.0">
 <title data-rh="true">Pingap简述 | Pingap</title><meta data-rh="true" name="viewport" content="width=device-width,initial-scale=1"><meta data-rh="true" name="twitter:card" content="summary_large_image"><meta data-rh="true" property="og:image" content="https://vicanso.github.io/pingap-zh/img/docusaurus-social-card.jpg"><meta data-rh="true" name="twitter:image" content="https://vicanso.github.io/pingap-zh/img/docusaurus-social-card.jpg"><meta data-rh="true" property="og:url" content="https://vicanso.github.io/pingap-zh/docs/introduction"><meta data-rh="true" property="og:locale" content="zh_Hans"><meta data-rh="true" name="docusaurus_locale" content="zh-Hans"><meta data-rh="true" name="docsearch:language" content="zh-Hans"><meta data-rh="true" name="docusaurus_version" content="current"><meta data-rh="true" name="docusaurus_tag" content="docs-default-current"><meta data-rh="true" name="docsearch:version" content="current"><meta data-rh="true" name="docsearch:docusaurus_tag" content="docs-default-current"><meta data-rh="true" property="og:title" content="Pingap简述 | Pingap"><meta data-rh="true" name="description" content="Pingap是一个基于pingora的反向代理服务。它通过简单的TOML配置文件，让非Rust开发者也能轻松使用pingora的强大功能。Pingap支持单服务多location转发，并提供丰富的插件扩展机制。你可以在releases页面下载各种架构的预编译版本。"><meta data-rh="true" property="og:description" content="Pingap是一个基于pingora的反向代理服务。它通过简单的TOML配置文件，让非Rust开发者也能轻松使用pingora的强大功能。Pingap支持单服务多location转发，并提供丰富的插件扩展机制。你可以在releases页面下载各种架构的预编译版本。"><link data-rh="true" rel="icon" href="/pingap-zh/img/pingap.png"><link data-rh="true" rel="canonical" href="https://vicanso.github.io/pingap-zh/docs/introduction"><link data-rh="true" rel="alternate" href="https://vicanso.github.io/pingap-zh/docs/introduction" hreflang="zh-Hans"><link data-rh="true" rel="alternate" href="https://vicanso.github.io/pingap-zh/docs/introduction" hreflang="x-default"><link data-rh="true" rel="preconnect" href="https://502YBQO3PX-dsn.algolia.net" crossorigin="anonymous"><link rel="search" type="application/opensearchdescription+xml" title="Pingap" href="/pingap-zh/opensearch.xml"><link rel="stylesheet" href="/pingap-zh/assets/css/styles.df972669.css">
-<script src="/pingap-zh/assets/js/runtime~main.35e7d940.js" defer="defer"></script>
+<script src="/pingap-zh/assets/js/runtime~main.c5c70222.js" defer="defer"></script>
 <script src="/pingap-zh/assets/js/main.744eedf6.js" defer="defer"></script>
 </head>
 <body class="navigation-with-keyboard">
@@ -15,8 +15,8 @@
 <li>多路由配置：<!-- -->
 <ul>
 <li>支持单服务多Location配置</li>
-<li>基于host与path的精确匹配</li>
-<li>支持按权重的负载均衡</li>
+<li>基于host与path的多种匹配形式</li>
+<li>支持按round robin权重或基于指定参数的的会话持久性负载均衡</li>
 </ul>
 </li>
 <li>路由重写能力：<!-- -->
@@ -44,7 +44,6 @@
 <ul>
 <li>基于TOML的配置格式</li>
 <li>支持文件与etcd存储</li>
-<li>配置变更实时生效</li>
 </ul>
 </li>
 <li>可观测性支持：<!-- -->
@@ -64,8 +63,8 @@
 <li>运维友好特性：<!-- -->
 <ul>
 <li>可定制的访问日志(30+模板属性)</li>
-<li>Web管理控制台</li>
 <li>完善的事件通知机制</li>
+<li>Web UI形式的配置管理</li>
 </ul>
 </li>
 <li>SSL/TLS支持：<!-- -->
@@ -94,7 +93,7 @@
 <li>根据配置的日志格式输出对应的访问日志</li>
 </ul>
 <h2 class="anchor anchorWithStickyNavbar_LWe7" id="插件体系">插件体系<a href="#插件体系" class="hash-link" aria-label="插件体系的直接链接" title="插件体系的直接链接">​</a></h2>
-<p>Pingap的插件主要分为两类，请求前或响应后的处理，提供压缩、缓存、认证、限流等多种不同场景的应用需求。插件是添加至location的，可根据不同需求配置各种不同的插件后，在location添加对应的插件，实现不同的功能组合。注意插件是按顺序执行的，按需调整其顺序。</p>
+<p>Pingap的插件主要分为两类，请求前或响应后的处理，提供压缩、缓存、认证、限流等多种不同场景的应用需求。插件与location关联，可根据不同需求配置各种不同的插件后，在location添加对应的插件，实现不同的功能组合。注意插件是按顺序执行的，按需调整其顺序。</p>
 <p><a href="/pingap-zh/docs/plugin">插件体系</a></p>
 <h2 class="anchor anchorWithStickyNavbar_LWe7" id="访问日志格式化">访问日志格式化<a href="#访问日志格式化" class="hash-link" aria-label="访问日志格式化的直接链接" title="访问日志格式化的直接链接">​</a></h2>
 <p>现在日志是按server来配置，因此该server下的所有location共用，已支持各种不同的占位符，按需配置不同的访问日志输出。</p>

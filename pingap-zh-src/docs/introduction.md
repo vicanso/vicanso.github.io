@@ -10,8 +10,8 @@ Pingap是一个基于[pingora](https://github.com/cloudflare/pingora)的反向�
 
 - 多路由配置：
   - 支持单服务多Location配置
-  - 基于host与path的精确匹配
-  - 支持按权重的负载均衡
+  - 基于host与path的多种匹配形式
+  - 支持按round robin权重或基于指定参数的的会话持久性负载均衡
 - 路由重写能力：
   - 支持正则表达式匹配
   - 灵活的路径重写规则
@@ -27,7 +27,6 @@ Pingap是一个基于[pingora](https://github.com/cloudflare/pingora)的反向�
 - 配置管理：
   - 基于TOML的配置格式
   - 支持文件与etcd存储
-  - 配置变更实时生效
 - 可观测性支持：
   - Prometheus指标集成
   - 支持指标拉取与推送
@@ -38,8 +37,8 @@ Pingap是一个基于[pingora](https://github.com/cloudflare/pingora)的反向�
   - 零停机配置更新
 - 运维友好特性：
   - 可定制的访问日志(30+模板属性)
-  - Web管理控制台
   - 完善的事件通知机制
+  - Web UI形式的配置管理
 - SSL/TLS支持：
   - 自动化Let's Encrypt证书
   - 多域名证书管理
@@ -112,7 +111,7 @@ Pingap核心部分功能主要处理以下逻辑(更丰富的功能则由各种�
 
 ## 插件体系
 
-Pingap的插件主要分为两类，请求前或响应后的处理，提供压缩、缓存、认证、限流等多种不同场景的应用需求。插件是添加至location的，可根据不同需求配置各种不同的插件后，在location添加对应的插件，实现不同的功能组合。注意插件是按顺序执行的，按需调整其顺序。
+Pingap的插件主要分为两类，请求前或响应后的处理，提供压缩、缓存、认证、限流等多种不同场景的应用需求。插件与location关联，可根据不同需求配置各种不同的插件后，在location添加对应的插件，实现不同的功能组合。注意插件是按顺序执行的，按需调整其顺序。
 
 [插件体系](/pingap-zh/docs/plugin)
 
