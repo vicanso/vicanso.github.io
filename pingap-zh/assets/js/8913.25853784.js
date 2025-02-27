@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkpingap=self.webpackChunkpingap||[]).push([[8913],{8913:(p,e,s)=>{s.r(e)}}]);

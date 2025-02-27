@@ -59,6 +59,14 @@ const config: Config = {
   ],
 
   themeConfig: {
+    algolia: {
+      appId: '502YBQO3PX',
+      apiKey: 'f6176e01141fc84a11a89b2b4e1dba74',
+      indexName: 'pingap',
+      contextualSearch: true,
+      searchParameters: {},
+      searchPagePath: 'search',
+    },
     // Replace with your project's social card
     image: "img/docusaurus-social-card.jpg",
     navbar: {
