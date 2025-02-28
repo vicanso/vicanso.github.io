@@ -163,7 +163,7 @@ headers = [
 - `download`: 是否启用文件下载
   - 启用后将设置 `Content-Disposition` 响应头
 - `headers`: 自定义 HTTP 响应头列表
-- `step`: 插件执行时机，可选 `request` 或 `proxy_upstream`
+- `step`: 插件执行时机，可选 `request` 或 `proxy_upstream`，若设置为`proxy_upstream`并添加相应的缓存插件，可大幅度提供性能
 
 ### 使用方式
 
@@ -238,7 +238,7 @@ step = "request"
 
 ## Cache
 
-缓存中间件，用于缓存 HTTP 请求。由于缓存模块是全局使用，为避免相同 URL 的冲突，建议每个 location 使用不同的插件并设置不同的 namespace。
+缓存中间件，用于缓存 HTTP 请求。由于缓存暂时仅支持全局初始化，为避免相同 URL 的冲突，建议每个 location 使用不同的插件设置不同的 namespace，该插件固定在`request`阶段执行。
 
 ### 配置示例
 
@@ -256,16 +256,17 @@ purge_ip_list = [
     "127.0.0.1",
     "192.168.1.1/24"
 ]
+check_cache_control = false
 ```
 
 ### 配置参数
 
-- `lock`: 缓存不存在时，相同请求的等待时长，默认为 1 秒
+- `lock`: 缓存不存在请求转发至upstream等待时，相同请求的等待时长，默认为 1 秒
   - 用于避免缓存击穿
 - `max_file_size`: 单个缓存文件的最大长度，默认为 1MB
   - 建议设置合理的值，避免过大的响应占用过多内存
 - `namespace`: 缓存命名空间
-  - 缓存键基于 path + querystring 生成
+  - 缓存键基于 namespace + path + querystring 生成
   - 多域名场景建议使用不同的命名空间
   - 文件缓存时对应单独的文件目录
 - `max_ttl`: 缓存的最长有效期
@@ -277,13 +278,12 @@ purge_ip_list = [
 - `predictor`: 是否记录无法缓存的请求
   - 避免重复判断请求是否可缓存
 - `headers`: 作为缓存键一部分的请求头列表
-  - 当响应依赖某些请求头时配置
+  - 当响应的缓存依赖特定请求头时配置
   - 例如：上游支持不同压缩算法时，需包含 `Accept-Encoding`
 - `purge_ip_list`: 允许执行 purge 请求的 IP 列表，默认为空
-- `skip`: 跳过缓存的正则表达式，默认为空
+- `skip`: 跳过缓存的正则表达式，请求url匹配则跳过缓存插件，默认为空
   - 用于快速跳过某些请求的缓存判断
-- `step`: 插件执行时机，仅支持 `request`
-
+- `check_cache_control`: 校验cache-control响应头，若无均认为不可缓存
 ### 界面配置
 
 ![Pingap Plugin Cache](./img/plugin-cache.jpg)
@@ -331,7 +331,7 @@ HTTP 响应压缩插件，用于处理上游返回数据的压缩。支持 gzip�
 - br(brotli): 大部分支持
 - zstd: 部分支持
 
-为了优化压缩效果，该插件会调整请求的 `Accept-Encoding` 头，将算法优先级调整为 `zstd --> br --> gzip`。
+为了优化压缩效果，pingap会根据配置以及浏览器支持的压缩算法，按`zstd --> br --> gzip`的规则设置，只设置一个压缩算法。
 
 ### 配置示例
 
@@ -366,7 +366,7 @@ decompression = true
 
 ## AcceptEncoding
 
-用于管理和优化 HTTP 请求的 Accept-Encoding 头，允许自定义支持的压缩算法及其优先顺序。
+用于管理和优化 HTTP 请求的 Accept-Encoding 头，允许自定义支持的压缩算法及其优先顺序，顺序建议为zdt > br > gzip。
 
 ### 配置示例
 
@@ -382,7 +382,7 @@ only_one_encoding = true        # 是否仅使用单一编码
 - `encodings`: 指定支持的压缩算法及其优先顺序
   - 多个算法用逗号分隔
   - 顺序从左到右表示优先级从高到低
-  - 支持的算法: zstd、br(brotli)、gzip
+  - 支持的算法: zstd、br、gzip
 - `only_one_encoding`: 是否仅保留一种编码方式
   - `true`: 仅使用优先级最高的支持的编码
   - `false`: 保留所有支持的编码，按优先级排序
@@ -445,7 +445,7 @@ step = "request"
 
 ## BasicAuth
 
-提供 HTTP Basic Authentication 认证功能。支持配置多组用户名/密码对,需以 base64 编码格式配置。
+提供 HTTP Basic Authentication 认证功能。支持配置多组用户名/密码对,需以 base64 编码格式配置，该插件固定在`request`阶段执行。
 
 ### 配置示例
 
@@ -458,7 +458,6 @@ authorizations = [
 category = "basic_auth"
 delay = "1s"
 hide_credentials = true
-step = "request"
 ```
 
 ### 配置参数
@@ -468,7 +467,6 @@ step = "request"
   - 可配置多组凭据
 - `delay`: 认证失败时的响应延迟时间
 - `hide_credentials`: 是否在转发请求时移除认证信息
-- `step`: 插件执行时机,仅支持 `request`
 
 ### 使用说明
 
@@ -484,7 +482,7 @@ step = "request"
 
 ## JWT
 
-提供 JWT (JSON Web Token) 认证功能。包含两个主要功能:
+提供 JWT (JSON Web Token) 认证功能，该插件固定执行在`request`阶段。包含两个主要功能:
 1. 在指定路径生成 JWT token
 2. 验证请求中携带的 JWT token 是否有效
 
@@ -498,7 +496,6 @@ category = "jwt"
 delay = "1s"
 header = "X-Jwt"
 secret = "123123"
-step = "request"
 ```
 
 ### 配置参数
@@ -513,7 +510,6 @@ step = "request"
   - token 获取优先级: header > cookie > query
   - 三个参数至少配置其中一个
 - `delay`: 认证失败时的响应延迟时间
-- `step`: 插件执行时机,仅支持 `request`
 
 ### 工作流程
 
@@ -531,14 +527,13 @@ step = "request"
 
 ## CombinedAuth
 
-提供基于应用 ID、密钥和时间戳的组合式认证机制。支持为每个应用配置独立的认证参数和 IP 白名单。
+提供基于应用 ID、密钥和时间戳的组合式认证机制。支持为每个应用配置独立的认证参数和 IP 白名单，该插件固定在`request`阶段执行。
 
 ### 配置示例
 
 ```toml
 [plugins.appAuth]
 category = "combined_auth"
-step = "request"
 
 [[plugins.appAuth.authorizations]]
 app_id = "pingap"
@@ -653,7 +648,7 @@ interval = "1m"
 
 ## IpRestriction
 
-提供基于 IP 地址的访问控制功能。支持设置允许(allow)或禁止(deny)两种模式，可配置单个 IP 地址或 CIDR 格式的网段。
+提供基于 IP 地址的访问控制功能。支持设置允许(allow)或禁止(deny)两种模式，可配置单个 IP 地址或 CIDR 格式的网段，该插件固定执行在`request`阶段。
 
 ### 配置示例
 
@@ -665,7 +660,6 @@ ip_list = [
     "1.1.1.0/24",       # CIDR 格式网段
 ]
 message = "禁止该IP访问"
-step = "request"
 type = "deny"
 ```
 
@@ -678,7 +672,6 @@ type = "deny"
   - 支持单个 IP 地址
   - 支持 CIDR 格式的网段
 - `message`: 访问被拒绝时的提示信息
-- `step`: 插件执行时机，仅支持 `request`
 
 ### 使用说明
 
@@ -768,7 +761,7 @@ type = "allow"
 
 ## CSRF
 
-提供跨站请求伪造(Cross-Site Request Forgery)防护功能。通过比对请求中的 cookie 和请求头中的 token 值来验证请求的合法性。
+提供跨站请求伪造(Cross-Site Request Forgery)防护功能。通过比对请求中的 cookie 和请求头中的 token 值来验证请求的合法性，该插件固定在`request`阶段执行。
 
 ### 配置示例
 
@@ -808,7 +801,7 @@ ttl = "1h"
 
 ## CORS
 
-提供跨域资源共享(Cross-Origin Resource Sharing)配置功能，用于控制浏览器跨域访问策略。
+提供跨域资源共享(Cross-Origin Resource Sharing)配置功能，用于控制浏览器跨域访问策略，该插件固定在`request`阶段执行。
 
 ### 配置示例
 
@@ -822,7 +815,6 @@ category = "cors"
 expose_headers = "Content-Type, X-Device"
 max_age = "1h"
 path = "^/api"
-step = "request"
 ```
 
 ### 配置参数
@@ -830,12 +822,12 @@ step = "request"
 - `allow_origin`: 允许跨域请求的源
   - 可以指定具体域名，如 `https://example.com`
   - 设置为 `$http_origin` 表示允许请求来源，不建议在生产环境使用
-  - 建议明确指定允许的域名列表
+  - 建议明确指定允许的域名列表，不建议直接使用`*`
 - `allow_credentials`: 是否允许携带认证信息
   - 包括 Cookie、HTTP 认证及客户端 SSL 证书
 - `allow_methods`: 允许的 HTTP 请求方法
   - 多个方法用逗号分隔，如 `GET, POST, OPTIONS`
-- `allow_headers`: 允许的自定义请求头
+- `allow_headers`: 允许的自定义请求头，若不设置则默认所有
   - 多个请求头用逗号分隔
 - `expose_headers`: 允许浏览器访问的响应头
   - 默认情况下浏览器只能访问基本响应头
@@ -843,7 +835,6 @@ step = "request"
 - `max_age`: 预检请求结果的缓存时间
 - `path`: CORS 配置生效的路径范围
   - 支持正则表达式匹配
-- `step`: 插件执行时机，仅支持 `request`
 
 ### 安全建议
 
