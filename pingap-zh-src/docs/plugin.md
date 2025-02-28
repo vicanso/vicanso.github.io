@@ -78,7 +78,7 @@ remark = "性能指标采集"
 
 ## Ping
 
-Ping插件提供了一个简单的健康检查端点,用于监控服务是否正常运行。当配置了反向代理时,也可以作为 pingap 的健康检查机制。
+Ping插件提供了一个简单的健康检查端点,用于监控服务是否正常运行。当配置了反向代理时,也可以作为 pingap 的健康检查机制，该插件固定执行在`request`阶段。
 
 ```toml
 [plugins.pingpong]
@@ -173,7 +173,7 @@ headers = [
 
 ## Mock
 
-Mock 插件用于模拟 HTTP 响应，可用于测试或临时服务降级。支持自定义响应内容、状态码和响应头。
+Mock 插件用于模拟 HTTP 响应，可用于测试或临时服务降级。支持自定义响应内容、状态码和响应头，访插件固定执行在`request`阶段。
 
 ### 配置示例
 
@@ -188,7 +188,6 @@ headers = [
 ]
 path = "/"
 status = 500
-step = "request"
 ```
 
 ### 配置参数
@@ -200,7 +199,6 @@ step = "request"
   - 不配置则匹配所有路径
 - `status`: HTTP 响应状态码
 - `delay`: 响应延迟时间
-- `step`: 插件执行时机，可选 `request` 或 `proxy_upstream`
 
 ### 使用方式
 
@@ -210,7 +208,7 @@ step = "request"
 
 ## Redirect
 
-Redirect 插件用于 HTTP 请求重定向，支持添加 URL 前缀或将 HTTP 请求重定向至 HTTPS。
+Redirect 插件用于 HTTP 请求重定向，支持添加 URL 前缀或将 HTTP 请求重定向至 HTTPS，访插件固定执行在`request`阶段。
 
 ### 配置示例
 
@@ -219,7 +217,6 @@ Redirect 插件用于 HTTP 请求重定向，支持添加 URL 前缀或将 HTTP 
 category = "redirect"
 http_to_https = true
 prefix = "/api"
-step = "request"
 ```
 
 ### 配置参数
@@ -393,7 +390,7 @@ only_one_encoding = true        # 是否仅使用单一编码
 
 ## KeyAuth
 
-提供简单的 API 密钥认证机制，支持从请求参数(query)或请求头(header)中获取认证信息。可配置多个有效密钥，方便多系统接入。
+提供简单的 API 密钥认证机制，支持从请求参数(query)或请求头(header)中获取认证信息。可配置多个有效密钥，方便多系统接入，访插件固定执行在`request`阶段。
 
 ### 配置示例
 
@@ -409,7 +406,6 @@ keys = [               # 允许的密钥列表
 ]
 delay = "1s"
 hide_credentials = true
-step = "request"
 ```
 
 #### 从请求头获取认证信息
@@ -424,7 +420,6 @@ keys = [               # 允许的密钥列表
 ]
 delay = "1s"
 hide_credentials = true
-step = "request"
 ```
 
 ### 配置参数
@@ -435,7 +430,6 @@ step = "request"
 - `keys`: 允许的密钥列表
 - `delay`: 认证失败时的响应延迟时间
 - `hide_credentials`: 是否在转发请求时移除认证信息
-- `step`: 插件执行时机，可选 `request` 或 `proxy_upstream`
 
 ### 界面配置
 
@@ -591,7 +585,7 @@ GET /api?app_id=pingap&ts=1727582506&digest=85c623c389177a69860adfd572212507ef98
   - 使用 `ip` 类型时无需指定
 - `max`: 最大允许值
 - `interval`: 统计时间间隔(仅用于 rate 类型)
-- `step`: 插件执行时机，可选 `request` 或 `proxy_upstream`
+- `step`: 插件执行时机，可选 `request` 或 `proxy_upstream`。若设置为`proxy_upstream`再增加对应的缓存插件，则可只针对转发至upstream的请求才会增加次数
 
 ### 配置示例
 
@@ -643,6 +637,7 @@ interval = "1m"
 - 当限制条件值为空时不进行限制
 - 频率限制需要配置 `interval` 参数
 - 并发限制不需要配置 `interval` 参数
+- rate限制现仅简单的分区间限制，每次仅计算上一区间的访问频率是否超限，后续调整为两个区间按权重计算
 
 ![Pingap Plugin Limit](./img/plugin-limit.jpg)
 
@@ -722,7 +717,7 @@ type = "deny"
 
 ## RefererRestriction
 
-提供基于 HTTP Referer 的访问控制功能。支持设置允许(allow)或禁止(deny)两种模式，可使用通配符(*)进行域名匹配。
+提供基于 HTTP Referer 的访问控制功能。支持设置允许(allow)或禁止(deny)两种模式，可使用通配符(*)进行域名匹配，该插件固定执行在`request`阶段。
 
 ### 配置示例
 
@@ -734,7 +729,6 @@ referer_list = [
     "example.com"       # 精确匹配
 ]
 message = "禁止访问"
-step = "request"
 type = "allow"
 ```
 
@@ -747,7 +741,6 @@ type = "allow"
   - 支持精确匹配
   - 支持使用 * 作为通配符匹配子域名
 - `message`: 访问被拒绝时的提示信息
-- `step`: 插件执行时机，仅支持 `request`
 
 ### 使用说明
 
@@ -847,7 +840,7 @@ path = "^/api"
 
 ## ResponseHeaders
 
-提供 HTTP 响应头的管理功能，支持添加、设置和删除响应头。支持使用变量引用:
+提供 HTTP 响应头的管理功能，支持添加、设置和删除响应头，该插件固定执行在`response`阶段。支持使用变量引用:
 - `$hostname`: 引用服务器主机名
 - `$变量名`: 引用环境变量值
 
@@ -859,7 +852,8 @@ add_headers = ["X-Server:pingap"]
 category = "response_headers"
 remove_headers = ["X-User"]
 set_headers = ["X-Response-Id:123"]
-step = "response"
+rename_headers = ["x-old-header:x-new-header"]
+set_headers_not_exists = ["x-server-ip:192.168.1.1"]
 ```
 
 ### 配置参数
@@ -870,7 +864,8 @@ step = "response"
   - 会覆盖已存在的同名响应头
 - `remove_headers`: 需要删除的响应头
   - 删除指定名称的响应头
-- `step`: 插件执行时机，仅支持 `response`
+- `rename_headers`: 需要重命名的响应头
+- `set_headers_not_exists`: 如果响应头不存在才设置
 
 ### 执行顺序
 
@@ -878,6 +873,8 @@ step = "response"
 1. `add_headers`: 添加新的响应头
 2. `remove_headers`: 删除指定的响应头
 3. `set_headers`: 设置(覆盖)响应头
+4. `rename_headers`: 重命名响应头
+5. `set_headers_not_exists`: 设置不存在的响应头
 
 ### 使用说明
 
@@ -888,3 +885,26 @@ step = "response"
    - `$VARIABLE_NAME` 获取环境变量值
 
 ![Pingap Plugin Response Headers](./img/plugin-response-headers.jpg)
+
+
+## SubFilter
+
+支持常规或正则形式的文本匹配，用于替换http的响应内容，该插件固定执行在`response`阶段。
+
+
+```toml
+[plugins.textReplace]
+category = "sub_filter"
+filters = [
+    "subs_filter 'mobile' 'Mobile' ig",
+    "sub_filter 'online' 'ONLINE'",
+]
+path = "^/api/"
+```
+
+### 配置参数
+
+- `path`: 匹配需要对响应改造的路径，按正则匹配
+- `filters`: 配置内容替换规则，可以配置多条规则，支持两种类型
+  - `subs_filter`: 正则匹配替换模式
+  - `sub_filter`: 普通文本替换模式
