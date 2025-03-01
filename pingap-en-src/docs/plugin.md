@@ -24,21 +24,90 @@ Plugins can execute at different stages of request processing, currently support
 ```rust
 #[async_trait]
 pub trait Plugin: Sync + Send {
-    // Returns plugin type for categorization
-    fn category(&self) -> PluginCategory;
-    
-    // Specifies plugin execution timing (Request/ProxyUpstream/Response)
-    fn step(&self) -> String;
-    
-    // Request handling hook function
-    // Returns Some(response) to complete request and return response directly
-    // Returns None to continue subsequent processing
-    async fn handle_request(...) -> Result<Option<HttpResponse>>;
-    
-    // Response handling hook function
-    // Returns Some(bytes) to rewrite response body
-    // Returns None to use original response
-    async fn handle_response(...) -> Result<Option<Bytes>>;
+    /// Returns a unique key that identifies this specific plugin instance.
+    ///
+    /// # Purpose
+    /// - Can be used for caching plugin results
+    /// - Helps differentiate between multiple instances of the same plugin type
+    /// - Useful for tracking and debugging
+    ///
+    /// # Default
+    /// Returns an empty string by default, which means no specific instance identification.
+    fn hash_key(&self) -> String {
+        "".to_string()
+    }
+
+    /// Processes an HTTP request at a specified lifecycle step.
+    ///
+    /// # Parameters
+    /// * `_step` - Current processing step in the request lifecycle (e.g., pre-routing, post-routing)
+    /// * `_session` - Mutable reference to the HTTP session containing request data
+    /// * `_ctx` - Mutable reference to the request context for storing state
+    ///
+    /// # Returns
+    /// * `Ok((executed, response))` where:
+    ///   * `executed` - Boolean flag:
+    ///     - `true`: Plugin performed meaningful logic for this request
+    ///     - `false`: Plugin was skipped or did nothing for this request
+    ///   * `response` - Optional HTTP response:
+    ///     - `Some(response)`: Terminates request processing and returns this response to client
+    ///     - `None`: Allows request to continue to next plugin or upstream
+    /// * `Err` - Returns error if plugin processing failed
+    ///
+    /// # Example
+    /// ```
+    /// // A plugin that blocks requests with a specific User-Agent
+    /// async fn handle_request(&self, _step, session, _ctx) -> Result<(bool, Option<HttpResponse>)> {
+    ///     let user_agent = session.get_header_str("User-Agent");
+    ///     if user_agent.contains("BadBot") {
+    ///         // Block the request with 403 Forbidden
+    ///         let resp = HttpResponse::new(StatusCode::FORBIDDEN);
+    ///         return Ok((true, Some(resp)));
+    ///     }
+    ///     // Allow the request to proceed
+    ///     Ok((true, None))
+    /// }
+    /// ```
+    async fn handle_request(
+        &self,
+        _step: PluginStep,
+        _session: &mut Session,
+        _ctx: &mut Ctx,
+    ) -> pingora::Result<(bool, Option<HttpResponse>)> {
+        Ok((false, None))
+    }
+
+    /// Processes an HTTP response at a specified lifecycle step.
+    ///
+    /// # Parameters
+    /// * `_step` - Current processing step in the response lifecycle
+    /// * `_session` - Mutable reference to the HTTP session
+    /// * `_ctx` - Mutable reference to the request context
+    /// * `_upstream_response` - Mutable reference to the upstream response header
+    ///
+    /// # Returns
+    /// * `Ok(modified)` - Boolean flag:
+    ///   - `true`: Plugin modified the response in some way
+    ///   - `false`: Plugin did not modify the response
+    /// * `Err` - Returns error if plugin processing failed
+    ///
+    /// # Example
+    /// ```
+    /// // A plugin that adds a custom header to all responses
+    /// async fn handle_response(&self, _step, _session, _ctx, upstream_response) -> Result<bool> {
+    ///     upstream_response.insert_header("X-Served-By", "My-Proxy-Service");
+    ///     Ok(true) // Indicate that we modified the response
+    /// }
+    /// ```
+    async fn handle_response(
+        &self,
+        _step: PluginStep,
+        _session: &mut Session,
+        _ctx: &mut Ctx,
+        _upstream_response: &mut ResponseHeader,
+    ) -> pingora::Result<bool> {
+        Ok(false)
+    }
 }
 ```
 
@@ -46,8 +115,8 @@ There are three main implementations:
 
 - `category`: Plugin type, used to distinguish what form of plugin it is
 - `step`: Plugin execution timing, choose timing based on needs, different plugins have different choices
-- `handle_request`: Plugin's pre-forwarding execution logic. If returns `Ok(Some(HttpResponse))`, indicates request is complete, won't forward to upstream, and will transmit response to client
-- `handle_response`: Plugin's pre-response execution logic. If returns `Ok(Some(Bytes))`, indicates response data should be rewritten
+- `handle_request`: Plugin's pre-forwarding execution logic. If returns `Ok((true, Some(HttpResponse)))`, indicates request is complete, won't forward to upstream, and will transmit response to client
+- `handle_response`: Plugin's pre-response execution logic. If returns `Ok(bool)`, that means the plugin is executed successful.
 
 ## Stats Performance Monitoring Plugin
 

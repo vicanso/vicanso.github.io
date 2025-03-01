@@ -24,21 +24,66 @@ sidebar_position: 71
 ```rust
 #[async_trait]
 pub trait Plugin: Sync + Send {
-    // 返回插件类型,用于分类管理
-    fn category(&self) -> PluginCategory;
-    
-    // 指定插件执行时序(Request/ProxyUpstream/Response)
-    fn step(&self) -> String;
-    
-    // 处理请求的钩子函数
-    // 返回 Some(response) 表示请求处理完成,直接返回响应
-    // 返回 None 表示继续后续处理
-    async fn handle_request(...) -> Result<Option<HttpResponse>>;
-    
-    // 处理响应的钩子函数
-    // 返回 Some(bytes) 表示重写响应体
-    // 返回 None 表示使用原响应
-    async fn handle_response(...) -> Result<Option<Bytes>>;
+    /// Returns a unique key that identifies this specific plugin instance.
+    ///
+    /// # Purpose
+    /// - Can be used for caching plugin results
+    /// - Helps differentiate between multiple instances of the same plugin type
+    /// - Useful for tracking and debugging
+    ///
+    /// # Default
+    /// Returns an empty string by default, which means no specific instance identification.
+    fn hash_key(&self) -> String {
+        "".to_string()
+    }
+
+    /// Processes an HTTP request at a specified lifecycle step.
+    ///
+    /// # Parameters
+    /// * `_step` - Current processing step in the request lifecycle (e.g., pre-routing, post-routing)
+    /// * `_session` - Mutable reference to the HTTP session containing request data
+    /// * `_ctx` - Mutable reference to the request context for storing state
+    ///
+    /// # Returns
+    /// * `Ok((executed, response))` where:
+    ///   * `executed` - Boolean flag:
+    ///     - `true`: Plugin performed meaningful logic for this request
+    ///     - `false`: Plugin was skipped or did nothing for this request
+    ///   * `response` - Optional HTTP response:
+    ///     - `Some(response)`: Terminates request processing and returns this response to client
+    ///     - `None`: Allows request to continue to next plugin or upstream
+    /// * `Err` - Returns error if plugin processing failed
+    async fn handle_request(
+        &self,
+        _step: PluginStep,
+        _session: &mut Session,
+        _ctx: &mut Ctx,
+    ) -> pingora::Result<(bool, Option<HttpResponse>)> {
+        Ok((false, None))
+    }
+
+    /// Processes an HTTP response at a specified lifecycle step.
+    ///
+    /// # Parameters
+    /// * `_step` - Current processing step in the response lifecycle
+    /// * `_session` - Mutable reference to the HTTP session
+    /// * `_ctx` - Mutable reference to the request context
+    /// * `_upstream_response` - Mutable reference to the upstream response header
+    ///
+    /// # Returns
+    /// * `Ok(modified)` - Boolean flag:
+    ///   - `true`: Plugin modified the response in some way
+    ///   - `false`: Plugin did not modify the response
+    /// * `Err` - Returns error if plugin processing failed
+    async fn handle_response(
+        &self,
+        _step: PluginStep,
+        _session: &mut Session,
+        _ctx: &mut Ctx,
+        _upstream_response: &mut ResponseHeader,
+    ) -> pingora::Result<bool> {
+        Ok(false)
+    }
 }
 ```
 
@@ -47,7 +92,7 @@ pub trait Plugin: Sync + Send {
 - `category`: 插件类型，用于区分该插件是哪类形式的插件
 - `step`: 插件的执行时序，按需选择插件的执行时序，不同的插件可选择的选择不一样
 - `handle_request`: 插件的转发前执行逻辑，若返回的是`Ok(Some(HttpResponse))`，则表示请求已处理完成，不再转发到上游节点，并将该响应传输至请求端
-- `handle_response`: 插件的响应前执逻辑，若返回的是`Ok(Some(Bytes))`，则表示要重写响应数据
+- `handle_response`: 插件的响应前执逻辑，若返回的是`Ok(true)`，则表示该插件被成功执行
 
 ## Stats 性能统计插件
 
