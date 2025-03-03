@@ -74,3 +74,5 @@ Attributes available in Context include:
 - `compression_ratio`: Compression ratio
 - `cache_lookup_time`: Cache lookup time
 - `cache_lock_time`: Cache lock time
+
+All `*_time` values are integers in milliseconds. If you need to convert them to human-friendly durations with units, you can use `*_time_human` instead.

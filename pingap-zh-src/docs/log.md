@@ -74,3 +74,6 @@ Context中可获取的属性包括：
 - `compression_ratio`: 压缩比率
 - `cache_lookup_time`: 缓存查询时间
 - `cache_lock_time`: 缓存锁定时间
+
+
+所有`*_time`均是ms单位的整数，如果需要转换为对人友好的带单位时长，则使用`*_time_human`即可。
