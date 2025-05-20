@@ -34,7 +34,6 @@ Pingap uses TOML for parameter configuration. For time-related configurations, u
   - `cache_max`: Hot data cache limit in file cache, uses tinyufo for memory cache, defaults to 100. Set to 0 to disable memory hot cache
   - `cache_file_max_weight`: Maximum cache file weight for tinyufo, defaults to 256, which means 256 * 4096 bytes, files larger than this value will not be cached to tinyufo
 - `cache_max_size`: Maximum cache space limit, shared by all services. Not applicable to file cache
-- `tcp_fast_open`: Enables TCP Fast Open to reduce TCP connection establishment latency. Requires specifying backlog size
 
 ## Upstream
 
@@ -61,6 +60,7 @@ Main parameters:
 - `tcp_interval`: TCP keepalive check interval
 - `tcp_probe_count`: TCP keepalive probe count
 - `tcp_recv_buf`: TCP receive buffer size
+- `tcp_fast_open`: Enable tcp fast open for upstream
 
 Note: All three parameters (`tcp_idle`, `tcp_interval`, `tcp_probe_count`) must be set for TCP keepalive.
 
