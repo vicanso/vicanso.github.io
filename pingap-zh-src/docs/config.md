@@ -2,165 +2,250 @@
 sidebar_position: 31
 ---
 
-# 配置说明
+# 配置项详解
 
-Pingap使用toml来配置相关参数，对于时间类的配置，格式为`1s`, `1m`, `1h`这种时间表示形式。而对于存储大小类的配置，格式为`1kb`, `1mb`, `1gb`这种表示方式。具体参数说明如下：
+Pingap 使用 TOML 格式进行配置，具有良好的可读性。所有配置项被拆分到不同的文件中，便于管理。
 
-## 基础配置
+通用单位格式：
 
-- `name`: 实例名称，默认为`Pingap`，如果是在同一机器部署多个实例，可以配置不同的名称
-- `error_template`: 参数可选，异常出错时的html模板，可自定义出错的html模板，在出错时会替换模板中的`{{version}}`为pingap的版本号，`{{content}}`为出错的具体信息
-- `pid_file`: 参数可选，默认为`/run/pingap.pid`，此参数配置进程id的记录文件，若单机部署多实例，则需要配置不同的路径
-- `upgrade_sock`: 参数可选，默认为`/tmp/pingap_upgrade.sock`，此参数配置程序无中断式更新时的socket路径，用于新的pingap进程与旧进程之间切换时使用，若单机部署多实例，则需要配置不同的路径
-- `user`: 参数可选，默认为空，用于设置守护进程的执行用户
-- `group`: 参数可选，默认为空，与`user`类似
-- `threads`: 参数可选，默认为1，用于设置每个服务(如server监听的tcp连接)使用的线程数，如果设置为0，则使用cgroup限制核数或cpu核数
-- `work_stealing`: 参数可选，默认为`true`，是否允许同服务中的不同线程的抢占工作
-- `listener_tasks_per_fd`: 参数可选，默认为`1`，设置每个文件描述符使用的监听任务数量，设置大于1允许并行接受连接。
-- `grace_period`: 设置优雅退出的等待周期，默认为5分钟
-- `graceful_shutdown_timeout`: 设置优雅退出关闭超时时长，默认为5秒
-- `upstream_keepalive_pool_size`: 设置upstream保持连接的连接池大小，默认为`128`
-- `webhook`: Webhook的请求路径
-- `webhook_type`: Webhook的类型，支持普通的http形式、`webcom`与`dingtalk`三种类型
-- `webhook_notifications`: Webhook通知的类型，有`backend_status`，`lets_encrypt`，`diff_config`，`restart`，`restart_fail`以及`tls_validity`等等
-- `log_level`: 应用日志的输出级别，默认为`INFO`
-- `log_buffered_size`: 日志缓存区大小，默认为0，若设置小于4096则表示不使用buffer
-- `log_format_json`: 设置为json格式化日志
-- `sentry`: Sentry的DSN配置，sentry需要使用`full feature`版本
-- `pyroscope`: Pyroscope连接地址(`http://ip:port?app=pingap&tag:a=A&tag:b=B`)，需要注意默认版本并未编译支持pyroscpe，需要使用perf的版本
-- `auto_restart_check_interval`: 检测配置更新的间隔，默认为每90秒检测一次，若配置为小于1秒的值，则不检测
-- `cache_directory`: 设置缓存目录，设置之后则使用文件形式缓存，文件目录缓存会定期清除过长时间未被访问文件，文件缓存的配置形式如`/opt/pingap/cache?reading_max=1000&writing_max=500&cache_max=200`
-  - `reading_max`: 限制最大正在读取缓存的数据（只对于文件缓存有效）
-  - `writing_max`: 限制最大正在写入缓存的数据（只对于文件缓存有效）
-  - `cache_max`: 文件缓存中对于热点数据的缓存数量限制，内存缓存为tinyufo，默认为100，若设置为0则表示不使用内存热点缓存
-  - `cache_file_max_weight`: 设置文件缓存中热点缓存tinyufo单个文件的最大权重，默认为256，表示256 * 4096字节，大于该值的文件不会缓存至tinyufo
-- `cache_max_size`: 缓存空间的最大限制，缓存是程序中所有服务共用，对于文件缓存此限制无效
+- 时间 (Duration): 使用易读的后缀，如`5s`(5秒), `10m`(10分钟), `1h`(1小时)。
+- 大小 (Size): 使用标准单位后缀，如`8kb`(8 KB), `16mb`(16 MB), `1gb`(1 GB)。
 
-## Upstream
+## 基础配置 (basic.toml)
 
-Upstream配置用于定义后端服务节点列表。如果配置域名，系统会根据DNS解析结果添加所有节点地址（需要配置相应的服务发现方式才会自动更新DNS解析）。建议配置HTTP健康检查来监控节点状态。
-
-主要参数说明：
-
-- `addrs`: 节点地址列表，格式为 `ip:port [weight]`，weight为可选的权重值(默认为1)
-- `discovery`: 服务发现方式。推荐域名使用dns方式，docker服务可使用docker label方式
-- `update_frequency`: 服务发现的更新间隔，建议配置以实现节点的动态更新
-- `algo`: 节点的选择算法，支持`hash`与`round_robin`两种形式，如`hash:ip`表示按ip hash选择节点。默认为`round_robin`
-- `sni`: 若配置的是https，需要设置对应的SNI
-- `verify_cert`: 若配置的是https，是否需要校验证书有效性
-- `health_check`: 节点健康检测配置，支持http、tcp与grpc形式
-- `ipv4_only`: 若配置为域名时，是否仅添加解析的ipv4节点
-- `enable_tracer`: 是否启用tracer功能，启用后可获取得upstream的连接数
-- `alpn`: 在tls握手时，alpn的配置，默认为H1
-- `connection_timeout`: tcp连接超时，默认为无
-- `total_connection_timeout`: 连接超时，若是https请求包括tls握手部分，默认为无
-- `read_timeout`: 读取超时，默认为无
-- `idle_timeout`: 空闲超时，指定连接空闲多久后会自动回收，如果设置为0，则连接不复用，需要注意有些网络设备对于无数据的tcp连接会过期自动关闭，因此可根据需要设置对应的值。默认为无
-- `write_timeout`: 写超时，默认为无
-- `tcp_idle`: tcp连接keepalive空闲回收时长
-- `tcp_interval`: tcp连接keepavlie检测时长
-- `tcp_probe_count`: tcp连接keepalvie探针检测次数
-- `tcp_recv_buf`: tcp接收缓存区大小
-- `tcp_fast_open`: 是否启用tcp快速打开
-
-需要注意，若要设置tcp的keepalive，`tcp_idle`，`tcp_interval`以及`tcp_probe_count`均需要设置。
-
-### 健康检查配置
-
-支持以下三种健康检查方式：
-
-- `HTTP(S)`: `http(s)://upstream名称/检查路径?参数`
-- `TCP`: `tcp://upstream名称?参数` 
-- `gRPC`: `grpc://upstream名称?service=服务名&参数`
-
-通用参数说明：
-- `connection_timeout`: 连接超时时间，默认3秒
-- `read_timeout`: 读取超时时间，默认3秒
-- `check_frequency`: 检查间隔，默认10秒
-- `success`: 判定为健康所需的连续成功次数，默认1次
-- `failure`: 判定为不健康所需的连续失败次数，默认2次
-- `reuse`: 是否复用检查连接，默认否
-
-### Algo的hash
-
-若指定通过hash的方式选择upstream的backend，则可使用如下方式：
-
-- `hash:url`: 根据url转发，主要用于upstream为基于url缓存的服务
-- `hash:ip`: 根据ip转发，upstream为有基于ip数据持久化的服务
-- `hash:header:X-User`: 根据请求头获取`X-User`的值转发
-- `hash:cookie:uid`: 根据Cookie的`uid`值转发
-- `hash:query:appKey`: 根据Query的`appkey`值转发
-- `hash:path`: 根据path转发，hash方式的默认值
+该文件定义了 Pingap 实例的全局行为、进程管理和基础性能参数。
 
 
-## Location
+实例与进程管理
 
-Location主要配置请求的匹配规则、请求头响应头的插入，以及各种插件的关联，是整个流程中的关联组成部分。下面是相关参数的详细说明：
+| 参数         | 默认值                   | 说明                                                                       |
+| ------------ | ------------------------ | -------------------------------------------------------------------------- |
+| name         | Pingap                   | 实例的名称，用于日志或监控中区分不同实例。                                 |
+| pid_file     | /run/pingap.pid          | 记录进程 ID (PID) 的文件路径。单机部署多实例时必须为每个实例设置不同路径。 |
+| upgrade_sock | /tmp/pingap_upgrade.sock | 用于零停机平滑重启的 Unix Socket 路径。单机部署多实例时必须修改。          |
+| user         |                          | 若以守护进程运行，指定运行服务的用户。                                     |
+| group        |                          | 若以守护进程运行，指定运行服务的用户组。                                   |
 
-- `upstream`: 配置该location对应的upstream，若该location所有的处理均由插件完成，则可不配置。如针对http重定向至https的逻辑，则只需要添加中间件即可
-- `path`: 匹配的路径，具体使用方法后续内容细说
-- `host`: 匹配的域名，如果是多个域名则使用`,`分隔，配置为`~`开始则表示以正则表达式匹配
-- `proxy_set_headers`: 转发至upstream时设置的请求头，若该请求头已存在则覆盖
-- `proxy_add_headers`: 转发至upstream时添加的请求头
-- `rewrite`: 请求路径的重写规则
-- `weight`: 自定义的权重，可以调整该location的权重，例如mock为服务不可用后，再调整该权重最高，则可禁用所有请求。如非特别则不需要设置，权重会自动计算（计算得出的权重最高不超过2048）
-- `plugins`: 添加至该location的插件列表，按顺序执行
-- `client_max_body_size`: 客户端请求的body最大长度
-- `max_processing`: 最大处理请求数，若设置为0则表示不限制
-- `grpc_web`: 是否启用支持grpc-web
-- `enable_reverse_proxy_headers`: 是否启用反向代理的请求头，启用后会添加以下的请求头
-  - `X-Real-IP`: 表示请求的客户端地址
-  - `X-Forwarded-For`: 表示请求的代理地址，按x-forwarded-for的格式添加
-  - `X-Forwarded-Proto`: 表示请求的scheme, 如http或https
-  - `X-Forwarded-Host`: 表示请求的host
-  - `X-Forwarded-Port`: 表示请求的server端口
+性能调优
 
-### Path匹配规则
-
-Location的path匹配支持以下的规则，权重由高至低：
-
-- 全等模式，配置以`=`开始，如`=/api`表示匹配path等于`/api`的请求
-- 正则模式，配置以`~`开始，如`~^/(api|rest)`表示匹配path以`/api`或`/rest`开始请求
-- 前缀模式，如`/api`表示匹配path为`/api`开始的请求
-
-### Path重写请求路径
-
-可按需配置请求路径重写规则，支持正则匹配处理(与nginx类似)，仅支持配置一个重写规则，若逻辑过于复杂建议可配置多个location来分开实现。配置通过空格分隔为前后两部分，处理逻辑则是按正则匹配将前部分替换为后部分，下面是常用的一些例如：
-
-- `^/api/ /`: 表示将请求前缀的`/api/`替换为`/`
-- `^/(\S*?)/ /api/$1/`: 表示在请求路径添加前缀`/api`
-- `^/(\S*?)/api/(\S*?) /$1/$2`: 表示将请求路径中的`/api`部分删除
-
-### 请求头设置支持的变量名
-
-- `$hostname`: 表示处理该请求主机的hostname
-- `$host`: 表示请求的host
-- `$scheme`: 表示请求的scheme, 如http或https
-- `$remote_addr`: 表示请求的客户端地址
-- `$remote_port`: 表示请求的客户端端口
-- `$server_addr`: 表示请求的server地址
-- `$server_port`: 表示请求的server端口
-- `$proxy_add_x_forwarded_for`: 表示请求的代理地址，按x-forwarded-for的格式添加
-- `$upstream_addr`: 表示请求的upstream地址
+| 参数                         | 默认值 | 说明                                                                             |
+| ---------------------------- | ------ | -------------------------------------------------------------------------------- |
+| threads                      | 1      | 每个服务（如 TCP 监听）使用的工作线程数。设置为 0 则根据 CPU 核心数自动决定。    |
+| work_stealing                | true   | 是否允许同一服务中的线程窃取其他线程的任务，通常能提升性能。                     |
+| upstream_keepalive_pool_size | 128    | 到上游 (Upstream) 的长连接池大小。                                               |
+| listener_tasks_per_fd        | 1      | 每个监听描述符使用的任务数。设置为 >1 可并行接受新连接，提升高并发下的接收性能。 |
 
 
-## Server
+可观测性与通知
 
-- `server.x`: server的配置，其中`x`为server的名称，需要注意名称不要相同，相同名称的配置会被覆盖。
-- `addr`: 监控的端口地址，地址格式为`ip:port`的形式，若需要监听多地址则以`,`分隔
-- `access_log`: 可选，默认为不输出访问日志。请求日志格式化，指定输出访问日志的形式。提供了以下几种常用的日志输出格式`combined`, `common`, `short`, `tiny`
-- `locations`: location的列表，指定该server使用的location，location的匹配顺序为按权重排序
-- `threads`: 设置服务默认的线程数，设置为0则等于cpu核数，默认为1
-- `tls_cipher_list`: 指定tls1.3之前版本使用的加密套件，可以参考nginx等软件的配置
-- `tls_ciphersuites`: 指定tls1.3版本使用的加密套件，可以参考nginx等软件的配置
-- `tls_min_version`: 指定tls的最低版本，默认为1.2
-- `tls_max_version`: 指定tls的最低版本，默认为1.3
-- `global_certificates`: 启用全局证书配置，若服务为https服务则需要勾选
-- `enabled_h2`: 是否启用http2，建议配置为启用，需要注意，如果是http则使用h2c的形式
-- `tcp_idle`: tcp连接keepalive空闲回收时长
-- `tcp_interval`: tcp连接keepavlie检测时长
-- `tcp_probe_count`: tcp连接keepalvie探针检测次数
-- `tcp_fastopen`: 启用tcp快速启动，并设置backlog的大小
-- `prometheus_metrics`: 设置启用prometheus，如果配置为http形式的则为push的形式，如果只配置路径则提供pull的请求路径，如`/metrics`则表示`http://ip:port/metrics`可获取对应的metrics数据(需要注意full futures版本才支持)
-- `otlp_exporter`: 设置opentemletry数据收集器的地址(需要注意full futures版本才支持)
-- `modules`: 选择要启用的模块，对于web-grpc需要勾选对应模块
+| 参数                  | 默认值 | 说明                                                                                                          |
+| --------------------- | ------ | ------------------------------------------------------------------------------------------------------------- |
+| log_level             | INFO   | 应用日志的输出级别（如`DEBUG`, `INFO`, `WARN`, `ERROR`）。                                                    |
+| log_buffered_size     |        | 日志缓冲区大小 (如 8kb)。设置后可提升高并发日志写入性能，0 表示不使用缓冲。                                   |
+| log_format_json       | false  | 是否将应用日志格式化为 JSON。                                                                                 |
+| webhook               |        | Webhook 的 URL，用于发送各类事件通知。                                                                        |
+| webhook_type          |        | Webhook 类型，支持 http(通用), wecom(企业微信), dingtalk(钉钉)。                                              |
+| webhook_notifications |        | 一个数组，定义需要通知的事件类型，如 backend_status, restart, diff_config 等。                                |
+| sentry                |        | Sentry 的 DSN 地址，用于错误收集。需要使用`full feature`版本的 Pingap。                                       |
+| pyroscope             |        | Pyroscope 的连接地址，用于持续性能分析。需要使用`perf`版本的 Pingap，如非需要针对性能优化，不建议启用此特性。 |
+
+其他
+
+| 参数                        | 默认值 | 说明                                                                             |
+| --------------------------- | ------ | -------------------------------------------------------------------------------- |
+| error_template              |        | 自定义错误页面的 HTML 模板路径。模板中`{{version}}`和`{{content}}`会被动态替换。 |
+| grace_period                | 5m     | 优雅退出的总等待周期。                                                           |
+| graceful_shutdown_timeout   | 5s     | 在优雅退出期间，等待每个连接关闭的超时时间。                                     |
+| auto_restart_check_interval | 90s    | 当使用`--autorestart`时，检测配置变更的间隔，避免短时间修改配置多次重启。        |
+| cache_directory             |        | 全局缓存目录。配置后将启用基于文件的缓存。                                       |
+| cache_max_size              |        | 内存缓存的最大空间。对文件缓存无效。                                             |
+
+
+## 上游配置 (upstream.toml)
+
+Upstream 定义了一组后端服务节点，包括它们的地址、负载均衡策略和健康状态检查。
+
+核心配置
+
+| 参数             | 默认值      | 说明                                                                     |
+| ---------------- | ----------- | ------------------------------------------------------------------------ |
+| addrs            | []          | （必需） 后端服务地址列表。格式为 ip:port [weight]，权重 weight 可选。   |
+| discovery        |             | 服务发现方式。使用域名时推荐 dns，容器环境可用 docker。                  |
+| algo             | round_robin | 负载均衡算法。支持 round_robin (轮询) 和 hash (一致性哈希)。             |
+| update_frequency |             | 服务发现的更新频率，如 30s。                                             |
+| health_check     |             | 健康检查。支持http、tcp与grpc形式，建议配置，若未配置默认以tcp端口检测。 |
+| ipv4_only        | false       | 在 DNS 解析时，是否仅使用 IPv4 地址。                                    |
+| dns_server       |             | 指定用于 DNS 服务发现的服务器地址，如 8.8.8.8:53。(用于dns服务发现)      |
+| dns_domain       |             | 指定 DNS 发现的域名。(用于dns服务发现)                                   |
+| dns_search       |             | 指定 DNS 搜索域。(用于dns服务发现)                                       |
+| enable_tracer    | false       | 是否启用追踪。开启后可获取连接数等更多可观测性指标。                     |
+
+💡 algo 的 hash 模式详解
+
+`hash`模式可实现会话保持，确保来自同一来源的请求始终被转发到同一后端节点。
+
+- `hash:ip`: 根据客户端 IP 哈希。
+- `hash:url`: 根据完整的 URL 哈希。
+- `hash:path`: 根据请求路径哈希（默认）。
+- `hash:header:X-User-ID`: 根据指定的请求头 (X-User-ID) 的值哈希。
+- `hash:cookie:session_id`: 根据指定的 Cookie (session_id) 的值哈希。
+- `hash:query:user_id`: 根据指定的查询参数 (user_id) 的值哈希。
+
+
+健康检查 (health_check)
+
+强烈建议配置健康检查，Pingap 会自动剔除不健康的节点。
+
+- 格式:
+  - `HTTP(S)`: `http(s)://<upstream_host>/<path>`
+  - `TCP`: `tcp://<upstream_host>`
+  - `gRPC`: `grpc://<upstream_host>?service=<service_name>`
+- 通用参数:
+  - check_frequency (默认 10s): 检查间隔。
+  - success (默认 1): 连续成功多少次后标记为健康。
+  - failure (默认 2): 连续失败多少次后标记为不健康。
+  - connection_timeout (默认 3s): 检查时的连接超时。
+
+
+连接与超时配置
+
+💡 最佳实践
+务必为生产环境设置合理的超时时间，以防止因后端服务缓慢或无响应而导致连接堆积，最终拖垮整个代理服务。
+
+| 参数                     | 默认值 | 说明                                                                          |
+| ------------------------ | ------ | ----------------------------------------------------------------------------- |
+| total_connection_timeout |        | 整个连接过程（包含TLS握手）的总超时。                                         |
+| connection_timeout       |        | 建立 TCP 连接的超时时间。                                                     |
+| read_timeout             |        | 从后端读取响应的超时时间。                                                    |
+| write_timeout            |        | 向后端写入请求的超时时间。                                                    |
+| idle_timeout             |        | 连接在连接池中的最大空闲时间。设置为 0 表示连接不复用，为空则按默认规则复用。 |
+
+TLS/HTTPS配置
+
+当后端服务为 HTTPS 时，需要配置以下参数。
+
+| 参数        | 默认值 | 说明                                                           |
+| ----------- | ------ | -------------------------------------------------------------- |
+| sni         |        | （必需） TLS 握手中的服务器名称指示 (Server Name Indication)。 |
+| verify_cert | true   | 是否校验后端服务的 TLS 证书的有效性。                          |
+| alpn        | H1     | TLS ALPN 协商的协议，如 H2。                                   |
+
+
+TCP 底层调优
+
+❗ 注意：除非您非常清楚这些参数的作用，否则建议保持默认值。
+
+| 参数             | 默认值 | 说明                                             |
+| ---------------- | ------ | ------------------------------------------------ |
+| tcp_idle         |        | TCP Keep-Alive 的空闲探测时长。                  |
+| tcp_interval     |        | TCP Keep-Alive 的探测间隔。                      |
+| tcp_probe_count  |        | TCP Keep-Alive 的探测次数。                      |
+| tcp_user_timeout |        | TCP 用户超时，定义了未确认数据可以保持多长时间。 |
+| tcp_recv_buf     |        | TCP 接收缓冲区的大小。                           |
+| tcp_fast_open    | false  | 是否启用 TCP Fast Open。                         |
+
+
+## 路由配置 (location.toml)
+
+Location 是连接请求和上游的桥梁，它定义了详细的匹配规则和请求处理逻辑。
+
+路由匹配与转发
+
+| 参数     | 默认值 | 说明                                                                                                       |
+| -------- | ------ | ---------------------------------------------------------------------------------------------------------- |
+| host     |        | 匹配的域名。多个域名用 , 分隔，~ 开头表示正则表达式。                                                      |
+| path     |        | 匹配的路径。支持前缀、正则和精确匹配。                                                                     |
+| upstream |        | 匹配成功后，将请求转发到的 Upstream 名称。                                                                 |
+| rewrite  |        | URL 重写规则，格式为 匹配正则 替换内容。                                                                   |
+| plugins  | []     | 绑定到此 Location 的插件列表，按顺序执行。                                                                 |
+| weight   |        | 自定义的权重，一般不需要设置，可用于此类场景：例如mock为服务不可用后，再调整该权重最高，则可禁用所有请求。 |
+| plugins  | []     | 绑定到此 Location 的插件列表，按顺序执行。                                                                 |
+| grpc_web | false  | 是否启用支持grpc-web。                                                                                     |
+
+📖 Path 匹配规则与优先级
+
+- `精确匹配`: 以 = 开头，如 =/api/user，仅匹配 path 完全等于 /api/user 的请求。
+- `正则匹配`: 以 ~ 开头，如 ~^/(api|rest)，使用正则表达式进行匹配。
+- `前缀匹配`: 如 /api，匹配所有以 /api 开头的请求。
+
+📖 Rewrite 重写规则
+
+- 移除路径前缀: `^/api/user-service/(.*) /$1`
+- 添加路径前缀: `^/(.*) /v2/api/$1`
+- 重新组织路径参数: `^/resource/users/id/(\\d+) /resource/users/$1`
+
+请求头处理
+
+| 参数                         | 默认值 | 说明                                                                         |
+| ---------------------------- | ------ | ---------------------------------------------------------------------------- |
+| enable_reverse_proxy_headers | false  | 是否自动添加 X-Forwarded-* 和 X-Real-IP 等标准反向代理请求头。强烈建议开启。 |
+| proxy_set_headers            | []     | 设置转发请求头。如果请求头已存在，则覆盖其值。                               |
+| proxy_add_headers            | []     | 添加转发请求头。如果请求头已存在，则追加新的值。                             |
+
+可用变量
+
+在设置请求头时，您可以使用以下动态变量：
+
+`$hostname`, `$host`, `$scheme`, `$remote_addr`, `$remote_port`, `$server_addr`, `$server_port`, `$upstream_addr` 等。
+
+安全与限制
+
+| 参数                 | 默认值 | 说明                                               |
+| -------------------- | ------ | -------------------------------------------------- |
+| client_max_body_size |        | 允许的客户端请求体最大值，如 10mb，默认无限制      |
+| max_processing       | 0      | 此 Location 可同时处理的最大请求数。0 表示不限制。 |
+
+## 服务配置 (server.toml)
+
+Server 是 Pingap 的网络入口，它定义了监听的端口、协议以及绑定的 Location 规则集。文件名中的 x (server.x.toml) 是该服务的唯一名称。
+
+
+核心配置
+
+| 参数      | 默认值 | 说明                                                   |
+| --------- | ------ | ------------------------------------------------------ |
+| addr      |        | （必需） 监听地址，格式为 ip:port。多个地址用 , 分隔。 |
+| locations | []     | （必需） 绑定到此 Server 的 Location 名称列表。        |
+
+
+TLS/HTTPS
+
+| 参数                | 默认值     | 说明                                       |
+| ------------------- | ---------- | ------------------------------------------ |
+| global_certificates | false      | 是否启用全局证书配置。HTTPS 服务必须开启。 |
+| tls_min_version     | 1.2        | 支持的最低 TLS 版本。                      |
+| tls_max_version     | 1.3        | 支持的最高 TLS 版本。                      |
+| tls_cipher_list     | (推荐列表) | TLS 1.2 及以下版本的加密套件。             |
+| tls_ciphersuites    | (推荐列表) | TLS 1.3 的加密套件。                       |
+
+
+协议与模块
+
+| 参数       | 默认值 | 说明                                                                   |
+| ---------- | ------ | ---------------------------------------------------------------------- |
+| enabled_h2 | false  | 是否启用 HTTP/2 支持。开启后，HTTPS 连接将协商 H2，HTTP 连接则为 H2C。 |
+| modules    | []     | 启用特定的功能模块，如 web-grpc 等。                                   |
+
+性能与连接调优
+
+| 参数                     | 默认值 | 说明                                                                         |
+| ------------------------ | ------ | ---------------------------------------------------------------------------- |
+| threads                  | 1      | 专门为此 Server 分配的工作线程数。                                           |
+| reuse_port               | false  | 是否启用 SO_REUSEPORT，允许多个进程/线程监听同一端口，在高并发下可提升性能。 |
+| downstream_read_timeout  |        | 从客户端读取请求的超时时间。                                                 |
+| downstream_write_timeout |        | 向客户端写入响应的超时时间。                                                 |
+| tcp_fastopen             |        | 启用 TCP Fast Open，并设置队列大小 (backlog)。                               |
+| tcp_idle                 |        | TCP Keep-Alive 的空闲探测时长。                                              |
+| tcp_interval             |        | TCP Keep-Alive 的探测间隔。                                                  |
+| tcp_probe_count          |        | TCP Keep-Alive 的探测次数。                                                  |
+| tcp_user_timeout         |        | TCP 用户超时，定义了未确认数据可以保持多长时间。                             |
+
+
+可观测性
+
+| 参数                 | 默认值 | 说明                                                                                   |
+| -------------------- | ------ | -------------------------------------------------------------------------------------- |
+| access_log           |        | 访问日志的目录文件与格式化模板。留空则不输出。 如：`/var/log/pingap.log {when} {path}` |
+| prometheus_metrics   |        | 暴露 Prometheus 指标的路径，如 /metrics。                                              |
+| otlp_exporter        |        | 暴露 OpenTelemetry 指标的路径，如 /metrics。                                           |
+| enable_server_timing | false  | 是否在响应头中添加 Server-Timing，用于展示处理耗时，便于前端性能分析。                 |

@@ -3,168 +3,105 @@
 <head>
 <meta charset="UTF-8">
 <meta name="generator" content="Docusaurus v3.7.0">
-<title data-rh="true">配置说明 | Pingap</title><meta data-rh="true" name="viewport" content="width=device-width,initial-scale=1"><meta data-rh="true" name="twitter:card" content="summary_large_image"><meta data-rh="true" property="og:image" content="https://vicanso.github.io/pingap-zh/img/docusaurus-social-card.jpg"><meta data-rh="true" name="twitter:image" content="https://vicanso.github.io/pingap-zh/img/docusaurus-social-card.jpg"><meta data-rh="true" property="og:url" content="https://vicanso.github.io/pingap-zh/docs/config"><meta data-rh="true" property="og:locale" content="zh_Hans"><meta data-rh="true" name="docusaurus_locale" content="zh-Hans"><meta data-rh="true" name="docsearch:language" content="zh-Hans"><meta data-rh="true" name="docusaurus_version" content="current"><meta data-rh="true" name="docusaurus_tag" content="docs-default-current"><meta data-rh="true" name="docsearch:version" content="current"><meta data-rh="true" name="docsearch:docusaurus_tag" content="docs-default-current"><meta data-rh="true" property="og:title" content="配置说明 | Pingap"><meta data-rh="true" name="description" content="Pingap使用toml来配置相关参数，对于时间类的配置，格式为1s, 1m, 1h这种时间表示形式。而对于存储大小类的配置，格式为1kb, 1mb, 1gb这种表示方式。具体参数说明如下："><meta data-rh="true" property="og:description" content="Pingap使用toml来配置相关参数，对于时间类的配置，格式为1s, 1m, 1h这种时间表示形式。而对于存储大小类的配置，格式为1kb, 1mb, 1gb这种表示方式。具体参数说明如下："><link data-rh="true" rel="icon" href="/pingap-zh/img/pingap.png"><link data-rh="true" rel="canonical" href="https://vicanso.github.io/pingap-zh/docs/config"><link data-rh="true" rel="alternate" href="https://vicanso.github.io/pingap-zh/docs/config" hreflang="zh-Hans"><link data-rh="true" rel="alternate" href="https://vicanso.github.io/pingap-zh/docs/config" hreflang="x-default"><link data-rh="true" rel="preconnect" href="https://502YBQO3PX-dsn.algolia.net" crossorigin="anonymous"><link rel="search" type="application/opensearchdescription+xml" title="Pingap" href="/pingap-zh/opensearch.xml"><link rel="stylesheet" href="/pingap-zh/assets/css/styles.df972669.css">
-<script src="/pingap-zh/assets/js/runtime~main.10443ea7.js" defer="defer"></script>
-<script src="/pingap-zh/assets/js/main.744eedf6.js" defer="defer"></script>
+<title data-rh="true">配置项详解 | Pingap</title><meta data-rh="true" name="viewport" content="width=device-width,initial-scale=1"><meta data-rh="true" name="twitter:card" content="summary_large_image"><meta data-rh="true" property="og:image" content="https://vicanso.github.io/pingap-zh/img/docusaurus-social-card.jpg"><meta data-rh="true" name="twitter:image" content="https://vicanso.github.io/pingap-zh/img/docusaurus-social-card.jpg"><meta data-rh="true" property="og:url" content="https://vicanso.github.io/pingap-zh/docs/config"><meta data-rh="true" property="og:locale" content="zh_Hans"><meta data-rh="true" name="docusaurus_locale" content="zh-Hans"><meta data-rh="true" name="docsearch:language" content="zh-Hans"><meta data-rh="true" name="docusaurus_version" content="current"><meta data-rh="true" name="docusaurus_tag" content="docs-default-current"><meta data-rh="true" name="docsearch:version" content="current"><meta data-rh="true" name="docsearch:docusaurus_tag" content="docs-default-current"><meta data-rh="true" property="og:title" content="配置项详解 | Pingap"><meta data-rh="true" name="description" content="Pingap 使用 TOML 格式进行配置，具有良好的可读性。所有配置项被拆分到不同的文件中，便于管理。"><meta data-rh="true" property="og:description" content="Pingap 使用 TOML 格式进行配置，具有良好的可读性。所有配置项被拆分到不同的文件中，便于管理。"><link data-rh="true" rel="icon" href="/pingap-zh/img/pingap.png"><link data-rh="true" rel="canonical" href="https://vicanso.github.io/pingap-zh/docs/config"><link data-rh="true" rel="alternate" href="https://vicanso.github.io/pingap-zh/docs/config" hreflang="zh-Hans"><link data-rh="true" rel="alternate" href="https://vicanso.github.io/pingap-zh/docs/config" hreflang="x-default"><link data-rh="true" rel="preconnect" href="https://502YBQO3PX-dsn.algolia.net" crossorigin="anonymous"><link rel="search" type="application/opensearchdescription+xml" title="Pingap" href="/pingap-zh/opensearch.xml"><link rel="stylesheet" href="/pingap-zh/assets/css/styles.df972669.css">
+<script src="/pingap-zh/assets/js/runtime~main.25c61296.js" defer="defer"></script>
+<script src="/pingap-zh/assets/js/main.4f53079f.js" defer="defer"></script>
 </head>
 <body class="navigation-with-keyboard">
-<script>!function(){function t(t){document.documentElement.setAttribute("data-theme",t)}var e=function(){try{return new URLSearchParams(window.location.search).get("docusaurus-theme")}catch(t){}}()||function(){try{return window.localStorage.getItem("theme")}catch(t){}}();t(null!==e?e:"light")}(),function(){try{const n=new URLSearchParams(window.location.search).entries();for(var[t,e]of n)if(t.startsWith("docusaurus-data-")){var a=t.replace("docusaurus-data-","data-");document.documentElement.setAttribute(a,e)}}catch(t){}}()</script><div id="__docusaurus"><div role="region" aria-label="跳到主要内容"><a class="skipToContent_fXgn" href="#__docusaurus_skipToContent_fallback">跳到主要内容</a></div><nav aria-label="主导航" class="navbar navbar--fixed-top"><div class="navbar__inner"><div class="navbar__items"><button aria-label="切换导航栏" aria-expanded="false" class="navbar__toggle clean-btn" type="button"><svg width="30" height="30" viewBox="0 0 30 30" aria-hidden="true"><path stroke="currentColor" stroke-linecap="round" stroke-miterlimit="10" stroke-width="2" d="M4 7h22M4 15h22M4 23h22"></path></svg></button><a class="navbar__brand" href="/pingap-zh/"><div class="navbar__logo"><img src="/pingap-zh/img/pingap.png" alt="Pingap Logo" class="themedComponent_mlkZ themedComponent--light_NVdE"><img src="/pingap-zh/img/pingap.png" alt="Pingap Logo" class="themedComponent_mlkZ themedComponent--dark_xIcU"></div><b class="navbar__title text--truncate">Pingap</b></a><a aria-current="page" class="navbar__item navbar__link navbar__link--active" href="/pingap-zh/docs/introduction">文档说明</a></div><div class="navbar__items navbar__items--right"><a href="http://pingap.io/pingap-en/" target="_blank" rel="noopener noreferrer" class="navbar__item navbar__link">English<svg width="13.5" height="13.5" aria-hidden="true" viewBox="0 0 24 24" class="iconExternalLink_nPIU"><path fill="currentColor" d="M21 13v10h-21v-19h12v2h-10v15h17v-8h2zm3-12h-10.988l4.035 4-6.977 7.07 2.828 2.828 6.977-7.07 4.125 4.172v-11z"></path></svg></a><a href="https://github.com/vicanso/pingap" target="_blank" rel="noopener noreferrer" class="navbar__item navbar__link">GitHub<svg width="13.5" height="13.5" aria-hidden="true" viewBox="0 0 24 24" class="iconExternalLink_nPIU"><path fill="currentColor" d="M21 13v10h-21v-19h12v2h-10v15h17v-8h2zm3-12h-10.988l4.035 4-6.977 7.07 2.828 2.828 6.977-7.07 4.125 4.172v-11z"></path></svg></a><div class="toggle_vylO colorModeToggle_DEke"><button class="clean-btn toggleButton_gllP toggleButtonDisabled_aARS" type="button" disabled="" title="切换浅色/暗黑模式（当前为浅色模式）" aria-label="切换浅色/暗黑模式（当前为浅色模式）" aria-live="polite" aria-pressed="false"><svg viewBox="0 0 24 24" width="24" height="24" class="lightToggleIcon_pyhR"><path fill="currentColor" d="M12,9c1.65,0,3,1.35,3,3s-1.35,3-3,3s-3-1.35-3-3S10.35,9,12,9 M12,7c-2.76,0-5,2.24-5,5s2.24,5,5,5s5-2.24,5-5 S14.76,7,12,7L12,7z M2,13l2,0c0.55,0,1-0.45,1-1s-0.45-1-1-1l-2,0c-0.55,0-1,0.45-1,1S1.45,13,2,13z M20,13l2,0c0.55,0,1-0.45,1-1 s-0.45-1-1-1l-2,0c-0.55,0-1,0.45-1,1S19.45,13,20,13z M11,2v2c0,0.55,0.45,1,1,1s1-0.45,1-1V2c0-0.55-0.45-1-1-1S11,1.45,11,2z M11,20v2c0,0.55,0.45,1,1,1s1-0.45,1-1v-2c0-0.55-0.45-1-1-1C11.45,19,11,19.45,11,20z M5.99,4.58c-0.39-0.39-1.03-0.39-1.41,0 c-0.39,0.39-0.39,1.03,0,1.41l1.06,1.06c0.39,0.39,1.03,0.39,1.41,0s0.39-1.03,0-1.41L5.99,4.58z M18.36,16.95 c-0.39-0.39-1.03-0.39-1.41,0c-0.39,0.39-0.39,1.03,0,1.41l1.06,1.06c0.39,0.39,1.03,0.39,1.41,0c0.39-0.39,0.39-1.03,0-1.41 L18.36,16.95z M19.42,5.99c0.39-0.39,0.39-1.03,0-1.41c-0.39-0.39-1.03-0.39-1.41,0l-1.06,1.06c-0.39,0.39-0.39,1.03,0,1.41 s1.03,0.39,1.41,0L19.42,5.99z M7.05,18.36c0.39-0.39,0.39-1.03,0-1.41c-0.39-0.39-1.03-0.39-1.41,0l-1.06,1.06 c-0.39,0.39-0.39,1.03,0,1.41s1.03,0.39,1.41,0L7.05,18.36z"></path></svg><svg viewBox="0 0 24 24" width="24" height="24" class="darkToggleIcon_wfgR"><path fill="currentColor" d="M9.37,5.51C9.19,6.15,9.1,6.82,9.1,7.5c0,4.08,3.32,7.4,7.4,7.4c0.68,0,1.35-0.09,1.99-0.27C17.45,17.19,14.93,19,12,19 c-3.86,0-7-3.14-7-7C5,9.07,6.81,6.55,9.37,5.51z M12,3c-4.97,0-9,4.03-9,9s4.03,9,9,9s9-4.03,9-9c0-0.46-0.04-0.92-0.1-1.36 c-0.98,1.37-2.58,2.26-4.4,2.26c-2.98,0-5.4-2.42-5.4-5.4c0-1.81,0.89-3.42,2.26-4.4C12.92,3.04,12.46,3,12,3L12,3z"></path></svg></button></div><div class="navbarSearchContainer_Bca1"><button type="button" class="DocSearch DocSearch-Button" aria-label="搜索 (Command+K)"><span class="DocSearch-Button-Container"><svg width="20" height="20" class="DocSearch-Search-Icon" viewBox="0 0 20 20" aria-hidden="true"><path d="M14.386 14.386l4.0877 4.0877-4.0877-4.0877c-2.9418 2.9419-7.7115 2.9419-10.6533 0-2.9419-2.9418-2.9419-7.7115 0-10.6533 2.9418-2.9419 7.7115-2.9419 10.6533 0 2.9419 2.9418 2.9419 7.7115 0 10.6533z" stroke="currentColor" fill="none" fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round"></path></svg><span class="DocSearch-Button-Placeholder">搜索</span></span><span class="DocSearch-Button-Keys"></span></button></div></div></div><div role="presentation" class="navbar-sidebar__backdrop"></div></nav><div id="__docusaurus_skipToContent_fallback" class="main-wrapper mainWrapper_z2l0"><div class="docsWrapper_hBAB"><button aria-label="回到顶部" class="clean-btn theme-back-to-top-button backToTopButton_sjWU" type="button"></button><div class="docRoot_UBD9"><aside class="theme-doc-sidebar-container docSidebarContainer_YfHR"><div class="sidebarViewport_aRkj"><div class="sidebar_njMd"><nav aria-label="文档侧边栏" class="menu thin-scrollbar menu_SIkG"><ul class="theme-doc-sidebar-menu menu__list"><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/pingap-zh/docs/introduction">Pingap简述</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/pingap-zh/docs/getting_started">入门教程</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/pingap-zh/docs/argument">命令行参数</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link menu__link--active" aria-current="page" href="/pingap-zh/docs/config">配置说明</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/pingap-zh/docs/log">日志格式化</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/pingap-zh/docs/certificate">HTTPS 证书管理</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/pingap-zh/docs/plugin">插件体系</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/pingap-zh/docs/docker">Docker</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/pingap-zh/docs/question">常见问题</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/pingap-zh/docs/performance">性能测试</a></li></ul></nav></div></div></aside><main class="docMainContainer_TBSr"><div class="container padding-top--md padding-bottom--lg"><div class="row"><div class="col docItemCol_VOVn"><div class="docItemContainer_Djhp"><article><nav class="theme-doc-breadcrumbs breadcrumbsContainer_Z_bl" aria-label="页面路径"><ul class="breadcrumbs" itemscope="" itemtype="https://schema.org/BreadcrumbList"><li class="breadcrumbs__item"><a aria-label="主页面" class="breadcrumbs__link" href="/pingap-zh/"><svg viewBox="0 0 24 24" class="breadcrumbHomeIcon_YNFT"><path d="M10 19v-5h4v5c0 .55.45 1 1 1h3c.55 0 1-.45 1-1v-7h1.7c.46 0 .68-.57.33-.87L12.67 3.6c-.38-.34-.96-.34-1.34 0l-8.36 7.53c-.34.3-.13.87.33.87H5v7c0 .55.45 1 1 1h3c.55 0 1-.45 1-1z" fill="currentColor"></path></svg></a></li><li itemscope="" itemprop="itemListElement" itemtype="https://schema.org/ListItem" class="breadcrumbs__item breadcrumbs__item--active"><span class="breadcrumbs__link" itemprop="name">配置说明</span><meta itemprop="position" content="1"></li></ul></nav><div class="tocCollapsible_ETCw theme-doc-toc-mobile tocMobile_ITEo"><button type="button" class="clean-btn tocCollapsibleButton_TO0P">本页总览</button></div><div class="theme-doc-markdown markdown"><header><h1>配置说明</h1></header>
-<p>Pingap使用toml来配置相关参数，对于时间类的配置，格式为<code>1s</code>, <code>1m</code>, <code>1h</code>这种时间表示形式。而对于存储大小类的配置，格式为<code>1kb</code>, <code>1mb</code>, <code>1gb</code>这种表示方式。具体参数说明如下：</p>
-<h2 class="anchor anchorWithStickyNavbar_LWe7" id="基础配置">基础配置<a href="#基础配置" class="hash-link" aria-label="基础配置的直接链接" title="基础配置的直接链接">​</a></h2>
+<script>!function(){function t(t){document.documentElement.setAttribute("data-theme",t)}var e=function(){try{return new URLSearchParams(window.location.search).get("docusaurus-theme")}catch(t){}}()||function(){try{return window.localStorage.getItem("theme")}catch(t){}}();t(null!==e?e:"light")}(),function(){try{const n=new URLSearchParams(window.location.search).entries();for(var[t,e]of n)if(t.startsWith("docusaurus-data-")){var a=t.replace("docusaurus-data-","data-");document.documentElement.setAttribute(a,e)}}catch(t){}}()</script><div id="__docusaurus"><div role="region" aria-label="跳到主要内容"><a class="skipToContent_fXgn" href="#__docusaurus_skipToContent_fallback">跳到主要内容</a></div><nav aria-label="主导航" class="navbar navbar--fixed-top"><div class="navbar__inner"><div class="navbar__items"><button aria-label="切换导航栏" aria-expanded="false" class="navbar__toggle clean-btn" type="button"><svg width="30" height="30" viewBox="0 0 30 30" aria-hidden="true"><path stroke="currentColor" stroke-linecap="round" stroke-miterlimit="10" stroke-width="2" d="M4 7h22M4 15h22M4 23h22"></path></svg></button><a class="navbar__brand" href="/pingap-zh/"><div class="navbar__logo"><img src="/pingap-zh/img/pingap.png" alt="Pingap Logo" class="themedComponent_mlkZ themedComponent--light_NVdE"><img src="/pingap-zh/img/pingap.png" alt="Pingap Logo" class="themedComponent_mlkZ themedComponent--dark_xIcU"></div><b class="navbar__title text--truncate">Pingap</b></a><a aria-current="page" class="navbar__item navbar__link navbar__link--active" href="/pingap-zh/docs/introduction">文档说明</a></div><div class="navbar__items navbar__items--right"><a href="http://pingap.io/pingap-en/" target="_blank" rel="noopener noreferrer" class="navbar__item navbar__link">English<svg width="13.5" height="13.5" aria-hidden="true" viewBox="0 0 24 24" class="iconExternalLink_nPIU"><path fill="currentColor" d="M21 13v10h-21v-19h12v2h-10v15h17v-8h2zm3-12h-10.988l4.035 4-6.977 7.07 2.828 2.828 6.977-7.07 4.125 4.172v-11z"></path></svg></a><a href="https://github.com/vicanso/pingap" target="_blank" rel="noopener noreferrer" class="navbar__item navbar__link">GitHub<svg width="13.5" height="13.5" aria-hidden="true" viewBox="0 0 24 24" class="iconExternalLink_nPIU"><path fill="currentColor" d="M21 13v10h-21v-19h12v2h-10v15h17v-8h2zm3-12h-10.988l4.035 4-6.977 7.07 2.828 2.828 6.977-7.07 4.125 4.172v-11z"></path></svg></a><div class="toggle_vylO colorModeToggle_DEke"><button class="clean-btn toggleButton_gllP toggleButtonDisabled_aARS" type="button" disabled="" title="切换浅色/暗黑模式（当前为浅色模式）" aria-label="切换浅色/暗黑模式（当前为浅色模式）" aria-live="polite" aria-pressed="false"><svg viewBox="0 0 24 24" width="24" height="24" class="lightToggleIcon_pyhR"><path fill="currentColor" d="M12,9c1.65,0,3,1.35,3,3s-1.35,3-3,3s-3-1.35-3-3S10.35,9,12,9 M12,7c-2.76,0-5,2.24-5,5s2.24,5,5,5s5-2.24,5-5 S14.76,7,12,7L12,7z M2,13l2,0c0.55,0,1-0.45,1-1s-0.45-1-1-1l-2,0c-0.55,0-1,0.45-1,1S1.45,13,2,13z M20,13l2,0c0.55,0,1-0.45,1-1 s-0.45-1-1-1l-2,0c-0.55,0-1,0.45-1,1S19.45,13,20,13z M11,2v2c0,0.55,0.45,1,1,1s1-0.45,1-1V2c0-0.55-0.45-1-1-1S11,1.45,11,2z M11,20v2c0,0.55,0.45,1,1,1s1-0.45,1-1v-2c0-0.55-0.45-1-1-1C11.45,19,11,19.45,11,20z M5.99,4.58c-0.39-0.39-1.03-0.39-1.41,0 c-0.39,0.39-0.39,1.03,0,1.41l1.06,1.06c0.39,0.39,1.03,0.39,1.41,0s0.39-1.03,0-1.41L5.99,4.58z M18.36,16.95 c-0.39-0.39-1.03-0.39-1.41,0c-0.39,0.39-0.39,1.03,0,1.41l1.06,1.06c0.39,0.39,1.03,0.39,1.41,0c0.39-0.39,0.39-1.03,0-1.41 L18.36,16.95z M19.42,5.99c0.39-0.39,0.39-1.03,0-1.41c-0.39-0.39-1.03-0.39-1.41,0l-1.06,1.06c-0.39,0.39-0.39,1.03,0,1.41 s1.03,0.39,1.41,0L19.42,5.99z M7.05,18.36c0.39-0.39,0.39-1.03,0-1.41c-0.39-0.39-1.03-0.39-1.41,0l-1.06,1.06 c-0.39,0.39-0.39,1.03,0,1.41s1.03,0.39,1.41,0L7.05,18.36z"></path></svg><svg viewBox="0 0 24 24" width="24" height="24" class="darkToggleIcon_wfgR"><path fill="currentColor" d="M9.37,5.51C9.19,6.15,9.1,6.82,9.1,7.5c0,4.08,3.32,7.4,7.4,7.4c0.68,0,1.35-0.09,1.99-0.27C17.45,17.19,14.93,19,12,19 c-3.86,0-7-3.14-7-7C5,9.07,6.81,6.55,9.37,5.51z M12,3c-4.97,0-9,4.03-9,9s4.03,9,9,9s9-4.03,9-9c0-0.46-0.04-0.92-0.1-1.36 c-0.98,1.37-2.58,2.26-4.4,2.26c-2.98,0-5.4-2.42-5.4-5.4c0-1.81,0.89-3.42,2.26-4.4C12.92,3.04,12.46,3,12,3L12,3z"></path></svg></button></div><div class="navbarSearchContainer_Bca1"><button type="button" class="DocSearch DocSearch-Button" aria-label="搜索 (Command+K)"><span class="DocSearch-Button-Container"><svg width="20" height="20" class="DocSearch-Search-Icon" viewBox="0 0 20 20" aria-hidden="true"><path d="M14.386 14.386l4.0877 4.0877-4.0877-4.0877c-2.9418 2.9419-7.7115 2.9419-10.6533 0-2.9419-2.9418-2.9419-7.7115 0-10.6533 2.9418-2.9419 7.7115-2.9419 10.6533 0 2.9419 2.9418 2.9419 7.7115 0 10.6533z" stroke="currentColor" fill="none" fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round"></path></svg><span class="DocSearch-Button-Placeholder">搜索</span></span><span class="DocSearch-Button-Keys"></span></button></div></div></div><div role="presentation" class="navbar-sidebar__backdrop"></div></nav><div id="__docusaurus_skipToContent_fallback" class="main-wrapper mainWrapper_z2l0"><div class="docsWrapper_hBAB"><button aria-label="回到顶部" class="clean-btn theme-back-to-top-button backToTopButton_sjWU" type="button"></button><div class="docRoot_UBD9"><aside class="theme-doc-sidebar-container docSidebarContainer_YfHR"><div class="sidebarViewport_aRkj"><div class="sidebar_njMd"><nav aria-label="文档侧边栏" class="menu thin-scrollbar menu_SIkG"><ul class="theme-doc-sidebar-menu menu__list"><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/pingap-zh/docs/introduction">introduction</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/pingap-zh/docs/getting_started">入门教程</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/pingap-zh/docs/argument">命令行参数与环境变量</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link menu__link--active" aria-current="page" href="/pingap-zh/docs/config">配置项详解</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/pingap-zh/docs/log">访问日志格式化</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/pingap-zh/docs/certificate">轻松管理 HTTPS 证书</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/pingap-zh/docs/plugin">插件体系</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/pingap-zh/docs/docker">Docker</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/pingap-zh/docs/question">常见问题</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/pingap-zh/docs/performance">性能测试</a></li></ul></nav></div></div></aside><main class="docMainContainer_TBSr"><div class="container padding-top--md padding-bottom--lg"><div class="row"><div class="col docItemCol_VOVn"><div class="docItemContainer_Djhp"><article><nav class="theme-doc-breadcrumbs breadcrumbsContainer_Z_bl" aria-label="页面路径"><ul class="breadcrumbs" itemscope="" itemtype="https://schema.org/BreadcrumbList"><li class="breadcrumbs__item"><a aria-label="主页面" class="breadcrumbs__link" href="/pingap-zh/"><svg viewBox="0 0 24 24" class="breadcrumbHomeIcon_YNFT"><path d="M10 19v-5h4v5c0 .55.45 1 1 1h3c.55 0 1-.45 1-1v-7h1.7c.46 0 .68-.57.33-.87L12.67 3.6c-.38-.34-.96-.34-1.34 0l-8.36 7.53c-.34.3-.13.87.33.87H5v7c0 .55.45 1 1 1h3c.55 0 1-.45 1-1z" fill="currentColor"></path></svg></a></li><li itemscope="" itemprop="itemListElement" itemtype="https://schema.org/ListItem" class="breadcrumbs__item breadcrumbs__item--active"><span class="breadcrumbs__link" itemprop="name">配置项详解</span><meta itemprop="position" content="1"></li></ul></nav><div class="tocCollapsible_ETCw theme-doc-toc-mobile tocMobile_ITEo"><button type="button" class="clean-btn tocCollapsibleButton_TO0P">本页总览</button></div><div class="theme-doc-markdown markdown"><header><h1>配置项详解</h1></header>
+<p>Pingap 使用 TOML 格式进行配置，具有良好的可读性。所有配置项被拆分到不同的文件中，便于管理。</p>
+<p>通用单位格式：</p>
 <ul>
-<li><code>name</code>: 实例名称，默认为<code>Pingap</code>，如果是在同一机器部署多个实例，可以配置不同的名称</li>
-<li><code>error_template</code>: 参数可选，异常出错时的html模板，可自定义出错的html模板，在出错时会替换模板中的<code>{{version}}</code>为pingap的版本号，<code>{{content}}</code>为出错的具体信息</li>
-<li><code>pid_file</code>: 参数可选，默认为<code>/run/pingap.pid</code>，此参数配置进程id的记录文件，若单机部署多实例，则需要配置不同的路径</li>
-<li><code>upgrade_sock</code>: 参数可选，默认为<code>/tmp/pingap_upgrade.sock</code>，此参数配置程序无中断式更新时的socket路径，用于新的pingap进程与旧进程之间切换时使用，若单机部署多实例，则需要 配置不同的路径</li>
-<li><code>user</code>: 参数可选，默认为空，用于设置守护进程的执行用户</li>
-<li><code>group</code>: 参数可选，默认为空，与<code>user</code>类似</li>
-<li><code>threads</code>: 参数可选，默认为1，用于设置每个服务(如server监听的tcp连接)使用的线程数，如果设置为0，则使用cgroup限制核数或cpu核数</li>
-<li><code>work_stealing</code>: 参数可选，默认为<code>true</code>，是否允许同服务中的不同线程的抢占工作</li>
-<li><code>listener_tasks_per_fd</code>: 参数可选，默认为<code>1</code>，设置每个文件描述符使用的监听任务数量，设置大于1允许并行接受连接。</li>
-<li><code>grace_period</code>: 设置优雅退出的等待周期，默认为5分钟</li>
-<li><code>graceful_shutdown_timeout</code>: 设置优雅退出关闭超时时长，默认为5秒</li>
-<li><code>upstream_keepalive_pool_size</code>: 设置upstream保持连接的连接池大小，默认为<code>128</code></li>
-<li><code>webhook</code>: Webhook的请求路径</li>
-<li><code>webhook_type</code>: Webhook的类型，支持普通的http形式、<code>webcom</code>与<code>dingtalk</code>三种类型</li>
-<li><code>webhook_notifications</code>: Webhook通知的类型，有<code>backend_status</code>，<code>lets_encrypt</code>，<code>diff_config</code>，<code>restart</code>，<code>restart_fail</code>以及<code>tls_validity</code>等等</li>
-<li><code>log_level</code>: 应用日志的输出级别，默认为<code>INFO</code></li>
-<li><code>log_buffered_size</code>: 日志缓存区大小，默认为0，若设置小于4096则表示不使用buffer</li>
-<li><code>log_format_json</code>: 设置为json格式化日志</li>
-<li><code>sentry</code>: Sentry的DSN配置，sentry需要使用<code>full feature</code>版本</li>
-<li><code>pyroscope</code>: Pyroscope连接地址(<code>http://ip:port?app=pingap&amp;tag:a=A&amp;tag:b=B</code>)，需要注意默认版本并未编译支持pyroscpe，需要使用perf的版本</li>
-<li><code>auto_restart_check_interval</code>: 检测配置更新的间隔，默认为每90秒检测一次，若配置为小于1秒的值，则不检测</li>
-<li><code>cache_directory</code>: 设置缓存目录，设置之后则使用文件形式缓存，文件目录缓存会定期清除过长时间未被访问文件，文件缓存的配置形式如<code>/opt/pingap/cache?reading_max=1000&amp;writing_max=500&amp;cache_max=200</code>
+<li>时间 (Duration): 使用易读的后缀，如<code>5s</code>(5秒), <code>10m</code>(10分钟), <code>1h</code>(1小时)。</li>
+<li>大小 (Size): 使用标准单位后缀，如<code>8kb</code>(8 KB), <code>16mb</code>(16 MB), <code>1gb</code>(1 GB)。</li>
+</ul>
+<h2 class="anchor anchorWithStickyNavbar_LWe7" id="基础配置-basictoml">基础配置 (basic.toml)<a href="#基础配置-basictoml" class="hash-link" aria-label="基础配置 (basic.toml)的直接链接" title="基础配置 (basic.toml)的直接链接">​</a></h2>
+<p>该文件定义了 Pingap 实例的全局行为、进程管理和基础性能参数。</p>
+<p>实例与进程管理</p>
+<table><thead><tr><th>参数</th><th>默认值</th><th>说明</th></tr></thead><tbody><tr><td>name</td><td>Pingap</td><td>实例的名称，用于日志或监控中区分不同实例。</td></tr><tr><td>pid_file</td><td>/run/pingap.pid</td><td>记录进程 ID (PID) 的文件路径。单机部署多实例时必须为每个实例设置不同路径。</td></tr><tr><td>upgrade_sock</td><td>/tmp/pingap_upgrade.sock</td><td>用于零停机平滑重启的 Unix Socket 路径。单机  部署多实例时必须修改。</td></tr><tr><td>user</td><td></td><td>若以守护进程运行，指定运行服务的用户。</td></tr><tr><td>group</td><td></td><td>若以守护进程运行，指定运行服务的用户组。</td></tr></tbody></table>
+<p>性能调优</p>
+<table><thead><tr><th>参数</th><th>默认值</th><th>说明</th></tr></thead><tbody><tr><td>threads</td><td>1</td><td>每个服务（如 TCP 监听）使用的工作线程数。设置为 0 则根据 CPU 核心数自动决定。</td></tr><tr><td>work_stealing</td><td>true</td><td>是否允许同一服务中的线程窃取其他线程的任务，通常能提升性能。</td></tr><tr><td>upstream_keepalive_pool_size</td><td>128</td><td>到上游 (Upstream) 的长连接池大小。</td></tr><tr><td>listener_tasks_per_fd</td><td>1</td><td>每个监听描述符使用的任务数。设置为 &gt;1 可并行接受新连接，提升高并发下的接收性能。</td></tr></tbody></table>
+<p>可观测性与通知</p>
+<table><thead><tr><th>参数</th><th>默认值</th><th>说明</th></tr></thead><tbody><tr><td>log_level</td><td>INFO</td><td>应用日志的输出级别（如<code>DEBUG</code>, <code>INFO</code>, <code>WARN</code>, <code>ERROR</code>）。</td></tr><tr><td>log_buffered_size</td><td></td><td>日志缓冲区大小 (如 8kb)。设置后可提升高并发日志写入性能，0 表示不使用缓冲。</td></tr><tr><td>log_format_json</td><td>false</td><td>是否将应用日志格式化为 JSON。</td></tr><tr><td>webhook</td><td></td><td>Webhook 的 URL，用于发送各类事件通知。</td></tr><tr><td>webhook_type</td><td></td><td>Webhook 类型，支持 http(通用), wecom(企业微信), dingtalk(钉钉)。</td></tr><tr><td>webhook_notifications</td><td></td><td>一个数组，定义需要通知的事件类型，如 backend_status, restart, diff_config 等。</td></tr><tr><td>sentry</td><td></td><td>Sentry 的 DSN 地址，用于错误收集。需要使用<code>full feature</code>版本的 Pingap。</td></tr><tr><td>pyroscope</td><td></td><td>Pyroscope 的连接地址，用于持续性能分析。需要使用<code>perf</code>版本的 Pingap，如非需要针对性能优化，不建议启用此特性。</td></tr></tbody></table>
+<p>其他</p>
+<table><thead><tr><th>参数</th><th>默认值</th><th>说明</th></tr></thead><tbody><tr><td>error_template</td><td></td><td>自定义错误页面的 HTML 模板路径。模板中<code>{{version}}</code>和<code>{{content}}</code>会被动态替换。</td></tr><tr><td>grace_period</td><td>5m</td><td>优雅退出的总等待周期。</td></tr><tr><td>graceful_shutdown_timeout</td><td>5s</td><td>在优雅退出期间，等待每个连接关闭的超时时间。</td></tr><tr><td>auto_restart_check_interval</td><td>90s</td><td>当使用<code>--autorestart</code>时，检测配置变更的间隔，避免短时间修改配置多次重启。</td></tr><tr><td>cache_directory</td><td></td><td>全局缓存目录。配置后将启用基于文件的缓存。</td></tr><tr><td>cache_max_size</td><td></td><td>内存缓存的最大空间。对文件缓存无效。</td></tr></tbody></table>
+<h2 class="anchor anchorWithStickyNavbar_LWe7" id="上游配置-upstreamtoml">上游配置 (upstream.toml)<a href="#上游配置-upstreamtoml" class="hash-link" aria-label="上游配置 (upstream.toml)的直接链接" title="上游配置 (upstream.toml)的直接链接">​</a></h2>
+<p>Upstream 定义了一组后端服务节点，包括它们的地址、负载均衡策略和健康状态检查。</p>
+<p>核心配置</p>
+<table><thead><tr><th>参数</th><th>默认值</th><th>说明</th></tr></thead><tbody><tr><td>addrs</td><td>[]</td><td>（必需） 后端服务地址列表。格式为 ip<!-- -->:port<!-- --> [weight]，权重 weight 可选。</td></tr><tr><td>discovery</td><td></td><td>服务发现方式。使用域名时推荐 dns，容器环境可用 docker。</td></tr><tr><td>algo</td><td>round_robin</td><td>负载均衡算法。支持 round_robin (轮询) 和 hash (一致性哈希)。</td></tr><tr><td>update_frequency</td><td></td><td>服务发现的更新频率，如 30s。</td></tr><tr><td>health_check</td><td></td><td>健康检查。支持http、tcp与grpc形式，建议配置，若未配置默认以tcp端口检测。</td></tr><tr><td>ipv4_only</td><td>false</td><td>在 DNS 解析时，是否仅使用 IPv4 地址。</td></tr><tr><td>dns_server</td><td></td><td>指定用于 DNS 服务发现的服务器地址，如 8.8.8.8:53。(用于dns服务发现)</td></tr><tr><td>dns_domain</td><td></td><td>指定 DNS 发现的域名。(用于dns服务发现)</td></tr><tr><td>dns_search</td><td></td><td>指定 DNS 搜索域。(用于dns服务发现)</td></tr><tr><td>enable_tracer</td><td>false</td><td>是否启用追踪。开启后可获取连接数等更多可观测性指标。</td></tr></tbody></table>
+<p>💡 algo 的 hash 模式详解</p>
+<p><code>hash</code>模式可实现会话保持，确保来自同一来源的请求始终被转发到同一后端节点。</p>
 <ul>
-<li><code>reading_max</code>: 限制最大正在读取缓存的数据（只对于文件缓存有效）</li>
-<li><code>writing_max</code>: 限制最大正在写入缓存的数据（只对于文件缓存有效）</li>
-<li><code>cache_max</code>: 文件缓存中对于热点数据的缓存数量限制，内存缓存为tinyufo，默认为100，若设置为0则表示不使用内存热点缓存</li>
-<li><code>cache_file_max_weight</code>: 设置文件缓存中热点缓存tinyufo单个文件的最大权重，默认为256，表示256 * 4096字节，大于该值的文件不会缓存至tinyufo</li>
+<li><code>hash:ip</code>: 根据客户端 IP 哈希。</li>
+<li><code>hash:url</code>: 根据完整的 URL 哈希。</li>
+<li><code>hash:path</code>: 根据请求路径哈希（默认）。</li>
+<li><code>hash:header:X-User-ID</code>: 根据指定的请求头 (X-User-ID) 的值哈希。</li>
+<li><code>hash:cookie:session_id</code>: 根据指定的 Cookie (session_id) 的值哈希。</li>
+<li><code>hash:query:user_id</code>: 根据指定的查询参数 (user_id) 的值哈希。</li>
+</ul>
+<p>健康检查 (health_check)</p>
+<p>强烈建议配置健康检查，Pingap 会自动剔除不健康的节点。</p>
+<ul>
+<li>格式:<!-- -->
+<ul>
+<li><code>HTTP(S)</code>: <code>http(s)://&lt;upstream_host&gt;/&lt;path&gt;</code></li>
+<li><code>TCP</code>: <code>tcp://&lt;upstream_host&gt;</code></li>
+<li><code>gRPC</code>: <code>grpc://&lt;upstream_host&gt;?service=&lt;service_name&gt;</code></li>
 </ul>
 </li>
-<li><code>cache_max_size</code>: 缓存空间的最大限制，缓存是程序中所有服务共用，对于文件缓存此限制无效</li>
-</ul>
-<h2 class="anchor anchorWithStickyNavbar_LWe7" id="upstream">Upstream<a href="#upstream" class="hash-link" aria-label="Upstream的直接链接" title="Upstream的直接链接">​</a></h2>
-<p>Upstream配置用于定义后端服务节点列表。如果配置域名，系统会根据DNS解析结果添加所有节点地址（需要配置相应的服务发现方式才会自动更新DNS解析）。建议配置HTTP健康检查来监控节点状态。</p>
-<p>主要参数说明：</p>
+<li>通用参数:<!-- -->
 <ul>
-<li><code>addrs</code>: 节点地址列表，格式为 <code>ip:port [weight]</code>，weight为可选的权重值(默认为1)</li>
-<li><code>discovery</code>: 服务发现方式。推荐域名使用dns方式，docker服务可使用docker label方式</li>
-<li><code>update_frequency</code>: 服务发现的更新间隔，建议配置以实现节点的动态 更新</li>
-<li><code>algo</code>: 节点的选择算法，支持<code>hash</code>与<code>round_robin</code>两种形式，如<code>hash:ip</code>表示按ip hash选择节点。默认为<code>round_robin</code></li>
-<li><code>sni</code>: 若配置的是https，需要设置对应的SNI</li>
-<li><code>verify_cert</code>: 若配置的是https，是否需要校验证书有效性</li>
-<li><code>health_check</code>: 节点健康检测配置，支持http、tcp与grpc形式</li>
-<li><code>ipv4_only</code>: 若配置为域名时，是否仅添加解析的ipv4节点</li>
-<li><code>enable_tracer</code>: 是否启用tracer功能，启用后可获取得upstream的连接数</li>
-<li><code>alpn</code>: 在tls握手时，alpn的配置，默认为H1</li>
-<li><code>connection_timeout</code>: tcp连接超时，默认为无</li>
-<li><code>total_connection_timeout</code>: 连接超时，若是https请求包括tls握手部分，默认为无</li>
-<li><code>read_timeout</code>: 读取超时，默认为无</li>
-<li><code>idle_timeout</code>: 空闲超时，指定连接空闲多久后会自动回收，如果设置为0，则连接不复用，需要注意有些网络设备对于无数据的tcp连接会过期自动关闭，因此可根据需要设置对应的值。默认为无</li>
-<li><code>write_timeout</code>: 写超时，默认为无</li>
-<li><code>tcp_idle</code>: tcp连接keepalive空闲回收时长</li>
-<li><code>tcp_interval</code>: tcp连接keepavlie检测时长</li>
-<li><code>tcp_probe_count</code>: tcp连接keepalvie探针检测次数</li>
-<li><code>tcp_recv_buf</code>: tcp接收缓存区大小</li>
-<li><code>tcp_fast_open</code>: 是否启用tcp快速打开</li>
-</ul>
-<p>需要注意，若要设置tcp的keepalive，<code>tcp_idle</code>，<code>tcp_interval</code>以及<code>tcp_probe_count</code>均需要设置。</p>
-<h3 class="anchor anchorWithStickyNavbar_LWe7" id="健康检查配置">健康检查配置<a href="#健康检查配置" class="hash-link" aria-label="健康检查配置的直接链接" title="健康检查配置的 直接链接">​</a></h3>
-<p>支持以下三种健康检查方式：</p>
-<ul>
-<li><code>HTTP(S)</code>: <code>http(s)://upstream名称/检查路径?参数</code></li>
-<li><code>TCP</code>: <code>tcp://upstream名称?参数</code></li>
-<li><code>gRPC</code>: <code>grpc://upstream名称?service=服务名&amp;参数</code></li>
-</ul>
-<p>通用参数说明：</p>
-<ul>
-<li><code>connection_timeout</code>: 连接超时时间，默认3秒</li>
-<li><code>read_timeout</code>: 读取超时时间，默认3秒</li>
-<li><code>check_frequency</code>: 检查间隔，默认10秒</li>
-<li><code>success</code>: 判定为健康所需的连续成功次数，默认1次</li>
-<li><code>failure</code>: 判定为不健康所需的连续失败次数，默认2次</li>
-<li><code>reuse</code>: 是否复用检查连接，默认否</li>
-</ul>
-<h3 class="anchor anchorWithStickyNavbar_LWe7" id="algo的hash">Algo的hash<a href="#algo的hash" class="hash-link" aria-label="Algo的hash的直接链接" title="Algo的hash的直接链接">​</a></h3>
-<p>若指定通过hash的方式选择upstream的backend，则可使用如下方式：</p>
-<ul>
-<li><code>hash:url</code>: 根据url转发，主要用于upstream为基于url缓存的服务</li>
-<li><code>hash:ip</code>: 根据ip转发，upstream为有基于ip数据持久化的服务</li>
-<li><code>hash:header:X-User</code>: 根据请求头获取<code>X-User</code>的值转发</li>
-<li><code>hash:cookie:uid</code>: 根据Cookie的<code>uid</code>值转发</li>
-<li><code>hash:query:appKey</code>: 根据Query的<code>appkey</code>值转发</li>
-<li><code>hash:path</code>: 根据path转发，hash方式的默认值</li>
-</ul>
-<h2 class="anchor anchorWithStickyNavbar_LWe7" id="location">Location<a href="#location" class="hash-link" aria-label="Location的直接链接" title="Location的直接链接">​</a></h2>
-<p>Location主要配置请求的匹配规则、请求头响应头的插入，以及各种插件的关联，是整个流程中的关联组成部分。下面是相关参数的详细说明：</p>
-<ul>
-<li><code>upstream</code>: 配置该location对应的upstream，若该location所有的处理均由插件完成，则可不配置。如针对http重定向至https的逻辑，则只需要添加中间件即可</li>
-<li><code>path</code>: 匹配的路径，具体使用方法后续内容细说</li>
-<li><code>host</code>: 匹配的域名，如果是多个域名则使用<code>,</code>分隔，配置为<code>~</code>开始则表示以正则表达式匹配</li>
-<li><code>proxy_set_headers</code>: 转发至upstream时设置的请求头，若该请求头已存在则覆盖</li>
-<li><code>proxy_add_headers</code>: 转发至upstream时添加的请求头</li>
-<li><code>rewrite</code>: 请求路径的重写规则</li>
-<li><code>weight</code>: 自定义的权重，可以调整该location的权重，例如mock为服务不可用后，再调整该权重最高，则可禁用所有请求。如非特别则不需要设置，权重会自动计算（计算得出的权重最高不超过2048）</li>
-<li><code>plugins</code>: 添加至该location的插件列表，按顺序执行</li>
-<li><code>client_max_body_size</code>: 客户端请求的body最大长度</li>
-<li><code>max_processing</code>: 最大处理请求数，若设置为0则表示不限制</li>
-<li><code>grpc_web</code>: 是否启用支持grpc-web</li>
-<li><code>enable_reverse_proxy_headers</code>: 是否启用反向代理的请求头，启用后会添加以下的请求头<!-- -->
-<ul>
-<li><code>X-Real-IP</code>: 表示请求的客户端地址</li>
-<li><code>X-Forwarded-For</code>: 表示请求的代理地址，按x-forwarded-for的格式添加</li>
-<li><code>X-Forwarded-Proto</code>: 表示请求的scheme, 如http或https</li>
-<li><code>X-Forwarded-Host</code>: 表示请求的host</li>
-<li><code>X-Forwarded-Port</code>: 表示请求的server端口</li>
+<li>check_frequency (默认 10s): 检查间隔。</li>
+<li>success (默认 1): 连续成功多少次后标记为健康。</li>
+<li>failure (默认 2): 连  续失败多少次后标记为不健康。</li>
+<li>connection_timeout (默认 3s): 检查时的连接超时。</li>
 </ul>
 </li>
 </ul>
-<h3 class="anchor anchorWithStickyNavbar_LWe7" id="path匹配规则">Path匹配规则<a href="#path匹配规则" class="hash-link" aria-label="Path匹配规则的直接链接" title="Path匹配规则的直接链接">  ​</a></h3>
-<p>Location的path匹配支持以下的规则，权重由高至低：</p>
+<p>连接与超时配置</p>
+<p>💡 最佳实践
+务必为生产环境设置合理的超时时间，以防止因后端服务缓慢或无响应而导致连接堆积，最终拖垮整个代理服务。</p>
+<table><thead><tr><th>参数</th><th>默认值</th><th>说明</th></tr></thead><tbody><tr><td>total_connection_timeout</td><td></td><td>整个连接过程（包含TLS握手）的总超时。</td></tr><tr><td>connection_timeout</td><td></td><td>建立 TCP 连接的超时时间。</td></tr><tr><td>read_timeout</td><td></td><td>从后端读取响应的超时时间。</td></tr><tr><td>write_timeout</td><td></td><td>向后端写入请求的超时时间。</td></tr><tr><td>idle_timeout</td><td></td><td>连接在连接池中的最大空闲时间。设置为 0 表示连接不复用，为空则按默认规则复用。</td></tr></tbody></table>
+<p>TLS/HTTPS配置</p>
+<p>当后端服务为 HTTPS 时，需要配置以下参数。</p>
+<table><thead><tr><th>参数</th><th>默认值</th><th>说明</th></tr></thead><tbody><tr><td>sni</td><td></td><td>（必需） TLS 握手中的服务器名称指示 (Server Name Indication)。</td></tr><tr><td>verify_cert</td><td>true</td><td>是否校验后端服务的 TLS 证书的有效性。</td></tr><tr><td>alpn</td><td>H1</td><td>TLS ALPN 协商的协议，如 H2。</td></tr></tbody></table>
+<p>TCP 底层调优</p>
+<p>❗ 注意：除非您非常清楚这些参数的作用，否则建议保持默认值。</p>
+<table><thead><tr><th>参数</th><th>默认值</th><th>说明</th></tr></thead><tbody><tr><td>tcp_idle</td><td></td><td>TCP Keep-Alive 的空闲探测时长。</td></tr><tr><td>tcp_interval</td><td></td><td>TCP Keep-Alive 的探测间隔。</td></tr><tr><td>tcp_probe_count</td><td></td><td>TCP Keep-Alive 的探测次数。</td></tr><tr><td>tcp_user_timeout</td><td></td><td>TCP 用户超时，定义了未确认数据可以保持多长时间。</td></tr><tr><td>tcp_recv_buf</td><td></td><td>TCP 接收缓冲区的大小。</td></tr><tr><td>tcp_fast_open</td><td>false</td><td>是否启用 TCP Fast Open。</td></tr></tbody></table>
+<h2 class="anchor anchorWithStickyNavbar_LWe7" id="路由配置-locationtoml">路由配置 (location.toml)<a href="#路由配置-locationtoml" class="hash-link" aria-label="路由配置 (location.toml)的直接链接" title="路由配置 (location.toml)的直接链接">​</a></h2>
+<p>Location 是连接请求和上游的桥梁，它定义了详细的匹配规则和请求处理逻辑。</p>
+<p>路由匹配与转发</p>
+<table><thead><tr><th>参数</th><th>默认值</th><th>说明</th></tr></thead><tbody><tr><td>host</td><td></td><td>匹配的域名。多个域名用 , 分隔，~ 开头表示正则表达式。</td></tr><tr><td>path</td><td></td><td>匹配的路径。支持前缀、正则和精确匹配。</td></tr><tr><td>upstream</td><td></td><td>匹配成功后，将请求转发到的 Upstream 名称。</td></tr><tr><td>rewrite</td><td></td><td>URL 重写规则，格式为 匹配正则 替换内容。</td></tr><tr><td>plugins</td><td>[]</td><td>绑定到此 Location 的插件列表，按顺序执行。</td></tr><tr><td>weight</td><td></td><td>自定义的权重，一般不需要设置，可用于此类场景：例如mock为服务不可用后，再调整该权重最高，则可禁用所有请求。</td></tr><tr><td>plugins</td><td>[]</td><td>绑定到此 Location 的插件列表，按顺序执行。</td></tr><tr><td>grpc_web</td><td>false</td><td>是否启用支持grpc-web。</td></tr></tbody></table>
+<p>📖 Path 匹配规则与优先级</p>
 <ul>
-<li>全等模式，配置以<code>=</code>开始，如<code>=/api</code>表示匹配path等于<code>/api</code>的请求</li>
-<li>正则模式，配置以<code>~</code>开始，如<code>~^/(api|rest)</code>表示匹配path以<code>/api</code>或<code>/rest</code>开始请求</li>
-<li>前缀模式，如<code>/api</code>表示匹配path为<code>/api</code>开始的请求</li>
+<li><code>精确匹配</code>: 以 = 开头，如 =/api/user，仅匹配 path 完全等于 /api/user 的请求。</li>
+<li><code>正则匹配</code>: 以 ~ 开头，如 ~^/(api|rest)，使用正则表达式进行匹配。</li>
+<li><code>前缀匹配</code>: 如 /api，匹配所有以 /api 开头的请求。</li>
 </ul>
-<h3 class="anchor anchorWithStickyNavbar_LWe7" id="path重写请求路径">Path重写请求路径<a href="#path重写请求路径" class="hash-link" aria-label="Path重写请求路径的直接链接" title="Path重写请求路径的直接链接">​</a></h3>
-<p>可按需配置请求路径重写规则，支持正则匹配处理(与nginx类似)，仅支持配置一个重写规则，若逻辑过于复杂建议可配置多个location来分开实现。配置通过空格分隔为前后两部分，处理逻辑则是按正则匹配将前部分替换为后部分，下面是常用的一些例如：</p>
+<p>📖 Rewrite 重写规则</p>
 <ul>
-<li><code>^/api/ /</code>: 表示将请求前缀的<code>/api/</code>替换为<code>/</code></li>
-<li><code>^/(\S*?)/ /api/$1/</code>: 表示在请求路径添加前缀<code>/api</code></li>
-<li><code>^/(\S*?)/api/(\S*?) /$1/$2</code>: 表示将请求路径中的<code>/api</code>部分删除</li>
+<li>移除路径前缀: <code>^/api/user-service/(.*) /$1</code></li>
+<li>添加路径前缀: <code>^/(.*) /v2/api/$1</code></li>
+<li>重新组织路径参数: <code>^/resource/users/id/(\\d+) /resource/users/$1</code></li>
 </ul>
-<h3 class="anchor anchorWithStickyNavbar_LWe7" id="请求头设置支持的变量名">请求头设置支持的变量名<a href="#请求头设置支持的变量名" class="hash-link" aria-label="请求头设置支持的变量名的直接链接" title="请求头设置支持的变量名的直接链接">​</a></h3>
-<ul>
-<li><code>$hostname</code>: 表示处理该请求主机的hostname</li>
-<li><code>$host</code>: 表示请求的host</li>
-<li><code>$scheme</code>: 表示请求的scheme, 如http或https</li>
-<li><code>$remote_addr</code>: 表示请求的客户端地址</li>
-<li><code>$remote_port</code>: 表示请求的客户端端口</li>
-<li><code>$server_addr</code>: 表示请求的server地址</li>
-<li><code>$server_port</code>: 表示请求的server端口</li>
-<li><code>$proxy_add_x_forwarded_for</code>: 表示请求的代理地址，按x-forwarded-for的格式添加</li>
-<li><code>$upstream_addr</code>: 表示请求的upstream地址</li>
-</ul>
-<h2 class="anchor anchorWithStickyNavbar_LWe7" id="server">Server<a href="#server" class="hash-link" aria-label="Server的直接链接" title="Server的直接链接">​</a></h2>
-<ul>
-<li><code>server.x</code>: server的配置，其中<code>x</code>为server的名称，需要注意名称不要相同，相同名称的配置会被覆盖。</li>
-<li><code>addr</code>: 监控的端口地址，地址格式为<code>ip:port</code>的形式，若需要监听多地址则以<code>,</code>分隔</li>
-<li><code>access_log</code>: 可选，默认为不输出访问日志。请求日志格式化，指定输出访问日志的形式。提供了以下几种常用的日志输出格式<code>combined</code>, <code>common</code>, <code>short</code>, <code>tiny</code></li>
-<li><code>locations</code>: location的列表，指定该server使用的location，location的匹配顺序为按权重排序</li>
-<li><code>threads</code>: 设置服务默认的线程数，设置为0则等于cpu核数，默认为1</li>
-<li><code>tls_cipher_list</code>: 指定tls1.3之前版本使用的加密套件，可以参考nginx等软件的配置</li>
-<li><code>tls_ciphersuites</code>: 指定tls1.3版本使用的加密套件，可以参考nginx等软件的配置</li>
-<li><code>tls_min_version</code>: 指定tls的最低版本，默认为1.2</li>
-<li><code>tls_max_version</code>: 指定tls的最低版本，默认为1.3</li>
-<li><code>global_certificates</code>: 启用全局证书配置，若服务为https服务则需要勾选</li>
-<li><code>enabled_h2</code>: 是否启用http2，建议配置为启用，需要注意，如果是http则使用h2c的形式</li>
-<li><code>tcp_idle</code>: tcp连接keepalive空闲回收时长</li>
-<li><code>tcp_interval</code>: tcp连接keepavlie 检测时长</li>
-<li><code>tcp_probe_count</code>: tcp连接keepalvie探针检测次数</li>
-<li><code>tcp_fastopen</code>: 启用tcp快速启动，并设置backlog的大小</li>
-<li><code>prometheus_metrics</code>: 设置启用prometheus，如果配置为http形式的则为push的形式，如果只配置路径则提供pull的请求路径，如<code>/metrics</code>则表示<code>http://ip:port/metrics</code>可获取对应的metrics数据(需要注意full futures版本才支持)</li>
-<li><code>otlp_exporter</code>: 设置opentemletry数据收集器的地址(需要注意full futures版本才支持)</li>
-<li><code>modules</code>: 选择要启用的模块，对于web-grpc需要勾选对应模块</li>
-</ul></div><footer class="theme-doc-footer docusaurus-mt-lg"><div class="row margin-top--sm theme-doc-footer-edit-meta-row"><div class="col"><a href="https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/docs/config.md" target="_blank" rel="noopener noreferrer" class="theme-edit-this-page"><svg fill="currentColor" height="20" width="20" viewBox="0 0 40 40" class="iconEdit_Z9Sw" aria-hidden="true"><g><path d="m34.5 11.7l-3 3.1-6.3-6.3 3.1-3q0.5-0.5 1.2-0.5t1.1 0.5l3.9 3.9q0.5 0.4 0.5 1.1t-0.5 1.2z m-29.5 17.1l18.4-18.5 6.3 6.3-18.4 18.4h-6.3v-6.2z"></path></g></svg>编辑此页</a></div><div class="col lastUpdated_JAkA"></div></div></footer></article><nav class="pagination-nav docusaurus-mt-lg" aria-label="文件选项卡"><a class="pagination-nav__link pagination-nav__link--prev" href="/pingap-zh/docs/argument"><div class="pagination-nav__sublabel">上一页</div><div class="pagination-nav__label">命令行参数</div></a><a class="pagination-nav__link pagination-nav__link--next" href="/pingap-zh/docs/log"><div class="pagination-nav__sublabel">下一页</div><div class="pagination-nav__label">日志格式化</div></a></nav></div></div><div class="col col--3"><div class="tableOfContents_bqdL thin-scrollbar theme-doc-toc-desktop"><ul class="table-of-contents table-of-contents__left-border"><li><a href="#基础配置" class="table-of-contents__link toc-highlight">基础配置</a></li><li><a href="#upstream" class="table-of-contents__link toc-highlight">Upstream</a><ul><li><a href="#健康检查配置" class="table-of-contents__link toc-highlight">健康检查配置</a></li><li><a href="#algo的hash" class="table-of-contents__link toc-highlight">Algo的hash</a></li></ul></li><li><a href="#location" class="table-of-contents__link toc-highlight">Location</a><ul><li><a href="#path匹配规则" class="table-of-contents__link toc-highlight">Path匹配规则</a></li><li><a href="#path重写请求路径" class="table-of-contents__link toc-highlight">Path重写请求路径</a></li><li><a href="#请求头设置支持的变量名" class="table-of-contents__link toc-highlight">请求头设置支持的变量名</a></li></ul></li><li><a href="#server" class="table-of-contents__link toc-highlight">Server</a></li></ul></div></div></div></div></main></div></div></div><footer class="footer"><div class="container container-fluid"><div class="footer__bottom text--center"><div class="footer__copyright">Copyright © 2024-2025 Tree Xie.</div></div></div></footer></div>
+<p>请求头处理</p>
+<table><thead><tr><th>参数</th><th>默认值</th><th>说明</th></tr></thead><tbody><tr><td>enable_reverse_proxy_headers</td><td>false</td><td>是否自动添加 X-Forwarded-* 和 X-Real-IP 等标准反向代理请求头。强烈建议开启。</td></tr><tr><td>proxy_set_headers</td><td>[]</td><td>设置转发请求头。如果请求头已存在，则覆盖其值。</td></tr><tr><td>proxy_add_headers</td><td>[]</td><td>添加转发请求头。如果请求头已存在，则追加新的值。</td></tr></tbody></table>
+<p>可用变量</p>
+<p>在设置请求头时，您可以使用以下动态变量：</p>
+<p><code>$hostname</code>, <code>$host</code>, <code>$scheme</code>, <code>$remote_addr</code>, <code>$remote_port</code>, <code>$server_addr</code>, <code>$server_port</code>, <code>$upstream_addr</code> 等。</p>
+<p>安全与限制</p>
+<table><thead><tr><th>参数</th><th>默认值</th><th>说明</th></tr></thead><tbody><tr><td>client_max_body_size</td><td></td><td>允许的客户端请求体最大值，如 10mb，默认无限制</td></tr><tr><td>max_processing</td><td>0</td><td>此 Location 可同时处理的最大请求数。0 表示不限制。</td></tr></tbody></table>
+<h2 class="anchor anchorWithStickyNavbar_LWe7" id="服务配置-servertoml">服务配置 (server.toml)<a href="#服务配置-servertoml" class="hash-link" aria-label="服务配置 (server.toml)的直接链接" title="服务配置 (server.toml)的直接链接">​</a></h2>
+<p>Server 是 Pingap 的网络入口，它定义了监听的端口、协议以及绑定的 Location 规则集。文件名中的 x (server.x.toml) 是该服务的唯一名称。</p>
+<p>核心配置</p>
+<table><thead><tr><th>参数</th><th>默认值</th><th>说明</th></tr></thead><tbody><tr><td>addr</td><td></td><td>（必需） 监听地址，格式为 ip<!-- -->:port<!-- -->。多个地址用 , 分隔。</td></tr><tr><td>locations</td><td>[]</td><td>（必需） 绑定到此 Server 的 Location 名称列表。</td></tr></tbody></table>
+<p>TLS/HTTPS</p>
+<table><thead><tr><th>参数</th><th>默认值</th><th>说明</th></tr></thead><tbody><tr><td>global_certificates</td><td>false</td><td>是否启用全局证书配置。HTTPS 服务必须开启。</td></tr><tr><td>tls_min_version</td><td>1.2</td><td>支持的最低 TLS 版本。</td></tr><tr><td>tls_max_version</td><td>1.3</td><td>支持的最高 TLS 版本。</td></tr><tr><td>tls_cipher_list</td><td>(推荐列表)</td><td>TLS 1.2 及以下版本的加密套件。</td></tr><tr><td>tls_ciphersuites</td><td>(推荐列表)</td><td>TLS 1.3 的加密套件。</td></tr></tbody></table>
+<p>协议与模块</p>
+<table><thead><tr><th>参数</th><th>默认值</th><th>说明</th></tr></thead><tbody><tr><td>enabled_h2</td><td>false</td><td>是否启用 HTTP/2 支持。开启后，HTTPS 连接将协商 H2，HTTP 连接则为 H2C。</td></tr><tr><td>modules</td><td>[]</td><td>启用特定的功能模块，如 web-grpc 等。</td></tr></tbody></table>
+<p>性能与连接调优</p>
+<table><thead><tr><th>参数</th><th>默认值</th><th>说明</th></tr></thead><tbody><tr><td>threads</td><td>1</td><td>专门为此 Server 分配的工作线程数。</td></tr><tr><td>reuse_port</td><td>false</td><td>是否启用 SO_REUSEPORT，允许多个进程/线程监听同一端口，在高并发下可提升性能。</td></tr><tr><td>downstream_read_timeout</td><td></td><td>从客户端读取请求的超时时间。</td></tr><tr><td>downstream_write_timeout</td><td></td><td>向客户端写入响应的超时时间。</td></tr><tr><td>tcp_fastopen</td><td></td><td>启用 TCP Fast Open，并设置队列大小 (backlog)。</td></tr><tr><td>tcp_idle</td><td></td><td>TCP Keep-Alive 的空闲探测时长。</td></tr><tr><td>tcp_interval</td><td></td><td>TCP Keep-Alive 的探测间隔。</td></tr><tr><td>tcp_probe_count</td><td></td><td>TCP Keep-Alive 的探测  次数。</td></tr><tr><td>tcp_user_timeout</td><td></td><td>TCP 用户超时，定义了未确认数据可以保持多长时间。</td></tr></tbody></table>
+<p>可观测性</p>
+<table><thead><tr><th>参数</th><th>默认值</th><th>说明</th></tr></thead><tbody><tr><td>access_log</td><td></td><td>访问日志的目录文件与格式化模板。留空则不输出。 如：<code>/var/log/pingap.log {when} {path}</code></td></tr><tr><td>prometheus_metrics</td><td></td><td>暴露 Prometheus 指标的路径，如 /metrics。</td></tr><tr><td>otlp_exporter</td><td></td><td>暴露 OpenTelemetry 指标的路径，如 /metrics。</td></tr><tr><td>enable_server_timing</td><td>false</td><td>是否在响应头中添加 Server-Timing，用于展示处理耗时，便于前端性能分析。</td></tr></tbody></table></div><footer class="theme-doc-footer docusaurus-mt-lg"><div class="row margin-top--sm theme-doc-footer-edit-meta-row"><div class="col"><a href="https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/docs/config.md" target="_blank" rel="noopener noreferrer" class="theme-edit-this-page"><svg fill="currentColor" height="20" width="20" viewBox="0 0 40 40" class="iconEdit_Z9Sw" aria-hidden="true"><g><path d="m34.5 11.7l-3 3.1-6.3-6.3 3.1-3q0.5-0.5 1.2-0.5t1.1 0.5l3.9 3.9q0.5 0.4 0.5 1.1t-0.5 1.2z m-29.5 17.1l18.4-18.5 6.3 6.3-18.4 18.4h-6.3v-6.2z"></path></g></svg>编辑此页</a></div><div class="col lastUpdated_JAkA"></div></div></footer></article><nav class="pagination-nav docusaurus-mt-lg" aria-label="文件选项卡"><a class="pagination-nav__link pagination-nav__link--prev" href="/pingap-zh/docs/argument"><div class="pagination-nav__sublabel">上一页</div><div class="pagination-nav__label">命令行参数与环境变量</div></a><a class="pagination-nav__link pagination-nav__link--next" href="/pingap-zh/docs/log"><div class="pagination-nav__sublabel">下一页</div><div class="pagination-nav__label">访问日志格式化</div></a></nav></div></div><div class="col col--3"><div class="tableOfContents_bqdL thin-scrollbar theme-doc-toc-desktop"><ul class="table-of-contents table-of-contents__left-border"><li><a href="#基础配置-basictoml" class="table-of-contents__link toc-highlight">基础配置 (basic.toml)</a></li><li><a href="#上游配置-upstreamtoml" class="table-of-contents__link toc-highlight">上游配置 (upstream.toml)</a></li><li><a href="#路由配置-locationtoml" class="table-of-contents__link toc-highlight">路由配置 (location.toml)</a></li><li><a href="#服务配置-servertoml" class="table-of-contents__link toc-highlight">服务配置 (server.toml)</a></li></ul></div></div></div></div></main></div></div></div><footer class="footer"><div class="container container-fluid"><div class="footer__bottom text--center"><div class="footer__copyright">Copyright © 2024-2025 Tree Xie.</div></div></div></footer></div>
 </body>
 </html>

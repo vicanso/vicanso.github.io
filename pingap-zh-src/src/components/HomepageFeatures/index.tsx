@@ -14,7 +14,7 @@ const FeatureList: FeatureItem[] = [
     Svg: require("@site/static/img/undraw_docusaurus_mountain.svg").default,
     description: (
       <>
-        单一可执行文件，支持arm与x86架构，提供musl版本的构建版本，可使用于各种老旧版本的linux，并提供Web界面式的配置管理，快速配置启用
+        Pingap 以单一自包含可执行文件的形式分发，原生支持 ARM 与 x86 架构。项目提供基于 musl 的纯静态链接构建版本，消除了对系统动态库的依赖，从而确保在包括老旧版本在内的各种 Linux 发行版上实现卓越的兼容性与开箱即用的部署体验。其内置的 Web 管理界面将复杂的配置流程可视化，极大简化了服务的配置、启用与日常维护工作。
       </>
     ),
   },
@@ -23,7 +23,7 @@ const FeatureList: FeatureItem[] = [
     Svg: require("@site/static/img/undraw_docusaurus_tree.svg").default,
     description: (
       <>
-        基于插件体系可满足各种应用场景，如应用鉴权、数据压缩、静态文件目录服务以及缓存等
+        系统核心基于灵活的插件化架构设计，使其能够通过加载不同模块来适应多样化的应用场景与复杂的业务需求。内置及社区支持的插件覆盖了关键功能领域，例如：身份认证与授权、动态数据压缩、高性能静态资源服务以及多级缓存策略等。
       </>
     ),
   },
@@ -32,7 +32,7 @@ const FeatureList: FeatureItem[] = [
     Svg: require("@site/static/img/undraw_docusaurus_react.svg").default,
     description: (
       <>
-        基于rust与pingora构建，得益于rust高性能的表现，pingap性能表现可圈可点，且安全可靠
+        Pingap 采用 Rust 语言开发，并构建于久经考验的 Pingora 异步网络框架之上。得益于 Rust 语言的内存安全保证和无畏并发模型，Pingap 在实现卓越网络吞吐量和低延迟性能的同时，从根本上杜绝了常见的内存安全漏洞。这一技术选型确保了服务在严苛生产环境下的高安全性和高运行可靠性。
       </>
     ),
   },

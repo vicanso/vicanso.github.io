@@ -4,7 +4,7 @@ import type * as Preset from "@docusaurus/preset-classic";
 
 const config: Config = {
   title: "Pingap",
-  tagline: "基于pingora构建，类似nginx的反向代理，简单且高效",
+  tagline: "Pingap 是一款基于 Pingora 框架构建的安全、高效反向代理。它旨在提供媲美 Nginx 的强大功能，同时通过现代化的设计与工具，带来远超以往的简洁配置与部署体验",
   favicon: "img/pingap.png",
 
   // Set the production url of your site here
