@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkpingap=self.webpackChunkpingap||[]).push([[2068],{2068:(e,p,a)=>{a.d(p,{createInfoServices:()=>s.v});var s=a(1366);a(8198)}}]);
