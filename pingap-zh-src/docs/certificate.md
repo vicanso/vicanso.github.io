@@ -74,7 +74,15 @@ Pingap 会通过 ACME 协议自动处理证书的申请、验证和续期。根�
 | tls_key         | 是           | 证书的私钥（Private Key），PEM 格式。使用 ACME 申请时，此字段由系统自动填充，若手动上传则需要手动填写。 |
 | acme            | 自动申请时是 | ACME 证书申请服务。目前仅支持 lets_encrypt。                                                            |
 | dns_challenge   | 否           | 是否启用 DNS-01 方式进行域名验证。需要 DNS 提供商的 API 支持。                                          |
-| dns_provider    | 否           | DNS 提供商的名称，如 cloudflare, godaddy 等。                                                           |
+| dns_provider    | 否           | DNS 提供商的名称，如 cloudflare, aliyun 等。                                                            |
 | dns_service_url | 否           | 部分 DNS 提供商可能需要指定的 API 地址。                                                                |
 | buffer_days     | 否           | 证书续期的缓冲天数。系统将在 有效期 < 缓冲天数 时触发自动续期。                                         |
 
+现只支持以下DNS服务提供商，其API地址配置格式如下：
+
+- `aliyun`: https://alidns.aliyuncs.com?access_key_id=xxx&access_key_secret=xxx
+- `cloudflare`: https://api.cloudflare.com?token=xxx
+- `huawei`: https://dns.{region}.myhuaweicloud.com?access_key_id=xxx&access_key_secret=xxx
+- `tencent`: https://dnspod.tencentcloudapi.com?access_key_id=xxx&access_key_secret=xxx
+
+由于API需要鉴权，因此也可以指定从环境变量中获取，如`dns_service_url = "$ENV:PINGAP_DNS_SERVICE_URL"`，则表示API地址是从环境变量中获取`PINGAP_DNS_SERVICE_URL`。
