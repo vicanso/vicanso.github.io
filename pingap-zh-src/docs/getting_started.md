@@ -48,11 +48,9 @@ RUST_LOG=INFO pingap -c /opt/pingap/conf --admin=pingap:YourSecurePassword@127.0
 
 在`pingap`中，一个完整的代理服务由三个核心概念组成，它们之间存在依赖关系：
 
-1、上游 (Upstream): 定义了后端真实服务的地址和属性（如健康检查、超时等）。
-
-2、路由 (Location): 定义了请求的匹配规则（如域名、路径）以及将请求转发到哪个 上游。
-
-3、服务 (Server): 定义了 pingap 监听的端口和协议，并绑定一组 路由 规则。
+1. 上游 (Upstream): 定义了后端真实服务的地址和属性（如健康检查、超时等）。
+2. 路由 (Location): 定义了请求的匹配规则（如域名、路径）以及将请求转发到哪个 上游。
+3. 服务 (Server): 定义了 pingap 监听的端口和协议，并绑定一组 路由 规则。
 
 因此，我们的配置顺序应该是：先创建上游 → 再创建路由 → 最后创建服务。
 
@@ -75,7 +73,7 @@ RUST_LOG=INFO pingap -c /opt/pingap/conf --admin=pingap:YourSecurePassword@127.0
 健康检查: 设置一个健康检查端点（如`http://host/ping`），`pingap`会自动剔除不健康的后端节点，提升服务可用性，其中`host`部分要检测时会自动替换为`ip:port`形式，若不设置默认为通过tcp端口的形式检测。
 
 
-1. 添加路由 (Location)
+2. 添加路由 (Location)
 
 路由负责将满足条件的请求转发给指定的上游。
 
