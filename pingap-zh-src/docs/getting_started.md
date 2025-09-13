@@ -37,7 +37,7 @@ RUST_LOG=INFO pingap -c /opt/pingap/conf --admin=pingap:YourSecurePassword@127.0
 - `--admin=pingap:YourSecurePassword@127.0.0.1:3018`: 启用管理后台。
    - `账号`: pingap
    - `密码`: YourSecurePassword (请务必替换为您自己的强密码!)
-   - `监听地址`: `127.0.0.1:3018`，表示仅在本地监听 3018 端口，服务器可以设置为`0.0.0.0:3018`或只监听服务器分配地址
+   - `监听地址`: `127.0.0.1:3018`，表示仅在本地监听 3018 端口，服务器可以设置为`0.0.0.0:3018`或服务器的IP
 
 🔒 安全提示
 为了防止暴力破解，管理后台内置了登录保护机制：同一 IP 多次输错密码将被临时锁定 5 分钟。
@@ -49,8 +49,11 @@ RUST_LOG=INFO pingap -c /opt/pingap/conf --admin=pingap:YourSecurePassword@127.0
 在`pingap`中，一个完整的代理服务由三个核心概念组成，它们之间存在依赖关系：
 
 1、上游 (Upstream): 定义了后端真实服务的地址和属性（如健康检查、超时等）。
+
 2、路由 (Location): 定义了请求的匹配规则（如域名、路径）以及将请求转发到哪个 上游。
+
 3、服务 (Server): 定义了 pingap 监听的端口和协议，并绑定一组 路由 规则。
+
 因此，我们的配置顺序应该是：先创建上游 → 再创建路由 → 最后创建服务。
 
 ## 第三步：通过 Web UI 完成代理配置
@@ -61,46 +64,43 @@ RUST_LOG=INFO pingap -c /opt/pingap/conf --admin=pingap:YourSecurePassword@127.0
 
 上游是所有配置的基础。
 
-- 在左侧菜单栏点击 “Upstream”，然后点击“添加上游服务”。
-- 名称: 填写一个有意义的名称，例如 my-app-service。
-- 地址: 填写后端服务的实际地址，例如 127.0.0.1:8080。
+- 在左侧菜单栏点击 “上游服务器配置”，默认为新增，如果要修改则选择对应的`Upstream`。
+- 名称: 填写一个有意义的名称，例如`my-app-service`。
+- 地址: 填写后端服务的实际地址，例如`127.0.0.1:8080`，对于权重一般不需要设置，如果有多个节点则配置多个即可。若上游为HTTPS协议的节点需要配置SNI。
 
-💡 最佳实践：配置高级选项
-强烈建议您展开“高级配置”面板进行设置：
+💡 最佳实践：强烈建议您展开“高级配置”面板进行设置
 
 超时设置: 根据您的应用特性，为连接、读取和写入设置合理的超时时间，避免因后端服务无响应而拖垮代理。
 
-健康检查: 设置一个健康检查端点（如`http://Host/ping`），`pingap`会自动剔除不健康的后端节点，提升服务可用性，其中`Host`部分要检测时会自动替换为`ip:port`形式。
+健康检查: 设置一个健康检查端点（如`http://host/ping`），`pingap`会自动剔除不健康的后端节点，提升服务可用性，其中`host`部分要检测时会自动替换为`ip:port`形式，若不设置默认为通过tcp端口的形式检测。
 
 
-2. 添加路由 (Location)
+1. 添加路由 (Location)
 
 路由负责将满足条件的请求转发给指定的上游。
 
-- 在左侧菜单栏点击 “Location”，然后点击“添加 Location”。
+- 在左侧菜单栏点击 “Location配置”，默认为新增，如果要修改则选择对应的`Location`。
 - 名称: 填写一个有意义的名称，例如`route-for-my-app`。
 - 上游: 在下拉框中选择我们刚刚创建的`my-app-service`。
-- 域名(Host): 填写您希望对外提供服务的域名，例如`app.example.com`。
+- 域名(Host): 填写您希望对外提供服务的域名，例如`app.example.com`，如果只使用Path即可匹配则不需要填写。
 - 路径(Path): 填写匹配的路径规则，例如`/app`。
 
 💡 最佳实践：启用反向代理请求头
-建议勾选 启用反向代理请求头。这会自动添加`X-Forwarded-For, X-Forwarded-Proto`等标准代理请求头，方便后端应用获取真实的客户端信息。
+若`Pingap`为接入节点，建议勾选`启用反向代理请求头`。这会自动添加`X-Forwarded-For, X-Forwarded-Proto`等标准代理请求头，方便后端应用获取真实的客户端信息。
 
-❗ 注意事项
-如果您的上游服务（Upstream）本身也是一个反向代理（如 Nginx），并且它依赖`Host`作为路由转发，请务必在“设置转发请求头”中，将`Host`设置为上游服务期望的值。
+❗ 注意事项：如果您的上游服务（Upstream）本身也是一个反向代理（如 Nginx），并且它依赖`Host`作为路由转发，请务必在“设置转发请求头”中，将`Host`设置为上游服务期望的值。
 
 
 3. 配置服务 (Server)
 
 服务是代理的入口，它监听指定端口并将请求交给路由处理。
 
-- 在左侧菜单栏点击 “Server”，然后点击“添加 Server”。
+- 在左侧菜单栏点击 “服务配置”，默认为新增，如果要修改则选择对应的`Server`。
 - 名称: 填写一个有意义的名称，例如`main-http-server`。
 - 监听地址: 填写 pingap 对外服务的地址和端口，例如`0.0.0.0:6188`(监听所有网络接口的 6188 端口)。
 - Locations: 在下拉框中勾选我们刚刚创建的`route-for-my-app`，如果选择多个location，会根据各location的权重匹配。
 
-💡 最佳实践：配置访问日志
-为了方便排查问题，建议配置访问日志。在“访问日志格式”中选择一个预设模板（如 common 或 combined），或根据需要自定义格式。
+💡 最佳实践：配置访问日志，为了方便排查问题，建议配置访问日志。在“访问日志格式”中选择一个预设模板（如 common 或 combined），或根据需要自定义格式。
 
 至此，所有的基础配置都已完成！这些配置已经自动保存到了`/opt/pingap/conf`目录下的`.toml`文件中。
 
@@ -125,7 +125,7 @@ RUST_LOG=INFO pingap -c /opt/pingap/conf \
 
 - `-d`: Daemonize，让程序以守护进程（后台）模式运行。
 - `--log=/opt/pingap/pingap.log`: 将日志输出到指定文件，而不是终端。
-- `--autoreload`: 热更新模式（生产推荐）。`pingap`会定期（约10秒）检测配置文件的变化。当`Upstream`, `Location`等配置发生变化时，它会无需重启、不中断服务地应用新配置。
+- `--autoreload`: 热更新模式（生产推荐）。`pingap`会定期（约10秒）检测配置文件的变化。当`Upstream`, `Location`, `Plugin` 以及 `Certificate`等配置发生变化时，它会无需重启、不中断服务地应用新配置。
 
 何时使用 --autorestart?
 
@@ -146,7 +146,7 @@ RUST_LOG=INFO pingap -c /opt/pingap/conf \
 
 进入 “Location” 管理页面，将`route-for-my-app`的路径从`/app`修改为`/pingap-app`并保存。
 
-稍等片刻（约10秒），观察后台日志文件`tail -f /opt/pingap/pingap.log`，您应该能看到类似`reload location success`的日志。
+稍等片刻（约10秒），观察后台日志文件`tail -f /opt/pingap/pingap.log-YYYY-MM-DD`，您应该能看到类似`reload location success`的日志。
 
 此时，再次访问`http://<pingap-server-ip>:6188/app/`会失败，而访问`http://<pingap-server-ip>:6188/pingap-app/`则会成功。
 
