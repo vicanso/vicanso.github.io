@@ -57,8 +57,6 @@ Pingap 使用 TOML 格式进行配置，具有良好的可读性。所有配置�
 | grace_period                | 5m     | 优雅退出的总等待周期。                                                           |
 | graceful_shutdown_timeout   | 5s     | 在优雅退出期间，等待每个连接关闭的超时时间。                                     |
 | auto_restart_check_interval | 90s    | 当使用`--autorestart`时，检测配置变更的间隔，避免短时间修改配置多次重启。        |
-| cache_directory             |        | 全局缓存目录。配置后将启用基于文件的缓存。                                       |
-| cache_max_size              |        | 内存缓存的最大空间。对文件缓存无效。                                             |
 
 
 ## 上游配置 (upstream.toml)
