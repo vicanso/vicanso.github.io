@@ -26,11 +26,12 @@ B. 运行模式参数
 
 这些参数用于控制 Pingap 的启动行为和生命周期。
 
-| 参数      | 简写 | 说明                                            |
-| --------- | ---- | ----------------------------------------------- |
-| `daemon`  | `d`  | 以守护进程方式运行（upgrade 功能必需）          |
-| `upgrade` | `u`  | 无中断更新模式，通过 unix socket 接收原程序请求 |
-| `test`    | `t`  | 仅测试配置有效性                                |
+| 参数      | 简写 | 说明                                                                 |
+| --------- | ---- | -------------------------------------------------------------------- |
+| `daemon`  | `d`  | 以守护进程方式运行（upgrade 功能必需）                               |
+| `upgrade` | `u`  | 无中断更新模式，通过 unix socket 接收原程序请求                      |
+| `test`    | `t`  | 仅测试配置有效性                                                     |
+| `threads` |      | 设置默认的线程数，其优先级高于配置文件中的设置，一般用于临时测试使用 |
 
 C. 自动更新参数
 
@@ -39,7 +40,7 @@ Pingap 提供强大的动态配置能力，以下参数用于控制配置变更�
 | 参数          | 简写 | 说明                                                               |
 | ------------- | ---- | ------------------------------------------------------------------ |
 | `autorestart` | `a`  | 配置更新时自动重启（包含 autoreload 功能）                         |
-| `autoreload`  | -    | 自动更新部分配置（仅支持 upstream、location、plugin、certificate） |
+| `autoreload`  | -    | 自动更新部分配置（已支持 upstream、location、plugin、certificate） |
 
 D. 集群与工具参数
 
@@ -83,48 +84,48 @@ D. 集群与工具参数
 
 ```bash
 # 设置日志级别为 INFO
+# -c: 指定配置存储目录
+# -d: 以后台守护进程模式运行
+# --log: 将日志输出到文件
+# --autoreload: 开启配置热更新
 RUST_LOG=INFO pingap \
-  # -c: 指定配置存储目录
   -c /opt/pingap/conf \
-  # -d: 以后台守护进程模式运行
   -d \
-  # --log: 将日志输出到文件
   --log /opt/pingap/pingap.log \
-  # --autoreload: 开启配置热更新
   --autoreload
 ```
 
 
-2. Etcd 集群模式（生产环境）
-在多节点部署时，推荐使用 Etcd 作为统一配置中心，并将管理节点与应用节点分离。
+2. Etcd 集群模式：在多节点部署时，推荐使用 Etcd 作为统一配置中心，并将管理节点与应用节点分离。
 
 管理节点 (Control Plane Node)
 
 此节点运行 Web UI，并将所有配置变更写入 Etcd。
 
 ```bash
+# -c: 指定 etcd 作为配置源
+# --cp: 声明这是一个控制平面节点
+# --admin: 启动 Web 管理后台
 RUST_LOG=INFO pingap \
-  # -c: 指定 etcd 作为配置源
   -c "etcd://user:pass@127.0.0.1:2379/pingap" \
-  # --cp: 声明这是一个控制平面节点
+  -d \
   --cp \
-  # --admin: 启动 Web 管理后台
   --admin=pingap:YourSecurePassword@0.0.0.0:3018
 ```
 
 应用节点 (Worker Node)
 
-这些节点从 Etcd 读取配置并处理实际的业务流量。它们不应该运行 Web UI。
+这些节点从 Etcd 读取配置并处理实际的业务流量。它们不需要运行 Web UI。
 
 ```bash
+# -c: 从相同的 etcd 路径读取配置
+# -d: 以后台模式运行
+# --log: 将日志写入文件
+# --autoreload: 从 watch etcd 配置变化，开启配置热更新
 RUST_LOG=INFO pingap \
-  # -c: 从相同的 etcd 路径读取配置
   -c "etcd://user:pass@127.0.0.1:2379/pingap" \
-  # -d: 以后台模式运行
   -d \
-  # --log: 将日志写入文件
   --log /opt/pingap/pingap.log \
-  # --autoreload: 从 watch etcd 配置变化，开启配置热更新
   --autoreload
 ```
 

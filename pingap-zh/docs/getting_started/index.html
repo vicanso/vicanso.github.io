@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="generator" content="Docusaurus v3.8.1">
 <title data-rh="true">入门教程 | Pingap</title><meta data-rh="true" name="viewport" content="width=device-width,initial-scale=1"><meta data-rh="true" name="twitter:card" content="summary_large_image"><meta data-rh="true" property="og:image" content="https://vicanso.github.io/pingap-zh/img/docusaurus-social-card.jpg"><meta data-rh="true" name="twitter:image" content="https://vicanso.github.io/pingap-zh/img/docusaurus-social-card.jpg"><meta data-rh="true" property="og:url" content="https://vicanso.github.io/pingap-zh/docs/getting_started"><meta data-rh="true" property="og:locale" content="zh_Hans"><meta data-rh="true" name="docusaurus_locale" content="zh-Hans"><meta data-rh="true" name="docsearch:language" content="zh-Hans"><meta data-rh="true" name="docusaurus_version" content="current"><meta data-rh="true" name="docusaurus_tag" content="docs-default-current"><meta data-rh="true" name="docsearch:version" content="current"><meta data-rh="true" name="docsearch:docusaurus_tag" content="docs-default-current"><meta data-rh="true" property="og:title" content="入门教程 | Pingap"><meta data-rh="true" name="description" content="欢迎使用 Pingap！本教程将引导您从零开始，一步步搭建、配置并运行一个功能完备的高性能反向代理服务。我们将从最简单的启动开始，通过 Web 管理后台完成所有核心配置，最终以守护进程模式稳定运行。"><meta data-rh="true" property="og:description" content="欢迎使用 Pingap！本教程将引导您从零开始，一步步搭建、配置并运行一个功能完备的高性能反向代理服务。我们将从最简单的启动开始，通过 Web 管理后台完成所有核心配置，最终以守护进程模式稳定运行。"><link data-rh="true" rel="icon" href="/pingap-zh/img/pingap.png"><link data-rh="true" rel="canonical" href="https://vicanso.github.io/pingap-zh/docs/getting_started"><link data-rh="true" rel="alternate" href="https://vicanso.github.io/pingap-zh/docs/getting_started" hreflang="zh-Hans"><link data-rh="true" rel="alternate" href="https://vicanso.github.io/pingap-zh/docs/getting_started" hreflang="x-default"><link data-rh="true" rel="preconnect" href="https://502YBQO3PX-dsn.algolia.net" crossorigin="anonymous"><script data-rh="true" type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"入门教程","item":"https://vicanso.github.io/pingap-zh/docs/getting_started"}]}</script><link rel="search" type="application/opensearchdescription+xml" title="Pingap" href="/pingap-zh/opensearch.xml"><link rel="stylesheet" href="/pingap-zh/assets/css/styles.975a7111.css">
-<script src="/pingap-zh/assets/js/runtime~main.bc7660aa.js" defer="defer"></script>
+<script src="/pingap-zh/assets/js/runtime~main.258cd485.js" defer="defer"></script>
 <script src="/pingap-zh/assets/js/main.ee418143.js" defer="defer"></script>
 </head>
 <body class="navigation-with-keyboard">
@@ -64,7 +64,7 @@
 <li>在左侧菜单栏点击 “Location配置”，默认为新增，如果要修改则选择对应的<code>Location</code>。</li>
 <li>名称: 填写一个有意义的名称，例如<code>route-for-my-app</code>。</li>
 <li>上游: 在下拉框中选择我们刚刚创建的<code>my-app-service</code>。</li>
-<li>域名(Host): 填写您希望对外提供服务的域名，例如<code>app.example.com</code>，如果只使用Path即可匹配则不需要填写。</li>
+<li>域名(Host): 填写您希望对外提供服务的域名，例如<code>app.example.com</code>，如果只使用<code>Path</code>即可匹配则不需要填写。</li>
 <li>路径(Path): 填写匹配的路径规则，例如<code>/app</code>。</li>
 </ul>
 <p>💡 最佳实践：启用反向代理请求头
@@ -94,7 +94,7 @@
 <li><code>--autoreload</code>: 热更新模式（生产推荐）。<code>pingap</code>会定期（约10秒）检测配置文件的变化。当<code>Upstream</code>, <code>Location</code>, <code>Plugin</code> 以及 <code>Certificate</code>等配置发生变化时，它会无需重启、不中断服务地应用新配置。</li>
 </ul>
 <p>何时使用 --autorestart?</p>
-<p><code>--autorestart</code>是一种重启更新模式。它用于变更更底层的配置，如Server的监听端口等。这种模式会自动使用<code>upgrade</code>的方式让旧实例的请求转给新实例，但是如果调整监听端口等会导致旧的端口不会关闭等现象。建议仅在测试环境或需要频繁变更基 础配置时使用。生产环境中，对于基础配置的变更(例如监听服务监听端口等较少变更），建议手动执行平滑重启（upgrade）。</p>
+<p><code>--autorestart</code>是一种重启更新模式。它用于变更更底层的配置，如Server的监听端口等。这种模式会自动使用<code>upgrade</code>的方式让旧实例的请求转给新实例，但是如果调整监听端口等会导致旧的端口不会关闭等现象。建议仅在测试环境或需要频繁变更基础配置时使用。生产环境中，对于基础配置的变更(例如监听服务监听端口等较少变更），建议手动执行平滑重启（upgrade）。</p>
 <h2 class="anchor anchorWithStickyNavbar_LWe7" id="第五步验证配置">第五步：验证配置<a href="#第五步验证配置" class="hash-link" aria-label="第五步：验证配置的直接链接" title="第五步：验证配置的直接链接">​</a></h2>
 <p>现在，<code>pingap</code>已经在后台稳定运行。让我们来验证一下配置是否生效。</p>
 <p>1、访问服务:</p>

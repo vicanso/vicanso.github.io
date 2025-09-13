@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="generator" content="Docusaurus v3.8.1">
 <title data-rh="true">配置项详解 | Pingap</title><meta data-rh="true" name="viewport" content="width=device-width,initial-scale=1"><meta data-rh="true" name="twitter:card" content="summary_large_image"><meta data-rh="true" property="og:image" content="https://vicanso.github.io/pingap-zh/img/docusaurus-social-card.jpg"><meta data-rh="true" name="twitter:image" content="https://vicanso.github.io/pingap-zh/img/docusaurus-social-card.jpg"><meta data-rh="true" property="og:url" content="https://vicanso.github.io/pingap-zh/docs/config"><meta data-rh="true" property="og:locale" content="zh_Hans"><meta data-rh="true" name="docusaurus_locale" content="zh-Hans"><meta data-rh="true" name="docsearch:language" content="zh-Hans"><meta data-rh="true" name="docusaurus_version" content="current"><meta data-rh="true" name="docusaurus_tag" content="docs-default-current"><meta data-rh="true" name="docsearch:version" content="current"><meta data-rh="true" name="docsearch:docusaurus_tag" content="docs-default-current"><meta data-rh="true" property="og:title" content="配置项详解 | Pingap"><meta data-rh="true" name="description" content="Pingap 使用 TOML 格式进行配置，具有良好的可读性。所有配置项被拆分到不同的文件中，便于管理。"><meta data-rh="true" property="og:description" content="Pingap 使用 TOML 格式进行配置，具有良好的可读性。所有配置项被拆分到不同的文件中，便于管理。"><link data-rh="true" rel="icon" href="/pingap-zh/img/pingap.png"><link data-rh="true" rel="canonical" href="https://vicanso.github.io/pingap-zh/docs/config"><link data-rh="true" rel="alternate" href="https://vicanso.github.io/pingap-zh/docs/config" hreflang="zh-Hans"><link data-rh="true" rel="alternate" href="https://vicanso.github.io/pingap-zh/docs/config" hreflang="x-default"><link data-rh="true" rel="preconnect" href="https://502YBQO3PX-dsn.algolia.net" crossorigin="anonymous"><script data-rh="true" type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"配置项详解","item":"https://vicanso.github.io/pingap-zh/docs/config"}]}</script><link rel="search" type="application/opensearchdescription+xml" title="Pingap" href="/pingap-zh/opensearch.xml"><link rel="stylesheet" href="/pingap-zh/assets/css/styles.975a7111.css">
-<script src="/pingap-zh/assets/js/runtime~main.bc7660aa.js" defer="defer"></script>
+<script src="/pingap-zh/assets/js/runtime~main.258cd485.js" defer="defer"></script>
 <script src="/pingap-zh/assets/js/main.ee418143.js" defer="defer"></script>
 </head>
 <body class="navigation-with-keyboard">
@@ -43,7 +43,7 @@
 <li><code>hash:query:user_id</code>: 根据指定的查询参数 (user_id) 的值哈希。</li>
 </ul>
 <p>健康检查 (health_check)</p>
-<p>强烈建议配置健康检查，Pingap 会自动剔除不健康的节点。</p>
+<p>强烈建议配置健康检查，<code>Pingap</code>会自动剔除不健康的节点，若不配置会默认使用tcp端口检测的方式。</p>
 <ul>
 <li>格式:<!-- -->
 <ul>
@@ -62,19 +62,18 @@
 </li>
 </ul>
 <p>连接与超时配置</p>
-<p>💡 最佳实践
-务必为生产环境设置合理的超时时间，以防止因后端服务缓慢或无响应而导致连接堆积，最终拖垮整个代理服务。</p>
+<p>💡 最佳实践：务必为生产环境设置合理的超时时间，以防止因后端服务缓慢或无响应而导致连接堆积，最终拖垮整个代理服务。</p>
 <table><thead><tr><th>参数</th><th>默认值</th><th>说明</th></tr></thead><tbody><tr><td>total_connection_timeout</td><td></td><td>整个连接过程（包含TLS握手）的总超时。</td></tr><tr><td>connection_timeout</td><td></td><td>建立 TCP 连接的超时时间。</td></tr><tr><td>read_timeout</td><td></td><td>从后端读取响应的超时时间。</td></tr><tr><td>write_timeout</td><td></td><td>向后端写入请求的超时时间。</td></tr><tr><td>idle_timeout</td><td></td><td>连接在连接池中的最大空闲时间。设置为 0 表示连接不复用，为空则按默认规则复用。</td></tr></tbody></table>
 <p>TLS/HTTPS配置</p>
 <p>当后端服务为 HTTPS 时，需要配置以下参数。</p>
-<table><thead><tr><th>参数</th><th>默认值</th><th>说明</th></tr></thead><tbody><tr><td>sni</td><td></td><td>（必需） TLS 握手中的服务器名称指示 (Server Name Indication)。</td></tr><tr><td>verify_cert</td><td>true</td><td>是否校验后端服务的 TLS 证书的有效性。</td></tr><tr><td>alpn</td><td>H1</td><td>TLS ALPN 协商的协议，如 H2。</td></tr></tbody></table>
+<table><thead><tr><th>参数</th><th>默认值</th><th>说明</th></tr></thead><tbody><tr><td>sni</td><td></td><td>（必需） TLS 握手中的服务器名称指示 (Server Name Indication)。</td></tr><tr><td>verify_cert</td><td>true</td><td>是否校验后端服务的 TLS 证书的有效性(若上游为自签证书可以设置为false)。</td></tr><tr><td>alpn</td><td>H1</td><td>TLS ALPN 协商的协议，如 H2。</td></tr></tbody></table>
 <p>TCP 底层调优</p>
 <p>❗ 注意：除非您非常清楚这些参数的作用，否则建议保持默认值。</p>
 <table><thead><tr><th>参数</th><th>默认值</th><th>说明</th></tr></thead><tbody><tr><td>tcp_idle</td><td></td><td>TCP Keep-Alive 的空闲探测时长。</td></tr><tr><td>tcp_interval</td><td></td><td>TCP Keep-Alive 的探测间隔。</td></tr><tr><td>tcp_probe_count</td><td></td><td>TCP Keep-Alive 的探测次数。</td></tr><tr><td>tcp_user_timeout</td><td></td><td>TCP 用户超时，定义了未确认数据可以保持多长时间。</td></tr><tr><td>tcp_recv_buf</td><td></td><td>TCP 接收缓冲区的大小。</td></tr><tr><td>tcp_fast_open</td><td>false</td><td>是否启用 TCP Fast Open。</td></tr></tbody></table>
 <h2 class="anchor anchorWithStickyNavbar_LWe7" id="路由配置-locationtoml">路由配置 (location.toml)<a href="#路由配置-locationtoml" class="hash-link" aria-label="路由配置 (location.toml)的直接链接" title="路由配置 (location.toml)的直接链接">​</a></h2>
 <p>Location 是连接请求和上游的桥梁，它定义了详细的匹配规则和请求处理逻辑。</p>
 <p>路由匹配与转发</p>
-<table><thead><tr><th>参数</th><th>默认值</th><th>说明</th></tr></thead><tbody><tr><td>host</td><td></td><td>匹配的域名。多个域名用 , 分隔，~ 开头表示正则表达式。</td></tr><tr><td>path</td><td></td><td>匹配的路径。支持前缀、正则和精确匹配。</td></tr><tr><td>upstream</td><td></td><td>匹配成功后，将请求转发到的 Upstream 名称。</td></tr><tr><td>rewrite</td><td></td><td>URL 重写规则，格式为 匹配正则 替换内容。</td></tr><tr><td>plugins</td><td>[]</td><td>绑定到此 Location 的插件列表，按顺序执行。</td></tr><tr><td>weight</td><td></td><td>自定义的权重，一般不需要设置，可用于此类场景：例如mock为服务不可用后，再调整该权重最高，则可禁用所有请求。</td></tr><tr><td>plugins</td><td>[]</td><td>绑定到此 Location 的插件列表，按顺序执行。</td></tr><tr><td>grpc_web</td><td>false</td><td>是否启用支持grpc-web。</td></tr></tbody></table>
+<table><thead><tr><th>参数</th><th>默认值</th><th>说明</th></tr></thead><tbody><tr><td>host</td><td></td><td>匹配的域名。多个域名用 , 分隔，~ 开头表示正则表达式。</td></tr><tr><td>path</td><td></td><td>匹配的路径。支持前缀、正则和精确匹配。</td></tr><tr><td>upstream</td><td></td><td>匹配成功后，将请求转发到的<code>Upstream</code>名称，需要配置为存在的<code>Upstream</code>。</td></tr><tr><td>rewrite</td><td></td><td>URL 重写规则，格式为<code>匹配正则</code>替换内容。</td></tr><tr><td>plugins</td><td>[]</td><td>绑定到此 Location 的插件列表，按顺序执行。</td></tr><tr><td>weight</td><td></td><td>自定义的权重，一般不需要设置，可用于此类场景：例如mock为服务不可用后，再调整该权重最高，则可禁用所有请求。</td></tr><tr><td>grpc_web</td><td>false</td><td>是否启用支持grpc-web。</td></tr></tbody></table>
 <p>📖 Path 匹配规则与优先级</p>
 <ul>
 <li><code>精确匹配</code>: 以 = 开头，如 =/api/user，仅匹配 path 完全等于 /api/user 的请求。</li>
@@ -95,9 +94,9 @@
 <p>安全与限制</p>
 <table><thead><tr><th>参数</th><th>默认值</th><th>说明</th></tr></thead><tbody><tr><td>client_max_body_size</td><td></td><td>允许的客户端请求体最大值，如 10mb，默认无限制</td></tr><tr><td>max_processing</td><td>0</td><td>此 Location 可同时处理的最大请求数。0 表示不限制。</td></tr></tbody></table>
 <h2 class="anchor anchorWithStickyNavbar_LWe7" id="服务配置-servertoml">服务配置 (server.toml)<a href="#服务配置-servertoml" class="hash-link" aria-label="服务配置 (server.toml)的直接链接" title="服务配置 (server.toml)的直接链接">​</a></h2>
-<p>Server 是 Pingap 的网络入口，它定义了监听的端口、协议以及绑定的 Location 规则集。文件名中的 x (server.x.toml) 是该服务的唯一名称。</p>
+<p>Server 是 Pingap 的网络入口，它定义了监听的 端口、协议以及绑定的 Location 规则集。文件名中的 x (server.x.toml) 是该服务的唯一名称。</p>
 <p>核心配置</p>
-<table><thead><tr><th>参数</th><th>默认值</th><th>说明</th></tr></thead><tbody><tr><td>addr</td><td></td><td>（必需） 监听地址，格式为 ip<!-- -->:port<!-- -->。多个地址用 , 分隔。</td></tr><tr><td>locations</td><td>[]</td><td>（必需） 绑定到此 Server 的 Location 名称列表。</td></tr></tbody></table>
+<table><thead><tr><th>参数</th><th>默认值</th><th>说明</th></tr></thead><tbody><tr><td>addr</td><td></td><td>（必需） 监听地址，格式为<code>ip:port</code>。多个地址用<code>,</code>分隔。</td></tr><tr><td>locations</td><td>[]</td><td>（必需） 绑定到此<code>Server</code>的<code>Location</code>名称列表，匹配时按<code>Location</code>的权重匹配，并非按顺序匹配</td></tr></tbody></table>
 <p>TLS/HTTPS</p>
 <table><thead><tr><th>参数</th><th>默认值</th><th>说明</th></tr></thead><tbody><tr><td>global_certificates</td><td>false</td><td>是否启用全局证书配置。HTTPS 服务必须开启。</td></tr><tr><td>tls_min_version</td><td>1.2</td><td>支持的最低 TLS 版本。</td></tr><tr><td>tls_max_version</td><td>1.3</td><td>支持的最高 TLS 版本。</td></tr><tr><td>tls_cipher_list</td><td>(推荐列表)</td><td>TLS 1.2 及以下版本的加密套件。</td></tr><tr><td>tls_ciphersuites</td><td>(推荐列表)</td><td>TLS 1.3 的加密套件。</td></tr></tbody></table>
 <p>协议与模块</p>

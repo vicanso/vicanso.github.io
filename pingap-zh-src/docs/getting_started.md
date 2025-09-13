@@ -82,7 +82,7 @@ RUST_LOG=INFO pingap -c /opt/pingap/conf --admin=pingap:YourSecurePassword@127.0
 - 在左侧菜单栏点击 “Location配置”，默认为新增，如果要修改则选择对应的`Location`。
 - 名称: 填写一个有意义的名称，例如`route-for-my-app`。
 - 上游: 在下拉框中选择我们刚刚创建的`my-app-service`。
-- 域名(Host): 填写您希望对外提供服务的域名，例如`app.example.com`，如果只使用Path即可匹配则不需要填写。
+- 域名(Host): 填写您希望对外提供服务的域名，例如`app.example.com`，如果只使用`Path`即可匹配则不需要填写。
 - 路径(Path): 填写匹配的路径规则，例如`/app`。
 
 💡 最佳实践：启用反向代理请求头
