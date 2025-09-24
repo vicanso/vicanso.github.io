@@ -2,46 +2,71 @@
 sidebar_position: 1
 ---
 
-# Pingap Overview
 
-Pingap is a reverse proxy service developed based on [pingora](https://github.com/cloudflare/pingora). While pingora provides rich modules for Rust developers, it's not very friendly for non-Rust developers. Therefore, Pingap offers simple and easy-to-use reverse proxy functionality through TOML configuration files, supporting multiple locations forwarding for a single service and extensibility through plugins. Pre-compiled executables for various architectures can be downloaded from the [releases](https://github.com/vicanso/pingap/releases) page.
+# What is Pingap?
 
-Key Features:
+Pingap is a modern, high-performance reverse proxy service built on top of Cloudflare's open-source Rust framework, [Pingora](https://github.com/cloudflare/pingora).
 
-- Multiple Location Support: Each service can configure multiple Locations, matched by host and path, with weight-based selection
-- Flexible Path Rewriting: Supports regex-based Path rewriting for prefix-based forwarding
-- Complete HTTP Support:
-  - HTTP/HTTPS transparent proxy
-  - Full HTTP 1.0/1.1/2.0 support (including h2c)
-  - grpc-web reverse proxy
-- Diverse Service Discovery: Supports static configuration, DNS, and docker label methods
-- Simple Configuration: Based on TOML format, can be stored in files or etcd
-- Rich Monitoring Metrics:
-  - Built-in 10+ Prometheus metrics
-  - Supports both pull and push collection methods
-  - OpenTelemetry support (w3c context trace and jaeger trace)
-- Dynamic Configuration Updates:
-  - Upstream, Location, and Plugin configurations take effect within 10 seconds, without request interruption
-  - Other configuration updates through graceful restart, ensuring service continuity
-- Customizable Access Logs: Supports template configuration with 30+ attributes
-- Convenient Management Interface: Provides Web admin panel with simple and intuitive operations
-- Comprehensive TLS Support:
-  - Out-of-the-box Let's Encrypt certificates
-  - Support for multi-domain certificates
-  - Single-port multi-domain certificates with automatic SNI matching
-- Event Notification Mechanism: Supports event pushing for `lets_encrypt`, `backend_status`, `diff_config`, `restart`, etc.
-- Rich Plugin Ecosystem: Provides various functional components including caching, compression, authentication, rate limiting, etc.
+Pingap's core mission is to bring the powerful performance and stability of the [Pingora](https://github.com/cloudflare/pingora) framework to every developer through a simple TOML configuration and a plugin-based architecture, making it easy to master even if you are not familiar with the Rust language.
+
+You can download pre-compiled versions for various system architectures from the [Releases](https://github.com/vicanso/pingap/releases) page at any time.
+
+## Why Choose Pingap?
+
+-   🚀 **Extreme Performance and Reliability**: Inherited from `Pingora`'s asynchronous multi-threaded architecture, it provides network processing capabilities with extremely low latency and high throughput, ensuring your services are stable and efficient.
+
+-   ✍️ **Simple and Intuitive Configuration**: Say goodbye to complex configuration syntax. All configurations can be completed through user-friendly TOML files or an intuitive Web UI. It supports hot-reloading of configurations, enabling zero-downtime changes.
+
+-   🧩 **Highly Flexible Extensibility**: A powerful plugin system spans the entire lifecycle of request processing. Whether it's authentication, rate limiting, caching, or custom logic, you can easily combine them like building blocks to meet various complex scenarios.
 
 
-## Processing Flow
+## Core Features
+
+#### Powerful Routing and Load Balancing
+
+-   **Fine-grained Routing**: Supports multiple matching modes based on Host and Path (prefix, regex, exact), easily implementing complex routing distribution for a single service.
+-   **Flexible Rewriting**: A powerful built-in URL rewriting engine supports regular expressions, making it easy to modify paths or add prefixes.
+-   **Intelligent Load Balancing**: Offers multiple load balancing strategies, including round-robin, weighted, and session persistence (based on IP, Header, etc.).
+
+#### Modern Protocols and Security
+
+-   **Comprehensive Protocol Support**: Full support for HTTP/1.x, HTTP/2, and can handle gRPC-web and h2c traffic.
+-   **Automated TLS**: Integrated with Let's Encrypt for automatic certificate application and renewal. Supports dynamic certificate selection based on SNI, making it easy to manage multi-domain HTTPS services.
+
+#### Dynamic and Automated
+
+-   **Dynamic Configuration**: Supports loading configurations from the filesystem or etcd. Core configurations (routing, upstreams, etc.) can be hot-reloaded within 10 seconds without a restart.
+-   **Service Discovery**: In addition to static address configuration, it supports dynamic service discovery based on DNS and Docker Labels, seamlessly integrating with containerized environments.
+
+#### Observability and Operations
+
+-   **Multi-dimensional Monitoring**: Natively integrated with Prometheus for easy exposure of rich performance metrics, supporting both Pull and Push modes.
+-   **Distributed Tracing**: Built-in OpenTelemetry support helps you build complete distributed call chain monitoring.
+-   **Highly Customizable Logs**: Provides over 30 template variables, allowing you to customize the access log format as you wish.
+-   **Web Admin Interface**: Offers an out-of-the-box Web UI, making configuration management and service status monitoring more intuitive.
+
+## Request Processing Flow
+
+When an HTTP request arrives at Pingap, it goes through a standardized processing flow. You can think of it as an assembly line composed of several processing stations:
+
+1.  **Service Listening**: A Server receives the request on a specified port.
+2.  **Route Matching**: Based on the request's Host and Path, the most suitable Location rule is matched.
+3.  **Request Processing (Plugins)**: Before the request is forwarded to the upstream service, the request plugins bound to the Location are executed in order (e.g., authentication, rate limiting, request header modification).
+4.  **Forward to Upstream**: The request is forwarded to a healthy Upstream backend service according to the load balancing strategy.
+5.  **Response Processing (Plugins)**: After receiving the response from the upstream service, the response plugins are executed in order (e.g., compression, caching, modifying response headers).
+6.  **Return to Client**: The final processed response is returned to the client.
+7.  **Log Recording**: An access log is recorded according to the configured format.
+
+
+Here is a visualization of the process:
 
 ```mermaid
 graph TD;
-    server["HTTP Server"];
+    server["HTTP Service"];
     locationA["Location A"];
     locationB["Location B"];
-    locationPluginListA["Forward Plugin List A"];
-    locationPluginListB["Forward Plugin List B"];
+    locationPluginListA["Request Plugin List A"];
+    locationPluginListB["Request Plugin List B"];
     upstreamA1["Upstream Service A1"];
     upstreamA2["Upstream Service A2"];
     upstreamB1["Upstream Service B1"];
@@ -55,9 +80,9 @@ graph TD;
 
     server -- "Path:/rest/*"--> locationB
 
-    locationA -- "Execute Forward Plugins Sequentially" --> locationPluginListA
+    locationA -- "Execute request plugins in order" --> locationPluginListA
 
-    locationB -- "Execute Forward Plugins Sequentially" --> locationPluginListB
+    locationB -- "Execute request plugins in order" --> locationPluginListB
 
     locationPluginListA -- "Forward to: 10.0.0.1:8001" --> upstreamA1
 
@@ -71,40 +96,14 @@ graph TD;
 
     locationPluginListB -- "Processing Complete" --> response
 
-    upstreamA1 -- "Execute Response Plugins Sequentially" --> locationResponsePluginListA
-    upstreamA2 -- "Execute Response Plugins Sequentially" --> locationResponsePluginListA
+    upstreamA1 -- "Execute response plugins in order" --> locationResponsePluginListA
+    upstreamA2 -- "Execute response plugins in order" --> locationResponsePluginListA
 
-    upstreamB1 -- "Execute Response Plugins Sequentially" --> locationResponsePluginListB
-    upstreamB2 -- "Execute Response Plugins Sequentially" --> locationResponsePluginListB
+    upstreamB1 -- "Execute response plugins in order" --> locationResponsePluginListB
+    upstreamB2 -- "Execute response plugins in order" --> locationResponsePluginListB
 
     locationResponsePluginListA --> response
     locationResponsePluginListB --> response
 
     response["HTTP Response"] --> stop("Log Recording");
 ```
-
-Pingap's core functionality mainly handles the following logic (richer features are implemented through various plugins):
-
-- Selects corresponding location based on path and host, with path supporting prefix, regex, and exact matching
-- Location rewrites path according to configuration and adds corresponding request headers
-- Executes corresponding forward middleware
-- Executes corresponding response middleware
-- Outputs access logs according to configured log format
-
-
-## Plugin System
-
-Pingap's plugins are mainly divided into two categories: pre-request and post-response processing, providing compression, caching, authentication, flow control, and various other application requirements. Plugins are added to locations, and different plugins can be configured according to different needs, then added to locations to achieve different feature combinations. Note that plugins are executed in order, adjust their sequence as needed.
-
-[Plugin System](/pingap-en/docs/plugin)
-
-
-## Access Log Formatting
-
-Logs are now configured per server, so all locations under that server share the configuration. Various placeholders are supported, configure different access log outputs as needed.
-
-[Detailed Log Formatting Documentation](/pingap-en/docs/log)
-
-## Application Configuration
-
-[Detailed Application Configuration Documentation](/pingap-en/docs/config)

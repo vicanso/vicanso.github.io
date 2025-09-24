@@ -2,162 +2,235 @@
 sidebar_position: 31
 ---
 
-# Configuration Guide
+# Detailed Configuration Reference
 
-Pingap uses TOML for parameter configuration. For time-related configurations, use formats like `1s`, `1m`, `1h`. For storage size configurations, use formats like `1kb`, `1mb`, `1gb`. Detailed parameter descriptions are as follows:
+Pingap uses the TOML format for configuration, which offers excellent readability. All configuration items are split into different files for easy management.
 
-## Basic Configuration
+**Common Unit Formats**:
 
-- `name`: Instance name, defaults to `Pingap`. If deploying multiple instances on the same machine, configure different names
-- `error_template`: Optional parameter for HTML template used when errors occur. You can customize the error HTML template. When an error occurs, `{{version}}` will be replaced with the Pingap version, and `{{content}}` with specific error information
-- `pid_file`: Optional parameter, defaults to `/run/pingap.pid`. Configures the process ID record file path. For multiple instances on one machine, configure different paths
-- `upgrade_sock`: Optional parameter, defaults to `/tmp/pingap_upgrade.sock`. Configures the socket path for zero-downtime updates, used when switching between old and new Pingap processes. For multiple instances, configure different paths
-- `user`: Optional parameter, defaults to empty. Sets the daemon process execution user
-- `group`: Optional parameter, defaults to empty, similar to `user`
-- `threads`: Optional parameter, defaults to 1. Sets thread count for each service (like server TCP connections). If set to 0, uses CPU core count or cgroup core limit
-- `work_stealing`: Optional parameter, defaults to `true`. Enables work stealing between different threads within the same service
-- `grace_period`: Sets graceful exit waiting period, defaults to 5 minutes
-- `graceful_shutdown_timeout`: Sets graceful shutdown timeout, defaults to 5 seconds
-- `upstream_keepalive_pool_size`: Sets upstream connection pool size, defaults to `128`
-- `webhook`: Webhook request path
-- `webhook_type`: Webhook type, supports regular HTTP, `webcom`, and `dingtalk`
-- `webhook_notifications`: Webhook notification types, including `backend_status`, `lets_encrypt`, `diff_config`, `restart`, `restart_fail`, and `tls_validity`
-- `log_level`: Application log output level, defaults to `INFO`
-- `log_buffered_size`: Log buffer size, defaults to 0. If set below 4096, no buffer is used
-- `log_format_json`: Sets JSON formatted logging
-- `sentry`: Sentry DSN configuration, requires `full feature` version
-- `pyroscope`: Pyroscope connection address(`http://ip:port?app=pingap&tag:a=A&tag:b=B`), requires perf version as default version doesn't include pyroscope support
-- `auto_restart_check_interval`: Configuration update check interval, defaults to 90 seconds. If set below 1 second, checks are disabled
-- `cache_directory`: Sets cache directory. When set, uses file-based caching. File cache periodically removes long-unused files. Format: `/opt/pingap/cache?reading_max=1000&writing_max=500&cache_max=200&cache_file_max_weight=256`
-  - `reading_max`: Maximum concurrent cache reads (file cache only)
-  - `writing_max`: Maximum concurrent cache writes (file cache only)
-  - `cache_max`: Hot data cache limit in file cache, uses tinyufo for memory cache, defaults to 100. Set to 0 to disable memory hot cache
-  - `cache_file_max_weight`: Maximum cache file weight for tinyufo, defaults to 256, which means 256 * 4096 bytes, files larger than this value will not be cached to tinyufo
-- `cache_max_size`: Maximum cache space limit, shared by all services. Not applicable to file cache
+-   **Duration**: Uses human-readable suffixes, such as `5s` (5 seconds), `10m` (10 minutes), `1h` (1 hour).
+-   **Size**: Uses standard unit suffixes, such as `8kb` (8 KB), `16mb` (16 MB), `1gb` (1 GB).
 
-## Upstream
+## Basic Configuration (basic.toml)
 
-Upstream configuration defines backend service node lists. For domain configurations, the system adds all node addresses based on DNS resolution results (automatic DNS updates require configured service discovery). HTTP health checks are recommended for node status monitoring.
+This file defines the global behavior, process management, and fundamental performance parameters of a Pingap instance.
 
-Main parameters:
+### Instance and Process Management
 
-- `addrs`: Node address list, format: `ip:port [weight]`, weight is optional (defaults to 1)
-- `discovery`: Service discovery method. DNS recommended for domains, docker label for docker services
-- `update_frequency`: Service discovery update interval, recommended for dynamic node updates
-- `algo`: Node selection algorithm, supports `hash` and `round_robin`. Example: `hash:ip` selects nodes by IP hash. Defaults to `round_robin`
-- `sni`: Required SNI for HTTPS configurations
-- `verify_cert`: Certificate validation requirement for HTTPS
-- `health_check`: Node health check configuration, supports HTTP, TCP, and gRPC
-- `ipv4_only`: For domain configurations, restricts to IPv4 nodes only
-- `enable_tracer`: Enables tracer functionality for upstream connection tracking
-- `alpn`: ALPN configuration for TLS handshake, defaults to H1
-- `connection_timeout`: TCP connection timeout, default none
-- `total_connection_timeout`: Connection timeout including TLS handshake for HTTPS, default none
-- `read_timeout`: Read timeout, default none
-- `idle_timeout`: Idle timeout for connection recycling. Set to 0 for no connection reuse. Default none
-- `write_timeout`: Write timeout, default none
-- `tcp_idle`: TCP keepalive idle timeout
-- `tcp_interval`: TCP keepalive check interval
-- `tcp_probe_count`: TCP keepalive probe count
-- `tcp_recv_buf`: TCP receive buffer size
-- `tcp_fast_open`: Enable tcp fast open for upstream
+| Parameter      | Default                    | Description                                                                                                                             |
+| :------------- | :------------------------- | :-------------------------------------------------------------------------------------------------------------------------------------- |
+| `name`         | `Pingap`                   | The name of the instance, used to differentiate between instances in logs or monitoring.                                                |
+| `pid_file`     | `/run/pingap.pid`          | The file path for storing the process ID (PID). When deploying multiple instances on a single machine, each must have a different path. |
+| `upgrade_sock` | `/tmp/pingap_upgrade.sock` | The Unix Socket path used for zero-downtime graceful restarts. Must be modified when deploying multiple instances on a single machine.  |
+| `user`         |                            | If running as a daemon, specifies the user to run the service as.                                                                       |
+| `group`        |                            | If running as a daemon, specifies the group to run the service as.                                                                      |
 
-Note: All three parameters (`tcp_idle`, `tcp_interval`, `tcp_probe_count`) must be set for TCP keepalive.
+### Performance Tuning
 
-### Health Check Configuration
+| Parameter                      | Default | Description                                                                                                                                                   |
+| :----------------------------- | :------ | :------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `threads`                      | `1`     | The number of worker threads used by each service (e.g., TCP listener). Setting it to `0` determines the number automatically based on CPU cores.             |
+| `work_stealing`                | `true`  | Whether to allow threads within the same service to steal tasks from other threads, which usually improves performance.                                       |
+| `upstream_keepalive_pool_size` | `128`   | The size of the keep-alive connection pool to the upstream services.                                                                                          |
+| `listener_tasks_per_fd`        | `1`     | The number of tasks per listening file descriptor. Setting it >1 allows parallel acceptance of new connections, improving performance under high concurrency. |
 
-Supports three health check methods:
+### Observability and Notifications
 
-- `HTTP(S)`: `http://upstream-name/check-path?parameters`
-- `TCP`: `tcp://upstream-name?parameters`
-- `gRPC`: `grpc://upstream-name?service=service-name&parameters`
+| Parameter               | Default | Description                                                                                                                                                                        |
+| :---------------------- | :------ | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `log_level`             | `INFO`  | The output level for application logs (e.g., `DEBUG`, `INFO`, `WARN`, `ERROR`).                                                                                                    |
+| `log_buffered_size`     |         | The size of the log buffer (e.g., `8kb`). Setting this can improve logging performance under high concurrency. `0` means no buffer is used.                                        |
+| `log_format_json`       | `false` | Whether to format application logs as JSON.                                                                                                                                        |
+| `webhook`               |         | The URL for webhooks, used for sending various event notifications.                                                                                                                |
+| `webhook_type`          |         | The type of webhook, supports `http` (generic), `wecom` (WeCom), `dingtalk` (DingTalk).                                                                                            |
+| `webhook_notifications` |         | An array defining which event types to be notified of, such as `backend_status`, `restart`, `diff_config`, etc.                                                                    |
+| `sentry`                |         | The DSN address for Sentry, used for error collection. Requires the `full feature` version of Pingap.                                                                              |
+| `pyroscope`             |         | The connection address for Pyroscope, used for continuous performance profiling. Requires the `perf` version of Pingap; not recommended unless performance optimization is needed. |
 
-Common parameters:
-- `connection_timeout`: Connection timeout, default 3 seconds
-- `read_timeout`: Read timeout, default 3 seconds
-- `check_frequency`: Check interval, default 10 seconds
-- `success`: Consecutive successes needed for healthy status, default 1
-- `failure`: Consecutive failures needed for unhealthy status, default 2
-- `reuse`: Connection reuse option, default false
+### Other
 
-### Hash Algorithm Options
+| Parameter                     | Default | Description                                                                                                                       |
+| :---------------------------- | :------ | :-------------------------------------------------------------------------------------------------------------------------------- |
+| `error_template`              |         | The path to a custom HTML template for error pages. `{{version}}` and `{{content}}` in the template will be dynamically replaced. |
+| `grace_period`                | `5m`    | The total waiting period for a graceful exit.                                                                                     |
+| `graceful_shutdown_timeout`   | `5s`    | During a graceful exit, the timeout for waiting for each connection to close.                                                     |
+| `auto_restart_check_interval` | `90s`   | When using `--autorestart`, the interval for checking configuration changes, to avoid multiple restarts from rapid changes.       |
 
-When using hash for upstream backend selection:
+## Upstream Configuration (upstream.toml)
 
-- `hash:url`: URL-based forwarding for URL-cached services
-- `hash:ip`: IP-based forwarding for IP-persistent data services
-- `hash:header:X-User`: Forward based on `X-User` header value
-- `hash:cookie:uid`: Forward based on `uid` cookie value
-- `hash:query:appKey`: Forward based on `appkey` query parameter
-- `hash:path`: Path-based forwarding (default hash method)
+An Upstream defines a set of backend service nodes, including their addresses, load balancing strategy, and health checks.
 
-## Location
+### Core Configuration
 
-Location configures request matching rules, header insertion, and plugin associations. Key parameters:
+| Parameter          | Default       | Description                                                                                                                                   |
+| :----------------- | :------------ | :-------------------------------------------------------------------------------------------------------------------------------------------- |
+| `addrs`            | `[]`          | **(Required)** A list of backend service addresses. Format is `ip:port [weight]`, where `weight` is optional.                                 |
+| `discovery`        |               | Service discovery method. `dns` is recommended when using domain names; `docker` is available for container environments.                     |
+| `algo`             | `round_robin` | Load balancing algorithm. Supports `round_robin` and `hash` (consistent hashing).                                                             |
+| `update_frequency` |               | The update frequency for service discovery, e.g., `30s`.                                                                                      |
+| `health_check`     |               | Health check. Supports `http`, `tcp`, and `grpc` formats. It is recommended to configure this; if not, a default TCP port check will be used. |
+| `ipv4_only`        | `false`       | Whether to only use IPv4 addresses during DNS resolution.                                                                                     |
+| `dns_server`       |               | Specifies the server address for DNS service discovery, e.g., `8.8.8.8:53`. (For DNS service discovery)                                       |
+| `dns_domain`       |               | Specifies the domain for DNS discovery. (For DNS service discovery)                                                                           |
+| `dns_search`       |               | Specifies the DNS search domain. (For DNS service discovery)                                                                                  |
+| `enable_tracer`    | `false`       | Whether to enable tracing. When enabled, more observability metrics like connection count can be obtained.                                    |
 
-- `upstream`: Associated upstream configuration. Optional if all processing is handled by plugins
-- `path`: Matching path, detailed usage below
-- `host`: Matching domain(s), comma-separated for multiple. Use `~` prefix for regex
-- `proxy_set_headers`: Request headers to set/override when forwarding to upstream
-- `proxy_add_headers`: Request headers to add when forwarding to upstream
-- `rewrite`: Path rewrite rules
-- `weight`: Custom weight for location priority
-- `plugins`: Ordered plugin list for this location
-- `client_max_body_size`: Maximum client request body size
-- `max_processing`: Maximum concurrent request limit (0 for unlimited)
-- `grpc_web`: Enable grpc-web support
-- `enable_reverse_proxy_headers`: Whether to enable reverse proxy request headers. When enabled, the following headers will be added:
-  - `X-Real-IP`: Indicates the client's IP address
-  - `X-Forwarded-For`: Indicates proxy addresses, added according to x-forwarded-for format
-  - `X-Forwarded-Proto`: Indicates the request scheme, such as http or https
-  - `X-Forwarded-Host`: Indicates the request host
-  - `X-Forwarded-Port`: Indicates the server port
+💡 **Details on the 'hash' mode for 'algo'**
 
-### Path Matching Rules
+The `hash` mode enables session persistence, ensuring that requests from the same source are always forwarded to the same backend node.
 
-Location paths support these rules (highest to lowest priority):
+-   `hash:ip`: Hashes based on the client IP.
+-   `hash:url`: Hashes based on the full URL.
+-   `hash:path`: Hashes based on the request path (default).
+-   `hash:header:X-User-ID`: Hashes based on the value of a specified request header (`X-User-ID`).
+-   `hash:cookie:session_id`: Hashes based on the value of a specified Cookie (`session_id`).
+-   `hash:query:user_id`: Hashes based on the value of a specified query parameter (`user_id`).
 
-- Exact match: Prefix with `=`, e.g., `=/api` matches exact `/api` path
-- Regex match: Prefix with `~`, e.g., `~^/(api|rest)` matches paths starting with `/api` or `/rest`
-- Prefix match: e.g., `/api` matches paths starting with `/api`
+### Health Check (`health_check`)
 
-### Path Rewrite Rules
+It is strongly recommended to configure health checks. `Pingap` will automatically remove unhealthy nodes. If not configured, it will default to a TCP port check.
 
-Supports regex-based path rewriting (similar to nginx). One rule per configuration. Examples:
+-   **Format**:
+    -   `HTTP(S)`: `http(s)://<upstream_host>/<path>`
+    -   `TCP`: `tcp://<upstream_host>`
+    -   `gRPC`: `grpc://<upstream_host>?service=<service_name>`
+-   **Common Parameters**:
+    -   `check_frequency` (default `10s`): The interval between checks.
+    -   `success` (default `1`): Number of consecutive successes to mark as healthy.
+    -   `failure` (default `2`): Number of consecutive failures to mark as unhealthy.
+    -   `connection_timeout` (default `3s`): The connection timeout for checks.
 
-- `^/api/ /`: Replaces `/api/` prefix with `/`
-- `^/(\S*?)/ /api/$1/`: Adds `/api` prefix
-- `^/(\S*?)/api/(\S*?) /$1/$2`: Removes `/api` from path
+### Connection and Timeout Configuration
 
-### Supported Header Variables
+💡 **Best Practice**: Always set reasonable timeouts for production environments to prevent connection buildup caused by slow or unresponsive backend services, which can eventually bring down the entire proxy service.
 
-- `$hostname`: Host machine hostname
-- `$host`: Request host
-- `$scheme`: Request scheme (http/https)
-- `$remote_addr`: Client address
-- `$remote_port`: Client port
-- `$server_addr`: Server address
-- `$server_port`: Server port
-- `$proxy_add_x_forwarded_for`: Proxy addresses in x-forwarded-for format
-- `$upstream_addr`: Upstream address
+| Parameter                  | Default | Description                                                                                                                                  |
+| :------------------------- | :------ | :------------------------------------------------------------------------------------------------------------------------------------------- |
+| `total_connection_timeout` |         | The total timeout for the entire connection process (including TLS handshake).                                                               |
+| `connection_timeout`       |         | The timeout for establishing a TCP connection.                                                                                               |
+| `read_timeout`             |         | The timeout for reading a response from the backend.                                                                                         |
+| `write_timeout`            |         | The timeout for writing a request to the backend.                                                                                            |
+| `idle_timeout`             |         | The maximum idle time for a connection in the connection pool. Setting to `0` means no connection reuse; `null` uses the default reuse rule. |
 
-## Server
+### TLS/HTTPS Configuration
 
-- `server.x`: Server configuration where `x` is unique server name
-- `addr`: Listening address(es) in `ip:port` format, comma-separated for multiple
-- `access_log`: Optional, disabled by default. Supports formats: `combined`, `common`, `short`, `tiny`
-- `locations`: Location list for this server
-- `threads`: Default thread count, 0 for CPU core count, default 1
-- `tls_cipher_list`: Pre-TLS 1.3 cipher suites
-- `tls_ciphersuites`: TLS 1.3 cipher suites
-- `tls_min_version`: Minimum TLS version, default 1.2
-- `tls_max_version`: Maximum TLS version, default 1.3
-- `global_certificates`: Enable global certificates for unmatched server names
-- `enabled_h2`: Enable HTTP/2 (recommended, uses h2c for HTTP)
-- `tcp_idle`: TCP keepalive idle timeout
-- `tcp_interval`: TCP keepalive check interval
-- `tcp_probe_count`: TCP keepalive probe count
-- `tcp_fastopen`: Enable TCP fast open with backlog size
-- `prometheus_metrics`: Enable Prometheus metrics (full features version only)
-- `otlp_exporter`: OpenTelemetry collector address (full features version only)
-- `modules`: Enable specific modules (required for web-grpc)
+When the backend service is HTTPS, the following parameters need to be configured.
+
+| Parameter     | Default | Description                                                                                                                   |
+| :------------ | :------ | :---------------------------------------------------------------------------------------------------------------------------- |
+| `sni`         |         | **(Required)** The Server Name Indication in the TLS handshake.                                                               |
+| `verify_cert` | `true`  | Whether to verify the validity of the backend service's TLS certificate (can be set to `false` for self-signed certificates). |
+| `alpn`        | `H1`    | The protocol for TLS ALPN negotiation, such as `H2`.                                                                          |
+
+### Low-Level TCP Tuning
+
+❗ **Note**: It is recommended to keep the default values unless you are very clear about the effects of these parameters.
+
+| Parameter          | Default | Description                                                        |
+| :----------------- | :------ | :----------------------------------------------------------------- |
+| `tcp_idle`         |         | The idle probing duration for TCP Keep-Alive.                      |
+| `tcp_interval`     |         | The probe interval for TCP Keep-Alive.                             |
+| `tcp_probe_count`  |         | The number of probes for TCP Keep-Alive.                           |
+| `tcp_user_timeout` |         | TCP user timeout, defines how long unacknowledged data can remain. |
+| `tcp_recv_buf`     |         | The size of the TCP receive buffer.                                |
+| `tcp_fast_open`    | `false` | Whether to enable TCP Fast Open.                                   |
+
+## Route Configuration (location.toml)
+
+A `Location` is the bridge connecting requests to upstreams. It defines detailed matching rules and request handling logic.
+
+### Route Matching and Forwarding
+
+| Parameter  | Default | Description                                                                                                                                                                       |
+| :--------- | :------ | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `host`     |         | The domain to match. Multiple domains are separated by commas. A `~` prefix indicates a regular expression.                                                                       |
+| `path`     |         | The path to match. Supports prefix, regex, and exact matching.                                                                                                                    |
+| `upstream` |         | The name of the `Upstream` to forward requests to upon a successful match. Must be an existing `Upstream`.                                                                        |
+| `rewrite`  |         | A URL rewrite rule, in the format of `matching_regex` `replacement_content`.                                                                                                      |
+| `plugins`  | `[]`    | A list of plugins bound to this Location, executed in order.                                                                                                                      |
+| `weight`   |         | A custom weight. Generally not needed, but can be used in scenarios like setting a mock service for unavailability and then giving it the highest weight to disable all requests. |
+| `grpc_web` | `false` | Whether to enable support for grpc-web.                                                                                                                                           |
+
+📖 **Path Matching Rules and Priority**
+
+-   **Exact Match**: Starts with `=`, e.g., `=/api/user`, matches only requests where the path is exactly `/api/user`.
+-   **Regex Match**: Starts with `~`, e.g., `~^/(api|rest)`, uses a regular expression to match.
+-   **Prefix Match**: e.g., `/api`, matches all requests starting with `/api`.
+
+📖 **Rewrite Rules**
+
+-   Remove path prefix: `^/api/user-service/(.*) /$1`
+-   Add path prefix: `^/(.*) /v2/api/$1`
+-   Reorganize path parameters: `^/resource/users/id/(\\d+) /resource/users/$1`
+
+### Request Header Handling
+
+| Parameter                      | Default | Description                                                                                                                       |
+| :----------------------------- | :------ | :-------------------------------------------------------------------------------------------------------------------------------- |
+| `enable_reverse_proxy_headers` | `false` | Whether to automatically add standard reverse proxy headers like `X-Forwarded-*` and `X-Real-IP`. Strongly recommended to enable. |
+| `proxy_set_headers`            | `[]`    | Sets a forwarded request header. If the header already exists, its value is overwritten.                                          |
+| `proxy_add_headers`            | `[]`    | Adds a forwarded request header. If the header already exists, a new value is appended.                                           |
+
+### Available Variables
+
+When setting request headers, you can use the following dynamic variables:
+
+`$hostname`, `$host`, `$scheme`, `$remote_addr`, `$remote_port`, `$server_addr`, `$server_port`, `$upstream_addr`, etc.
+
+### Security and Limits
+
+| Parameter              | Default | Description                                                                                |
+| :--------------------- | :------ | :----------------------------------------------------------------------------------------- |
+| `client_max_body_size` |         | The maximum allowed client request body size, e.g., `10mb`. No limit by default.           |
+| `max_processing`       | `0`     | The maximum number of requests this Location can process concurrently. `0` means no limit. |
+
+## Server Configuration (server.toml)
+
+A `Server` is the network entry point for Pingap. It defines the listening port, protocol, and the set of `Location` rules bound to it. The `x` in the filename (`servers.x.toml`) is the unique name of the service.
+
+### Core Configuration
+
+| Parameter   | Default | Description                                                                                                                                   |
+| :---------- | :------ | :-------------------------------------------------------------------------------------------------------------------------------------------- |
+| `addr`      |         | **(Required)** The listening address, in `ip:port` format. Multiple addresses are separated by commas.                                        |
+| `locations` | `[]`    | **(Required)** A list of `Location` names bound to this `Server`. Matching is based on the `Location`'s weight, not their order in this list. |
+
+### TLS/HTTPS
+
+| Parameter             | Default            | Description                                                                                 |
+| :-------------------- | :----------------- | :------------------------------------------------------------------------------------------ |
+| `global_certificates` | `false`            | Whether to enable the global certificate configuration. Must be enabled for HTTPS services. |
+| `tls_min_version`     | `1.2`              | The minimum supported TLS version.                                                          |
+| `tls_max_version`     | `1.3`              | The maximum supported TLS version.                                                          |
+| `tls_cipher_list`     | (Recommended list) | The cipher suites for TLS 1.2 and below.                                                    |
+| `tls_ciphersuites`    | (Recommended list) | The cipher suites for TLS 1.3.                                                              |
+
+### Protocols and Modules
+
+| Parameter    | Default | Description                                                                                                          |
+| :----------- | :------ | :------------------------------------------------------------------------------------------------------------------- |
+| `enabled_h2` | `false` | Whether to enable HTTP/2 support. If enabled, HTTPS connections will negotiate H2, and HTTP connections will be H2C. |
+| `modules`    | `[]`    | Enables specific feature modules, such as `web-grpc`, etc.                                                           |
+
+### Performance and Connection Tuning
+
+| Parameter                  | Default | Description                                                                                                                                             |
+| :------------------------- | :------ | :------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `threads`                  | `1`     | The number of worker threads specifically allocated for this Server.                                                                                    |
+| `reuse_port`               | `false` | Whether to enable `SO_REUSEPORT`, allowing multiple processes/threads to listen on the same port, which can improve performance under high concurrency. |
+| `downstream_read_timeout`  |         | The timeout for reading a request from the client.                                                                                                      |
+| `downstream_write_timeout` |         | The timeout for writing a response to the client.                                                                                                       |
+| `tcp_fastopen`             |         | Enables TCP Fast Open and sets the queue size (backlog).                                                                                                |
+| `tcp_idle`                 |         | The idle probing duration for TCP Keep-Alive.                                                                                                           |
+| `tcp_interval`             |         | The probe interval for TCP Keep-Alive.                                                                                                                  |
+| `tcp_probe_count`          |         | The number of probes for TCP Keep-Alive.                                                                                                                |
+| `tcp_user_timeout`         |         | TCP user timeout, defines how long unacknowledged data can remain.                                                                                      |
+
+### Observability
+
+| Parameter              | Default | Description                                                                                                                 |
+| :--------------------- | :------ | :-------------------------------------------------------------------------------------------------------------------------- |
+| `access_log`           |         | The directory, file, and format template for access logs. Left empty to disable. E.g., `/var/log/pingap.log {when} {path}`. |
+| `prometheus_metrics`   |         | The path for exposing Prometheus metrics, e.g., `/metrics`.                                                                 |
+| `otlp_exporter`        |         | The path for exposing OpenTelemetry metrics, e.g., `/metrics`.                                                              |
+| `enable_server_timing` | `false` | Whether to add the `Server-Timing` header to responses, to show processing duration for frontend performance analysis.      |

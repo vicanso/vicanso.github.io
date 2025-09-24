@@ -49,8 +49,8 @@ RUST_LOG=INFO pingap -c /opt/pingap/conf --admin=pingap:YourSecurePassword@127.0
 在`pingap`中，一个完整的代理服务由三个核心概念组成，它们之间存在依赖关系：
 
 1. 上游 (Upstream): 定义了后端真实服务的地址和属性（如健康检查、超时等）。
-2. 路由 (Location): 定义了请求的匹配规则（如域名、路径）以及将请求转发到哪个 上游。
-3. 服务 (Server): 定义了 pingap 监听的端口和协议，并绑定一组 路由 规则。
+2. 路由 (Location): 定义了请求的匹配规则（如域名、路径）以及将请求转发到哪个上游。
+3. 服务 (Server): 定义了 `pingap` 监听的端口和协议，并绑定一组 `路由` 规则。
 
 因此，我们的配置顺序应该是：先创建上游 → 再创建路由 → 最后创建服务。
 
@@ -84,6 +84,7 @@ RUST_LOG=INFO pingap -c /opt/pingap/conf --admin=pingap:YourSecurePassword@127.0
 - 路径(Path): 填写匹配的路径规则，例如`/app`。
 
 💡 最佳实践：启用反向代理请求头
+
 若`Pingap`为接入节点，建议勾选`启用反向代理请求头`。这会自动添加`X-Forwarded-For, X-Forwarded-Proto`等标准代理请求头，方便后端应用获取真实的客户端信息。
 
 ❗ 注意事项：如果您的上游服务（Upstream）本身也是一个反向代理（如 Nginx），并且它依赖`Host`作为路由转发，请务必在“设置转发请求头”中，将`Host`设置为上游服务期望的值。

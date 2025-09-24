@@ -30,7 +30,7 @@ description: 通过实施“双重提交 Cookie” (Double Submit Cookie) 模式
 
 ## 配置参数
 
-在 `plugin.csrf.toml` 文件中进行配置。
+在 `plugins.csrf.toml` 文件中进行配置。
 
 | 参数         | 类型   | 是否必需 | 默认值           | 说明                                                                                                                 |
 | :----------- | :----- | :------- | :--------------- | :------------------------------------------------------------------------------------------------------------------- |
@@ -52,7 +52,7 @@ description: 通过实施“双重提交 Cookie” (Double Submit Cookie) 模式
     ```
     > **示例输出**: `aBcDeFgHiJkLmNoPqRsTuVwXyZ1234567890/=+` (请使用您自己生成的密钥)
 
-2.  **配置插件 (`plugin.csrf-api.toml`)**:
+2.  **配置插件 (`plugins.csrf-api.toml`)**:
     ```toml
     # 必须与所有 Pingap 实例共享的密钥
     key = "aBcDeFgHiJkLmNoPqRsTuVwXyZ1234567890/="

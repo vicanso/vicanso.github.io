@@ -2,226 +2,145 @@
 sidebar_position: 11
 ---
 
-# Getting Started
+# Getting Started Tutorial
 
-This section explains how to create a reverse proxy service from scratch. To use the upgrade feature for configuration updates, pingap needs to run as a background process.
+Welcome to Pingap! This tutorial will guide you from scratch, step by step, to build, configure, and run a fully-featured, high-performance reverse proxy service. We will start with the simplest launch, complete all core configurations through the Web admin interface, and finally run it stably in daemon mode.
 
-For configuration updates, pingap provides two modes:
+## Prerequisites
 
-1. **Hot Reload Mode** (`--autoreload`):
-   - Suitable for updating upstream, location, certificate and plugin configurations
-   - Changes take effect without restart
-   - Recommended for scenarios that only need hot reload support
+Before we begin, please ensure you have downloaded and installed the `pingap` binary executable.
 
-2. **Restart Update Mode** (`--autorestart`):
-   - Suitable for updating server and other basic configurations
-   - Requires service restart to take effect
-   - Recommended for scenarios requiring frequent basic configuration changes
-
-## Choose Configuration Storage Directory
-
-Pingap supports both file and etcd storage methods for configuration. The only difference is in the startup parameters. This example uses the simpler file storage method.
-
-When using file storage, pingap provides two modes:
-
-1. Directory Mode (Recommended):
-   - Specify a directory as the configuration path
-   - Automatically generates multiple toml configuration files by category
-   - Web management interface uses this mode by default
-
-2. Single File Mode:
-   - Specify a file as the configuration path
-   - All configurations are saved in one file
-
-Startup example:
-```bash
-RUST_LOG=INFO pingap -c /opt/pingap/conf
-```
-
-After startup, pingap will automatically load all toml configuration files from the specified directory. Since the directory is empty in this example, there won't be any actual effect yet.
-
-## Enable Web Management Backend
-
-For toml configuration details, please refer to the [Application Configuration Guide](/pingap-en/docs/config). It's recommended to use the Web management backend for configuration, which supports the following authentication methods:
-
-1. Basic Auth authentication (optional)
-2. Base64 encoded authentication string
-
-### Basic Usage
+This tutorial will use the filesystem to store all configuration information, which is the most straightforward method for most scenarios. We will store all configuration files in the `/opt/pingap/conf` directory.
 
 ```bash
-# Using username and password
-RUST_LOG=INFO pingap -c /opt/pingap/conf --admin=pingap:123123@127.0.0.1:3018
-
-# Using Base64 encoding (base64("pingap:123123"))
-RUST_LOG=INFO pingap -c /opt/pingap/conf --admin=cGluZ2FwOjEyMzEyMw==@127.0.0.1:3018
-
-# Reuse existing port and specify path prefix
-sudo RUST_LOG=INFO pingap -c /opt/pingap/conf --admin=pingap:123123@127.0.0.1:80/pingap
+# Create the configuration directory
+mkdir -p /opt/pingap/conf
 ```
 
-Default configuration details:
-- Management backend address: `http://127.0.0.1:3018/`
-- Default username: pingap
-- Default password: 123123
-- Security limit: IPs with multiple password failures will be locked for 5 minutes
+### Step 1: First Start and the Web Admin Interface
 
-![Pingap](./img/pingap-en.jpg)
+For beginners, the quickest way to get started is to launch Pingap with its built-in Web admin interface enabled. This allows us to complete all configurations in a graphical interface.
 
-After successful startup, visit `http://127.0.0.1:3018/` to access the configuration interface. This interface provides complete configuration management functionality, including basic settings, upstream services, routing rules, etc., which we'll cover in detail in subsequent sections.
+Execute the following command to start `pingap` for the first time:
 
-:::caution Security Note
-To prevent brute force attacks, the management backend implements a login protection mechanism: IPs with multiple incorrect password attempts will be temporarily locked for 5 minutes.
-:::
+```bash
+# -c specifies the configuration directory
+# --admin enables the Web admin interface, format: <user>:<password>@<listen_addr>
+RUST_LOG=INFO pingap -c /opt/pingap/conf --admin=pingap:YourSecurePassword@127.0.0.1:3018
+```
 
-## Basic Configuration
+**Command Breakdown**:
 
-Basic configuration usually can keep default values without special adjustment. However, pay attention in these cases:
+-   `RUST_LOG=INFO`: Sets the log level to `INFO` to easily observe the program's running status. If you need more detailed logs, you can set it to `DEBUG`.
+-   `-c /opt/pingap/conf`: Specifies the storage directory for configuration files. `pingap` will automatically read and write `*.toml` configuration files in this directory.
+-   `--admin=pingap:YourSecurePassword@127.0.0.1:3018`: Enables the admin interface.
+    -   `Username`: pingap
+    -   `Password`: YourSecurePassword (Please be sure to replace this with your own strong password!)
+    -   `Listen Address`: `127.0.0.1:3018`, which means it only listens on port 3018 locally. For a server, you can set this to `0.0.0.0:3018` or the server's IP.
 
-- When running multiple pingap instances on the same machine:
-  - Must set different `process id file` for each instance
-  - Must set different `upgrade sock` paths for each instance
-  - This prevents configuration conflicts between multiple instances
+🔒 **Security Tip**
+To prevent brute-force attacks, the admin interface has a built-in login protection mechanism: if the same IP enters the wrong password multiple times, it will be temporarily locked for 5 minutes.
 
-:::tip Best Practice
-It's not recommended to run multiple pingap instances on the same machine. If you need to support multiple service ports, consider configuring different servers instead.
-:::
+Now, open your browser and navigate to `http://127.0.0.1:3018`. You will see the login page. Enter the username and password you just set to access the admin interface.
 
-![Pingap Basic Config](./img/basic-info-en.jpg)
+### Step 2: Understanding the Core Configuration Flow
 
-## Upstream Service Configuration
+In `pingap`, a complete proxy service is composed of three core concepts with a dependency relationship:
 
-Due to configuration dependencies, we need to configure upstream services first. Click the "Add Upstream Service" button in the management interface to configure:
+1.  **Upstream**: Defines the addresses and properties of the real backend services (e.g., health checks, timeouts).
+2.  **Location**: Defines the matching rules for requests (e.g., domain, path) and which **Upstream** to forward them to.
+3.  **Server**: Defines the port and protocol that Pingap listens on and binds a set of **Location** rules to it.
 
-![Pingap Upstream Config](./img/upstream-add-en.jpg)
+Therefore, our configuration sequence should be: first create an Upstream → then create a Location → and finally create a Server.
 
-### Basic Configuration
-- Address format is `ip:port`
-- Uses HTTP protocol by default
-- If `sni` is configured, automatically uses HTTPS protocol to access upstream nodes
+### Step 3: Completing the Proxy Configuration via the Web UI
 
-### Advanced Configuration
-Although most configuration items have default values, it's recommended to expand the advanced configuration panel:
+Next, we will use the Web interface to complete a classic configuration that proxies requests from `http://<your-domain>/app/` to the backend service `http://127.0.0.1:8080/`.
 
-![Pingap Upstream Detail](./img/upstream-detail-en.jpg)
+#### 1. Add an Upstream
 
-1. **Timeout Settings**
-   - Recommended to set various timeout values based on actual needs
-   - Not recommended to use default no-timeout settings
+The Upstream is the foundation of all configurations.
 
-2. **HTTPS Related**
-   - `sni`: Server Name Indication for HTTPS connections
-   - `verify certificate`: Controls HTTPS certificate verification
-   - These settings can be ignored if using HTTP protocol
+-   Click on "Upstream Configuration" in the left-hand menu. It defaults to adding a new one; to modify, select the corresponding `Upstream`.
+-   **Name**: Enter a meaningful name, for example, `my-app-service`.
+-   **Addresses**: Enter the actual address of the backend service, for example, `127.0.0.1:8080`. The weight is generally not needed. If there are multiple nodes, configure them one by one. If the upstream is an HTTPS node, SNI needs to be configured.
 
-3. **Health Check**
-   - Example: `http://charts/ping`
-   - Where `charts` is the Host header for requests
-   - Health check directly connects to configured upstream address
-   - Note: Domain names are not resolved during checks
+💡 **Best Practice**: It is strongly recommended that you expand the "Advanced Configuration" panel to configure settings.
 
-## Location Configuration
+-   **Timeout Settings**: Set reasonable connection, read, and write timeouts based on your application's characteristics to prevent the proxy from being dragged down by unresponsive backend services.
+-   **Health Check**: Set a health check endpoint (e.g., `http://host/ping`). `pingap` will automatically remove unhealthy backend nodes to improve service availability. The `host` part will be automatically replaced with the `ip:port` form during the check. If not set, it defaults to a TCP port check.
 
-Location configuration is mainly used to set request routing rules, including domain (host), path, and corresponding upstream services. The configuration interface looks like this:
+#### 2. Add a Location
 
-![Pingap Location Detail](./img/location-detail-en.jpg)
+The Location is responsible for forwarding requests that meet certain conditions to a specified upstream.
 
-### Domain (Host) Configuration
-- Set according to service domain
-- Supports multiple domains: separate with `,`
-- Supports regular expressions: start with `~`
-- Can be left unset if all services use the same domain
+-   Click on "Location Configuration" in the left-hand menu. It defaults to adding a new one; to modify, select the corresponding `Location`.
+-   **Name**: Enter a meaningful name, for example, `route-for-my-app`.
+-   **Upstream**: Select the `my-app-service` we just created from the dropdown.
+-   **Host**: Enter the domain name you want to serve externally, for example, `app.example.com`. This can be left blank if matching by `Path` is sufficient.
+-   **Path**: Enter the path matching rule, for example, `/app`.
 
-### Path Configuration
-- Used to forward different path prefixes to corresponding services
-- Supports various matching rules (see location configuration documentation for details)
+💡 **Best Practice**: Enable reverse proxy headers
+If `Pingap` is the entry node, it is recommended to check `Enable Reverse Proxy Headers`. This will automatically add standard proxy headers like `X-Forwarded-For` and `X-Forwarded-Proto`, making it convenient for the backend application to get real client information.
 
-### Request Header Processing
-Supports two processing methods:
-1. **Set Forward Headers**
-   - Overwrites original header values
-   - Suitable for unique headers like `Host`
+❗ **Note**: If your Upstream service is also a reverse proxy (like Nginx) and it relies on the `Host` for routing, be sure to set the `Host` to the value expected by the upstream service in "Set Forwarded Request Headers".
 
-2. **Add Forward Headers**
-   - Preserves original headers
-   - Adds new header values
+#### 3. Configure a Server
 
-### Route Rewriting
-- Configure using regular expressions
-- Format: `match_value replacement_value` (separated by space)
+The Server is the entry point of the proxy. It listens on a specified port and passes requests to the Locations for processing.
 
-:::tip Note
-When the upstream service itself is a reverse proxy and matches based on host, you need to set the corresponding `Host` header in the location configuration.
-:::
+-   Click on "Server Configuration" in the left-hand menu. It defaults to adding a new one; to modify, select the corresponding `Server`.
+-   **Name**: Enter a meaningful name, for example, `main-http-server`.
+-   **Listen Address**: Enter the address and port for Pingap to serve externally, for example, `0.0.0.0:6188` (listens on port 6188 of all network interfaces).
+-   **Locations**: Check the `route-for-my-app` we just created in the dropdown. If you select multiple locations, they will be matched based on each location's weight.
 
-## Server Configuration
+💡 **Best Practice**: Configure access logs. To facilitate troubleshooting, it is recommended to configure access logs. Choose a preset template (like `common` or `combined`) in "Access Log Format" or customize the format as needed.
 
-Server configuration includes several key parts:
+At this point, all basic configurations are complete! These settings have been automatically saved to `.toml` files in the `/opt/pingap/conf` directory.
 
-### Listen Address
-- Supports configuring multiple service addresses, separated by `,`
-- Supports both IPv4 and IPv6
-- Example: `127.0.0.1:3001,[::1]:3001` (listening on port 3001 for both IPv4 and IPv6)
 
-### Access Log
-- Access logs are generated only when format template is configured
-- Provides four preset types:
-  - `tiny`
-  - `short`
-  - `common`
-  - `combined`
-- Recommendation: Customize log format based on actual needs rather than using presets
+### Step 4: Running in the Background and Auto-Updating
 
-### Service Threads
-- Default thread count: 1
-- Use case: Sufficient for general forwarding services
-- Note: Increasing thread count won't bring linear performance improvement
+Now, we want `pingap` to run in the background like a real service and automatically apply new configurations when they change.
 
-![Pingap Server Config](./img/server-detail-en.jpg)
+First, press `Ctrl+C` to stop the currently running foreground `pingap` process.
 
-## Background Operation and Auto-Restart
-
-All program configurations are complete, but since the program is loading an older version of the configuration, a restart is needed to load the new configuration. Pingap also supports detecting configuration updates and automatically triggering upgrade operations, launching new instances and closing current ones when updates are detected.
-
-The final adjusted program startup command includes these aspects:
-
-- Program runs as background service
-- Program automatically detects configuration updates and restarts if needed. For upstream and location updates, changes are applied in near real-time without restart
-- Logs are written to /opt/pingap/pingap.log
+Then, start it with this more complete command:
 
 ```bash
 RUST_LOG=INFO pingap -c /opt/pingap/conf \
-  -d --log=/opt/pingap/pingap.log \
-  --autorestart \
-  --admin=pingap:123123@127.0.0.1:3018
+  -d \
+  --log=/opt/pingap/pingap.log \
+  --autoreload \
+  --admin=pingap:YourSecurePassword@127.0.0.1:3018
 ```
 
-### Configuration Verification
+**New Argument Breakdown**:
 
-1. Access Test:
-   - Open browser and visit `http://127.0.0.1:6188/charts/`
-   - Confirm service is running normally
+-   `-d`: Daemonize, runs the program as a background daemon process.
+-   `--log=/opt/pingap/pingap.log`: Outputs logs to the specified file instead of the terminal.
+-   `--autoreload`: Hot-reload mode (recommended for production). `pingap` will periodically (about every 10 seconds) check for changes in the configuration files. When configurations for `Upstream`, `Location`, `Plugin`, and `Certificate` change, it will apply the new settings without restarting and without interrupting service.
 
-2. Configuration Update Test:
-   - Modify `location` configuration: change path from `/charts` to `/pingap`
-   - Modify `rewrite` rules
-   - Observe log output:
-     ```
-     2024-06-30T13:04:28.524079+08:00  INFO reload location success
-     ```
+#### When to use `--autorestart`?
 
-### Important Notes
+`--autorestart` is a restart-based update mode. It is used for changing more fundamental configurations, such as a Server's listening port. This mode automatically uses the `upgrade` method to transfer requests from the old instance to the new one, but if you change the listening port, the old port might not be closed. It is recommended only for testing environments or when frequent changes to basic configurations are needed. In production, for changes to basic configurations (which are typically infrequent), it is recommended to perform a graceful restart (`upgrade`) manually.
 
-1. **Configuration Update Mechanism**:
-   - Configuration check intervals:
-     - Regular restart check: 90 seconds
-     - Hot reload check: 10 seconds
-   - To avoid frequent restarts, configuration updates have about 2 minutes delay
+### Step 5: Verifying the Configuration
 
-2. **Update Methods**:
-   - Hot reload supports:
-     - `upstream`, `location`, `certificate`, `plugin` configurations
-     - Takes effect without restart
-   - Full restart update:
-     - Upgrade switching supported only on Linux systems
-     - Other configuration changes require restart to take effect
+Now that `pingap` is running stably in the background, let's verify that our configuration is working.
+
+#### 1. Accessing the Service:
+
+Open a browser or use `curl` to visit `http://<pingap-server-ip>:6188/app/some/path`. If everything is correct, the request should be successfully forwarded to the backend at `http://127.0.0.1:8080/app/some/path`.
+
+#### 2. Testing Hot-Reloading:
+
+Log in to the Web admin interface at `http://127.0.0.1:3018`.
+
+Go to the "Location" management page, change the path of `route-for-my-app` from `/app` to `/pingap-app`, and save.
+
+Wait a moment (about 10 seconds) and watch the log file `tail -f /opt/pingap/pingap.log-YYYY-MM-DD`. You should see a log entry similar to `reload location success`.
+
+At this point, visiting `http://<pingap-server-ip>:6188/app/` will fail, while visiting `http://<pingap-server-ip>:6188/pingap-app/` will succeed.
+
+This proves that Pingap's dynamic hot-reloading capability is working, and you can adjust routing and upstream policies at any time without interrupting the service.

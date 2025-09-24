@@ -1,38 +1,59 @@
 ---
-sidebar_position: 81
+sidebar_position: 151
 ---
 
-# Frequently Asked Questions
+# Frequently Asked Questions (FAQ)
 
-## Host Header Configuration
+This section gathers some of the most common questions and their solutions that users encounter while using `Pingap`.
 
-When multiple services share the same port and are distinguished by the `Host` header field, you need to explicitly set the forwarded `Host` header in the Location configuration.
+#### Q: I have multiple services using the same port. Why is the routing incorrect when I access them via domain names?
 
-## Upstream Address Configuration Notes
+**A**: This is because when multiple services share the same IP and port, `Pingap` needs to rely on the `Host` field in the request header to differentiate and forward requests to the correct backend. By default, `Pingap` passes the client's original `Host` header directly to the backend.
 
-Upstream addresses consist of IP and port. If no port is specified, HTTP services default to port `80`, and HTTPS services default to port `443`.
+**Solution**: If your upstream service also needs to process requests based on the `Host` header, you must explicitly set the `Host` to the domain name your backend service expects in the **Set Forwarded Request Headers (`proxy_set_headers`)** option within the **Location configuration**.
 
-Important note: When using a domain name as an address, the default service discovery mechanism only resolves the domain name to IP(s) during initialization (if multiple IPs are resolved, multiple addresses will be added). Subsequent changes to the domain's IP mapping won't be detected in real-time. If your scenario involves dynamically changing IP addresses, it's recommended to use DNS service discovery.
+#### Q: I updated the `DNS` record for my domain. Why isn't `Pingap` forwarding to the new `IP` address?
 
-## Thread Configuration Notes
+**A**: When handling `Upstream` addresses configured as domain names, `Pingap`'s default service discovery mechanism only performs a `DNS` resolution once at startup. If it resolves to multiple `IPs`, they will all be added as nodes, but any subsequent changes to the `DNS` record will not be automatically detected.
 
-Pingap's thread configuration is Server-based, with a default value of 1. You can:
-- Set thread count individually for each Server
-- Set a global default value in the basic configuration (Servers without individual settings will use this value)
-- Set it to 0 to automatically use the same number of threads as CPU cores
+**Solution**: If your upstream service's `IP` address changes dynamically (e.g., in a cloud environment or Kubernetes), you should configure `DNS` service discovery for that `Upstream`. To do this, add `discovery = "dns"` and set a reasonable `update_frequency` (e.g., `30s`) in the `Upstream` configuration.
 
-## HTTPS Upstream Configuration
+#### Q: How do I configure the number of threads for `Pingap`? How does it work?
 
-When using HTTPS protocol for Upstream, you need to:
-1. Set the corresponding SNI (Server Name Indication)
-2. If upstream node port is not specified, the HTTPS standard port `443` will be used by default
+**A**: The number of worker threads in `Pingap` can be finely controlled, with the following configuration priority:
 
-## Multi-domain HTTPS Service Configuration
+1.  **Server-level configuration**: The `threads` value set for a specific service in `server.toml` has the highest priority.
+2.  **Global basic configuration**: The `threads` value set in `basic.toml` serves as the default for all `Server`s that do not have their own thread count configured.
+3.  **Program default**: If neither of the above is configured, it defaults to `1` thread.
 
-To provide HTTPS services for multiple domains on the same Server, simply:
-1. Add the corresponding certificates in certificate management
-2. Configure the service to "Use global certificates of the application"
+Additionally, setting `threads` to `0` is a special mode that tells `Pingap` to automatically set the number of threads equal to the number of `CPU` cores in the current environment.
 
-## Disable ACME
+#### Q: What should I be aware of when my backend service (Upstream) uses the HTTPS protocol?
 
-Pingap supports using ACME to automatically obtain certificates. If the domain name resolves to multiple IPs, only one instance needs to enable ACME. If you need to disable ACME, set the environment variable `PINGAP_DISABLE_ACME=true`.
+**A**: When you configure an `Upstream` that uses HTTPS, please ensure you complete the following two key configurations:
+
+1.  **Set SNI**: You must correctly fill in the `sni` field in the `Upstream` configuration. Its value is typically the domain name of your backend service. This is crucial for a successful TLS handshake.
+2.  **Port**: If your backend service uses the standard `443` port, you can omit the port number; otherwise, be sure to specify the port explicitly in `addrs`.
+3.  If you are using a self-signed certificate, set the certificate verification option to `No`.
+
+#### Q: How can I serve multiple different domains over HTTPS on the same port?
+
+**A**: `Pingap` supports multi-domain `HTTPS` services based on `SNI`, and the configuration is very simple:
+
+1.  **Add all certificates**: In the **Certificate Management** interface, upload or apply for the corresponding `HTTPS` certificates for all the domains you need to support.
+2.  **Enable global certificates**: In the `server.toml` configuration file, find the `Server` that provides `HTTPS` services and make sure the **Enable Global Certificate Configuration (`global_certificates`)** option is checked.
+
+After completing these two steps, `Pingap` will automatically select and provide the correct certificate based on the domain name requested by the client during the `TLS` connection.
+
+#### Q: My service is deployed on multiple IPs. How do I prevent all instances from trying to apply for a `Let's Encrypt` certificate?
+
+**A**: This is a very typical multi-node deployment scenario. When a domain name resolves to multiple IP addresses (corresponding to multiple `Pingap` instances), you must ensure that only one instance is responsible for the `ACME` certificate application and renewal. If all instances try to apply, you will quickly hit `Let's Encrypt`'s rate limits, and it may lead to application failure due to validation conflicts.
+
+**Solution**: On all `Pingap` instances except for the primary one, disable the `ACME` feature by setting an environment variable.
+
+```bash
+PINGAP_DISABLE_ACME=true
+```
+
+This way, only the primary instance will handle certificate matters, while the other instances will wait for and share the certificate obtained by the primary instance (usually achieved through shared storage or a configuration center). It is recommended that only one instance be responsible for applying for certificates, regardless of whether you are using the `http-01 challenge` or the `dns-01 challenge`.
+

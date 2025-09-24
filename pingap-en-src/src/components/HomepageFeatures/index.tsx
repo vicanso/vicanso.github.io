@@ -14,7 +14,7 @@ const FeatureList: FeatureItem[] = [
     Svg: require("@site/static/img/undraw_docusaurus_mountain.svg").default,
     description: (
       <>
-        Single executable file, supporting both ARM and x86 architectures. Provides musl builds for compatibility with older Linux versions, and offers web-based configuration management for quick setup.
+        Pingap is distributed as a single, self-contained executable with native support for both ARM and x86 architectures. The project provides a fully statically linked build based on musl, which eliminates dependencies on system dynamic libraries. This ensures excellent compatibility and an out-of-the-box deployment experience across a wide range of Linux distributions, including legacy versions. Furthermore, its built-in web management interface visualizes the complex configuration process, greatly simplifying service setup, deployment, and routine maintenance.
       </>
     ),
   },
@@ -23,7 +23,7 @@ const FeatureList: FeatureItem[] = [
     Svg: require("@site/static/img/undraw_docusaurus_tree.svg").default,
     description: (
       <>
-        Plugin-based architecture to meet various application scenarios, such as application authentication, data compression, static file directory service, and caching.
+        The system's core is built upon a flexible, plugin-based architecture, enabling it to adapt to diverse use cases and complex business requirements by loading different modules. The built-in plugins cover critical functional areas, including: Authentication and Authorization, dynamic data compression, high-performance static asset serving, and multi-level caching strategies.
       </>
     ),
   },
@@ -32,7 +32,8 @@ const FeatureList: FeatureItem[] = [
     Svg: require("@site/static/img/undraw_docusaurus_react.svg").default,
     description: (
       <>
-        Built with Rust and Pingora, benefiting from Rust's high-performance characteristics, Pingap delivers impressive performance while maintaining safety and reliability.
+        Pingap is developed in Rust and built upon the battle-tested Pingora asynchronous networking framework. Leveraging Rust's memory safety guarantees and its fearless concurrency model, Pingap achieves exceptional network throughput and low-latency performance while fundamentally eliminating common memory safety vulnerabilities. This technical foundation ensures the service delivers high security and operational reliability, even in demanding production environments.
+
       </>
     ),
   },

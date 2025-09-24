@@ -1,23 +1,23 @@
 ---
-sidebar_position: 100
+sidebar_position: 161
 ---
 
 # Performance Testing
 
-Performance testing is a complex process that depends on various scenarios. Below are some simple test scenarios.
+Performance testing is a complex process that depends on various scenarios. Therefore, the following are only simple test cases.
 
-CPU: M2
+**CPU**: M2
 
-### Nginx (No Access Logging)
+### Nginx (no access log)
 
-Nginx is used here for comparison purposes
+Nginx is only used for comparison.
 
 ```bash
 wrk 'http://127.0.0.1:9080/' --latency
 
 Running 10s test @ http://127.0.0.1:9080/
   2 threads and 10 connections
-  Thread Stats   Avg      Stdev     Max   +/- Stdev
+  Thread Stats    Avg      Stdev     Max   +/- Stdev
     Latency   393.55us    2.39ms  32.81ms   97.72%
     Req/Sec    72.68k     5.98k   86.25k    87.13%
   Latency Distribution
@@ -30,7 +30,8 @@ Requests/sec: 144598.99
 Transfer/sec:     20.69MB
 ```
 
-### Pingap (No Access Logging)
+
+### Pingap (no access log)
 
 ```bash
 wrk 'http://127.0.0.1:6188/ping' --latency
@@ -50,7 +51,7 @@ Requests/sec: 148056.28
 Transfer/sec:     19.34MB
 ```
 
-### Pingap Forwarding to Nginx
+### Pingap forwarding to nginx
 
 Threads: 1
 
@@ -92,7 +93,7 @@ Requests/sec:  89449.37
 Transfer/sec:     12.80MB
 ```
 
-Threads: 3 (Setting to 3 threads shows little improvement over 2 threads, likely due to global locks or similar factors - to be confirmed later)
+Threads: 3 (The effect of setting 3 threads is not much better than 2 threads, estimated to be affected by global locks, etc., will be confirmed later)
 
 ```bash
 wrk 'http://127.0.0.1:6188/proxy-nginx'  --latency
@@ -112,7 +113,7 @@ Requests/sec:  95160.18
 Transfer/sec:     13.61MB
 ```
 
-### Pingap Serving 8kb HTML
+### Pingap response 8kb html
 
 ```bash
 wrk 'http://127.0.0.1:6188/downloads/index.html' --latency
@@ -134,9 +135,9 @@ Transfer/sec:    320.01MB
 
 ### Compression
 
-Testing client compression performance with different compression formats (data is read from memory, so the main time cost is in compression processing). All compression algorithms are set to level 9; adjust as needed in actual use.
+Test the processing performance of the client when compressing different compression formats (data is read in memory, so the main time is spent on compression), all compression algorithm compression levels are set to 9, and the actual usage is set as needed.
 
-Client without compression support (24KB response data)
+Client does not support compression (response data 24KB)
 
 ```bash
 wrk 'http://localhost:6118/' --latency
@@ -155,7 +156,7 @@ Requests/sec:  89474.79
 Transfer/sec:      2.20GB
 ```
 
-Client with gzip compression support (2.87KB response data)
+Client supports gzip compression (response data 2.87KB)
 
 ```bash
 wrk -H "accept-encoding: gzip" 'http://localhost:6118/' --latency
@@ -174,7 +175,7 @@ Requests/sec:   6285.12
 Transfer/sec:     18.06MB
 ```
 
-Client with br compression support (2.46KB response data)
+Client supports br compression (response data 2.46KB)
 
 ```bash
 wrk -H "accept-encoding: br" 'http://localhost:6118/' --latency
@@ -193,7 +194,7 @@ Requests/sec:    601.55
 Transfer/sec:      1.48MB
 ```
 
-Client with zstd compression support (2.73KB response data)
+Client supports zstd compression (response data 2.73KB)
 
 ```bash
 wrk -H "accept-encoding: zstd" 'http://localhost:6118/' --latency
@@ -212,7 +213,7 @@ Requests/sec:   4612.25
 Transfer/sec:     12.61MB
 ```
 
-Client with zstd compression, server set to 2 threads
+Client supports zstd compression, service set to 2 threads
 
 ```bash
 wrk -H "accept-encoding: zstd" 'http://localhost:6118/' --latency
@@ -232,7 +233,8 @@ Requests/sec:   7540.73
 Transfer/sec:     20.62MB
 ```
 
-### Caching
+
+### Cache
 
 Threads: 1
 

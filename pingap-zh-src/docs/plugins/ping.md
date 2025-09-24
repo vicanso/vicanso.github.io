@@ -31,7 +31,7 @@ description: 提供一个轻量级的 HTTP 端点，用于服务存活探测 (Li
 
 ## 配置参数
 
-在 `plugin.ping.toml` 文件中进行配置。
+在 `plugins.ping.toml` 文件中进行配置。
 
 | 参数   | 类型   | 是否必需 | 默认值 | 说明                                                               |
 | :----- | :----- | :------- | :----- | :----------------------------------------------------------------- |
@@ -43,7 +43,7 @@ description: 提供一个轻量级的 HTTP 端点，用于服务存活探测 (Li
 
 **目标**：为我们的 Pingap 服务添加一个位于 `/healthz` 的健康检查端点。
 
-1.  **配置插件 (`plugin.ping-healthcheck.toml`)**:
+1.  **配置插件 (`plugins.ping-healthcheck.toml`)**:
     ```toml
     # 指定健康检查的端点路径
     path = "/healthz"

@@ -10,7 +10,7 @@ description: 了解 Pingap 强大的插件体系，并通过概览列表快速�
 
 ### 工作原理
 
-1.  **独立配置**：每个插件的配置都存储在独立的 TOML 文件中（例如 `plugin.jwt.toml`, `plugin.cache.toml`），与主配置分离，便于管理。
+1.  **独立配置**：每个插件的配置都存储在独立的 TOML 文件中（例如 `plugins.jwt.toml`, `plugins.cache.toml`），与主配置分离，便于管理。
 2.  **应用于 Location**：在 `location.toml` 文件中，您可以通过 `plugins` 数组将一个或多个插件实例应用到特定的路由规则上。
 3.  **顺序执行**：插件在 `plugins` 数组中按其声明的**顺序依次执行**。这意味着您可以精心安排插件的执行顺序来实现复杂的逻辑链条（例如，先进行 IP 限制，再进行 JWT 认证）。
 
@@ -26,6 +26,7 @@ description: 了解 Pingap 强大的插件体系，并通过概览列表快速�
 | Basic Auth 插件             | 为您的服务添加基于用户名和密码的 HTTP Basic Auth 认证。                                                                                 | [查看详情](./basic-auth.md)          |
 | Cache 插件                  | 缓存来自上游服务的响应，大幅提升高频访问接口的性能，并有效降低后端服务负载。                                                            | [查看详情](./cache.md)               |
 | Compression 插件            | 根据客户端的支持情况，自动对发往客户端的响应体进行**动态压缩**。                                                                        | [查看详情](./compression.md)         |
+| Combined Auth 插件          | 为您的服务添加组合认证， 支持多参数组合认证。                                                                                           | [查看详情](./combined-auth.md)       |
 | CORS 插件                   | 为您的服务添加 CORS 支持，允许客户端从其他域名访问您的服务。                                                                            | [查看详情](./cors.md)                |
 | CSRF 插件                   | 为您的服务添加 CSRF 保护，防止跨站请求伪造。                                                                                            | [查看详情](./csrf.md)                |
 | Directory 插件              | 将 `Pingap` 的一个 `Location` 转变为一个功能强大的静态文件服务器，直接从磁盘提供文件服务，而无需将请求转发到上游后端。                  | [查看详情](./directory.md)           |

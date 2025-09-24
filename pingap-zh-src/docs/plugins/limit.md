@@ -41,7 +41,7 @@ description: 通过限制单位时间内的请求速率或并发连接数，保�
 
 ## 配置参数
 
-在 `plugin.limit.toml` 文件中进行配置。
+在 `plugins.limit.toml` 文件中进行配置。
 
 | 参数       | 类型    | 是否必需               | 默认值   | 说明                                                                                                                             |
 | :--------- | :------ | :--------------------- | :------- | :------------------------------------------------------------------------------------------------------------------------------- |
@@ -70,7 +70,7 @@ description: 通过限制单位时间内的请求速率或并发连接数，保�
 
 **目标**：保护我们的公共 API，限制每个 API Key 每分钟最多只能发起 100 次请求。API Key 通过 `X-Api-Key` 请求头传递。
 
-1.  **配置插件 (`plugin.limit-api-rate.toml`)**:
+1.  **配置插件 (`plugins.limit-api-rate.toml`)**:
     ```toml
     # 模式：速率限制
     type = "rate"
@@ -107,7 +107,7 @@ description: 通过限制单位时间内的请求速率或并发连接数，保�
 
 **目标**：`/api/reports` 是一个非常消耗资源的报表生成接口。我们希望限制每个登录用户（通过 `session_id` Cookie 识别）同时只能生成 1 个报表。
 
-1.  **配置插件 (`plugin.limit-report-inflight.toml`)**:
+1.  **配置插件 (`plugins.limit-report-inflight.toml`)**:
     ```toml
     # 模式：并发限制
     type = "inflight"

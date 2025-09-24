@@ -28,7 +28,7 @@ description: 轻松实现 HTTP 到 HTTPS 的强制跳转或为 URL 路径添加�
 
 ## 配置参数
 
-在 `plugin.redirect.toml` 文件中进行配置。
+在 `plugins.redirect.toml` 文件中进行配置。
 
 | 参数            | 类型    | 是否必需 | 默认值  | 说明                                                                         |
 | :-------------- | :------ | :------- | :------ | :--------------------------------------------------------------------------- |
@@ -43,7 +43,7 @@ description: 轻松实现 HTTP 到 HTTPS 的强制跳转或为 URL 路径添加�
 
 **目标**：我们希望网站的所有访问都通过 HTTPS。任何通过 `http://` 访问的用户都应该被自动跳转到 `https://` 对应的页面。
 
-1.  **配置插件 (`plugin.force-https.toml`)**:
+1.  **配置插件 (`plugins.force-https.toml`)**:
     ```toml
     # 开启 http 到 https 的重定向
     http_to_https = true
@@ -77,7 +77,7 @@ description: 轻松实现 HTTP 到 HTTPS 的强制跳转或为 URL 路径添加�
 
 **目标**：我们的所有 API 都需要通过 HTTPS 访问，并且路径都需要以 `/api/v2` 开头。
 
-1.  **配置插件 (`plugin.redirect-api.toml`)**:
+1.  **配置插件 (`plugins.redirect-api.toml`)**:
     ```toml
     # 开启 http 到 https 的重定向
     http_to_https = true

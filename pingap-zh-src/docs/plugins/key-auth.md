@@ -32,7 +32,7 @@ description: 通过验证 HTTP 请求头或 URL 查询参数中的 API 密钥 (A
 
 ## 配置参数
 
-在 `plugin.key-auth.toml` 文件中进行配置。
+在 `plugins.key-auth.toml` 文件中进行配置。
 
 | 参数               | 类型             | 是否必需        | 默认值  | 说明                                                                                                      |
 | :----------------- | :--------------- | :-------------- | :------ | :-------------------------------------------------------------------------------------------------------- |
@@ -49,7 +49,7 @@ description: 通过验证 HTTP 请求头或 URL 查询参数中的 API 密钥 (A
 
 **目标**：保护 `/api/v1/` 下的所有接口，要求客户端必须在 `X-Api-Key` 请求头中提供有效的密钥。
 
-1.  **配置插件 (`plugin.key-auth-header.toml`)**:
+1.  **配置插件 (`plugins.key-auth-header.toml`)**:
     ```toml
     # 指定从 "X-Api-Key" 请求头中读取密钥
     header = "X-Api-Key"
@@ -97,7 +97,7 @@ description: 通过验证 HTTP 请求头或 URL 查询参数中的 API 密钥 (A
 
 **目标**：为了兼容一些无法设置请求头的旧客户端，我们允许通过 URL 查询参数 `apiKey` 进行认证。
 
-1.  **配置插件 (`plugin.key-auth-query.toml`)**:
+1.  **配置插件 (`plugins.key-auth-query.toml`)**:
     ```toml
     # 指定从 "apiKey" 查询参数中读取密钥
     query = "apiKey"
