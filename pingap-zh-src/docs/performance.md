@@ -6,260 +6,223 @@ sidebar_position: 161
 
 性能测试是一个场景复杂且依赖各种场景的流程，因此下面只是做了简单的测试场景。
 
-CPU: M2
+```
+Architecture:     x86_64 (架构)
+CPU op-mode(s):   32-bit, 64-bit
+Byte Order:       Little Endian
+CPU(s):           16       (总逻辑核心数/线程数)
+On-line CPU(s) list: 0-15
+Thread(s) per core: 2        (每个物理核心的线程数，2代表开启了超线程)
+Model name:       Intel(R) Core(TM) i5-13400 @ 4.60GHz (CPU型号)
+L3 cache:         20 MiB   (L3缓存大小，对性能影响显著)
+```
 
 ### Nginx（无访问日志）
 
 nginx的只是用来做一个比对使用
 
 ```bash
-wrk 'http://127.0.0.1:9080/' --latency
-
-Running 10s test @ http://127.0.0.1:9080/
-  2 threads and 10 connections
+wrk -c 1000 -t 10 'http://127.0.0.1:8080/api/json' --latency
+Running 10s test @ http://127.0.0.1:8080/api/json
+  10 threads and 1000 connections
   Thread Stats   Avg      Stdev     Max   +/- Stdev
-    Latency   393.55us    2.39ms  32.81ms   97.72%
-    Req/Sec    72.68k     5.98k   86.25k    87.13%
+    Latency    15.97ms   63.05ms   1.02s    95.53%
+    Req/Sec    20.22k     1.62k   27.58k    90.20%
   Latency Distribution
-     50%   65.00us
-     75%   71.00us
-     90%   78.00us
-     99%   14.87ms
-  1460643 requests in 10.10s, 208.95MB read
-Requests/sec: 144598.99
-Transfer/sec:     20.69MB
+     50%    4.66ms
+     75%    4.72ms
+     90%    4.81ms
+     99%  336.44ms
+  2011820 requests in 10.03s, 640.82MB read
+  Socket errors: connect 0, read 2986, write 0, timeout 0
+Requests/sec: 200591.12
+Transfer/sec:     63.89MB
 ```
 
 
-### Pingap（无访问日志）
-
-```bash
-wrk 'http://127.0.0.1:6188/ping' --latency
-
-Running 10s test @ http://127.0.0.1:6188/ping
-  2 threads and 10 connections
-  Thread Stats   Avg      Stdev     Max   +/- Stdev
-    Latency    66.18us   28.39us   2.30ms   85.24%
-    Req/Sec    74.43k     1.75k   76.25k    97.03%
-  Latency Distribution
-     50%   70.00us
-     75%   77.00us
-     90%   83.00us
-     99%  100.00us
-  1495363 requests in 10.10s, 195.37MB read
-Requests/sec: 148056.28
-Transfer/sec:     19.34MB
-```
 
 ### Pingap转发至nginx
 
 Threads: 1
 
 ```bash
-wrk 'http://127.0.0.1:6188/proxy-nginx'  --latency
-
-Running 10s test @ http://127.0.0.1:6188/proxy-nginx
-  2 threads and 10 connections
+wrk -c 1000 -t 10 --latency http://127.0.0.1:8090/api/test
+Running 10s test @ http://127.0.0.1:8090/api/test
+  10 threads and 1000 connections
   Thread Stats   Avg      Stdev     Max   +/- Stdev
-    Latency   206.46us  151.03us   7.28ms   98.62%
-    Req/Sec    25.06k     1.16k   29.07k    87.13%
+    Latency    38.75ms   51.25ms 193.70ms   79.22%
+    Req/Sec    14.16k     1.91k   20.05k    71.10%
   Latency Distribution
-     50%  211.00us
-     75%  224.00us
-     90%  239.00us
-     99%  391.00us
-  503591 requests in 10.10s, 72.04MB read
-Requests/sec:  49862.65
-Transfer/sec:      7.13MB
+     50%    1.79ms
+     75%   75.46ms
+     90%  127.35ms
+     99%  161.89ms
+  1408545 requests in 10.02s, 374.78MB read
+Requests/sec: 140565.72
+Transfer/sec:     37.40MB
 ```
 
 Threads: 2
 
 ```bash
-wrk 'http://127.0.0.1:6188/proxy-nginx'  --latency
-
-Running 10s test @ http://127.0.0.1:6188/proxy-nginx
- 2 threads and 10 connections
- Thread Stats   Avg      Stdev     Max   +/- Stdev
-   Latency   161.04us  753.69us  19.29ms   99.23%
-   Req/Sec    44.96k     2.73k   48.65k    73.76%
- Latency Distribution
-    50%  107.00us
-    75%  125.00us
-    90%  143.00us
-    99%  299.00us
- 903504 requests in 10.10s, 129.25MB read
-Requests/sec:  89449.37
-Transfer/sec:     12.80MB
+wrk -c 1000 -t 10 --latency http://127.0.0.1:8090/api/test
+Running 10s test @ http://127.0.0.1:8090/api/test
+  10 threads and 1000 connections
+  Thread Stats   Avg      Stdev     Max   +/- Stdev
+    Latency     8.63ms   10.23ms  69.29ms   80.18%
+    Req/Sec    23.66k     1.44k   26.51k    87.40%
+  Latency Distribution
+     50%    1.72ms
+     75%   15.59ms
+     90%   25.36ms
+     99%   36.10ms
+  2354115 requests in 10.03s, 626.37MB read
+Requests/sec: 234789.28
+Transfer/sec:     62.47MB
 ```
 
-Threads: 3 (设置为3个线程效果比2个线程提升很少，估计有全局的锁之类影响，后续确认)
+Threads: 3
 
 ```bash
-wrk 'http://127.0.0.1:6188/proxy-nginx'  --latency
-
-Running 10s test @ http://127.0.0.1:6188/proxy-nginx
-  2 threads and 10 connections
+wrk -c 1000 -t 10 --latency http://127.0.0.1:8090/api/test
+Running 10s test @ http://127.0.0.1:8090/api/test
+  10 threads and 1000 connections
   Thread Stats   Avg      Stdev     Max   +/- Stdev
-    Latency   111.73us  277.33us  10.84ms   99.54%
-    Req/Sec    48.06k     3.35k   74.58k    87.56%
+    Latency     3.97ms    3.91ms  43.27ms   81.21%
+    Req/Sec    32.74k     1.13k   35.76k    87.20%
   Latency Distribution
-     50%   95.00us
-     75%  115.00us
-     90%  134.00us
-     99%  193.00us
-  961184 requests in 10.10s, 137.50MB read
-Requests/sec:  95160.18
-Transfer/sec:     13.61MB
+     50%    1.64ms
+     75%    6.51ms
+     90%    9.81ms
+     99%   15.25ms
+  3257197 requests in 10.02s, 866.66MB read
+Requests/sec: 324922.79
+Transfer/sec:     86.45MB
 ```
 
-### Pingap 响应 8kb 的 html
+Threads: 4
 
 ```bash
-wrk 'http://127.0.0.1:6188/downloads/index.html' --latency
-
-Running 10s test @ http://127.0.0.1:6188/downloads/index.html
-  2 threads and 10 connections
+wrk -c 1000 -t 10 --latency http://127.0.0.1:8090/api/test
+Running 10s test @ http://127.0.0.1:8090/api/test
+  10 threads and 1000 connections
   Thread Stats   Avg      Stdev     Max   +/- Stdev
-    Latency   225.84us   59.47us   1.83ms   78.04%
-    Req/Sec    22.17k     1.94k   25.25k    87.13%
+    Latency     2.92ms    2.49ms  24.68ms   78.64%
+    Req/Sec    39.91k   813.08    42.53k    69.60%
   Latency Distribution
-     50%  222.00us
-     75%  247.00us
-     90%  286.00us
-     99%  418.00us
-  445764 requests in 10.10s, 3.16GB read
-Requests/sec:  44134.06
-Transfer/sec:    320.01MB
+     50%    1.71ms
+     75%    4.55ms
+     90%    6.64ms
+     99%   10.23ms
+  3970942 requests in 10.02s, 1.03GB read
+Requests/sec: 396274.98
+Transfer/sec:    105.44MB
+```
+
+### Pingap 响应 230kb 的 css
+
+Threads: 4
+
+```bash
+wrk -c 1000 -t 10 --latency http://127.0.0.1:8090/bootstrap.min.css
+Running 10s test @ http://127.0.0.1:8090/bootstrap.min.css
+  10 threads and 1000 connections
+  Thread Stats   Avg      Stdev     Max   +/- Stdev
+    Latency    67.17ms   34.21ms   1.09s    70.01%
+    Req/Sec   744.58    263.37     1.35k    63.00%
+  Latency Distribution
+     50%   64.98ms
+     75%   90.87ms
+     90%  105.10ms
+     99%  124.30ms
+  74121 requests in 10.02s, 16.05GB read
+Requests/sec:   7393.88
+Transfer/sec:      1.60GB
 ```
 
 ### 压缩
 
-测试客户端压缩各种不同压缩格式时的处理性能（数据在内存中读取，因此主要耗时在压缩处理），所有压缩算法的压缩级别均选择9，实际使用按需设置。
+测试客户端压缩各种不同压缩格式时的处理性能，压缩算法使用的压缩级别为：gzip(6)， br(6)，zstd(6)，实际使用按需设置，`Pingap` 均设置为4线程。
 
-客户端不支持压缩(响应数据24KB)
+
+客户端支持gzip压缩(响应数据30.2KB)
 
 ```bash
-wrk 'http://localhost:6118/' --latency
-Running 10s test @ http://localhost:6118/
-  2 threads and 10 connections
+wrk -c 1000 -t 10 --latency -H "accept-encoding: gzip" http://127.0.0.1:8090/bootstrap.min.css
+Running 10s test @ http://127.0.0.1:8090/bootstrap.min.css
+  10 threads and 1000 connections
   Thread Stats   Avg      Stdev     Max   +/- Stdev
-    Latency   110.61us   62.30us   3.71ms   87.06%
-    Req/Sec    44.96k     1.13k   46.16k    93.07%
+    Latency   306.29ms  124.46ms   1.33s    56.06%
+    Req/Sec   160.07     76.51   660.00     74.57%
   Latency Distribution
-     50%  117.00us
-     75%  125.00us
-     90%  133.00us
-     99%  164.00us
-  903688 requests in 10.10s, 22.26GB read
-Requests/sec:  89474.79
-Transfer/sec:      2.20GB
+     50%  310.72ms
+     75%  418.42ms
+     90%  468.79ms
+     99%  525.62ms
+  15948 requests in 10.02s, 468.26MB read
+Requests/sec:   1591.26
+Transfer/sec:     46.72MB
 ```
 
-客户端支持gzip压缩(响应数据2.87KB)
+客户端支持br压缩(响应数据26.8KB)
 
 ```bash
-wrk -H "accept-encoding: gzip" 'http://localhost:6118/' --latency
-Running 10s test @ http://localhost:6118/
-  2 threads and 10 connections
+wrk -c 1000 -t 10 --latency -H "accept-encoding: br" http://127.0.0.1:8090/bootstrap.min.css
+Running 10s test @ http://127.0.0.1:8090/bootstrap.min.css
+  10 threads and 1000 connections
   Thread Stats   Avg      Stdev     Max   +/- Stdev
-    Latency     1.59ms  525.65us   7.55ms   86.09%
-    Req/Sec     3.16k   156.64     3.36k    93.56%
+    Latency   481.04ms  188.25ms   1.63s    68.02%
+    Req/Sec   102.31     52.41   610.00     84.20%
   Latency Distribution
-     50%    1.72ms
-     75%    1.80ms
-     90%    1.88ms
-     99%    2.25ms
-  63484 requests in 10.10s, 182.42MB read
-Requests/sec:   6285.12
-Transfer/sec:     18.06MB
+     50%  479.02ms
+     75%  630.50ms
+     90%  727.51ms
+     99%  825.87ms
+  10058 requests in 10.02s, 254.64MB read
+Requests/sec:   1003.75
+Transfer/sec:     25.41MB
 ```
 
-客户端支持br压缩(响应数据2.46KB)
+客户端支持zstd压缩(响应数据29.0KB)
 
 ```bash
-wrk -H "accept-encoding: br" 'http://localhost:6118/' --latency
-Running 10s test @ http://localhost:6118/
-  2 threads and 10 connections
+wrk -c 1000 -t 10 --latency -H "accept-encoding: zstd" http://127.0.0.1:8090/bootstrap.min.css
+Running 10s test @ http://127.0.0.1:8090/bootstrap.min.css
+  10 threads and 1000 connections
   Thread Stats   Avg      Stdev     Max   +/- Stdev
-    Latency    16.62ms    5.41ms  54.96ms   88.28%
-    Req/Sec   302.12     24.46   353.00     83.00%
+    Latency   295.13ms  129.33ms   1.45s    66.63%
+    Req/Sec   166.25     53.38   510.00     76.48%
   Latency Distribution
-     50%   18.03ms
-     75%   18.61ms
-     90%   19.47ms
-     99%   21.99ms
-  6023 requests in 10.01s, 14.85MB read
-Requests/sec:    601.55
-Transfer/sec:      1.48MB
-```
-
-客户端支持zstd压缩(响应数据2.73KB)
-
-```bash
-wrk -H "accept-encoding: zstd" 'http://localhost:6118/' --latency
-Running 10s test @ http://localhost:6118/
- 2 threads and 10 connections
- Thread Stats   Avg      Stdev     Max   +/- Stdev
-   Latency     2.19ms    0.93ms  23.19ms   85.73%
-   Req/Sec     2.32k   169.74     2.50k    92.50%
- Latency Distribution
-    50%    2.32ms
-    75%    2.46ms
-    90%    2.59ms
-    99%    3.53ms
- 46183 requests in 10.01s, 126.27MB read
-Requests/sec:   4612.25
-Transfer/sec:     12.61MB
-```
-
-客户端支持zstd压缩，服务设置为2个线程
-
-```bash
-wrk -H "accept-encoding: zstd" 'http://localhost:6118/' --latency
-
-Running 10s test @ http://localhost:6118/
-  2 threads and 10 connections
-  Thread Stats   Avg      Stdev     Max   +/- Stdev
-    Latency     1.33ms  540.17us   9.68ms   69.88%
-    Req/Sec     3.79k   201.55     4.21k    77.72%
-  Latency Distribution
-     50%    1.30ms
-     75%    1.72ms
-     90%    1.97ms
-     99%    2.47ms
-  76162 requests in 10.10s, 208.24MB read
-Requests/sec:   7540.73
-Transfer/sec:     20.62MB
+     50%  284.72ms
+     75%  391.32ms
+     90%  466.32ms
+     99%  574.70ms
+  16562 requests in 10.03s, 464.94MB read
+Requests/sec:   1651.31
+Transfer/sec:     46.36MB
 ```
 
 
 ### 缓存
 
-Threads: 1
+使用缓存插件，将数据按压缩类型缓存，由于此时压缩仅在首次时执行，因此无论哪种压缩方式均对资源占用很多，`Pingap` 均设置为4线程。
+
+以下的压测结果可以看出，同样是设置4线程，`Requests/sec`由`1651`提升到`160583`，近百倍的提升。
+
 
 ```bash
-wrk -H 'Accept-Encoding: gzip, deflate, br, zstd' 'http://localhost:6118/cache'
-Running 10s test @ http://localhost:6118/cache
-  2 threads and 10 connections
+wrk -c 1000 -t 10 --latency -H "accept-encoding: zstd" http://127.0.0.1:8090/bootstrap.min.css
+Running 10s test @ http://127.0.0.1:8090/bootstrap.min.css
+  10 threads and 1000 connections
   Thread Stats   Avg      Stdev     Max   +/- Stdev
-    Latency   183.82us   62.06us   2.30ms   86.60%
-    Req/Sec    27.27k   554.92    28.68k    92.57%
-  548062 requests in 10.10s, 2.07GB read
-Requests/sec:  54263.03
-Transfer/sec:    209.89MB
-```
-
-Threads: 2
-
-```bash
-wrk -H 'Accept-Encoding: gzip, deflate, br, zstd' 'http://localhost:6118/cache'
-Running 10s test @ http://localhost:6118/cache
-  2 threads and 10 connections
-  Thread Stats   Avg      Stdev     Max   +/- Stdev
-    Latency    98.40us   47.66us   2.52ms   79.75%
-    Req/Sec    50.40k     4.23k   53.03k    91.58%
-  1013154 requests in 10.10s, 3.83GB read
-Requests/sec: 100318.26
-Transfer/sec:    388.01MB
+    Latency     6.42ms    4.55ms  32.84ms   69.08%
+    Req/Sec    16.17k   472.05    17.52k    68.70%
+  Latency Distribution
+     50%    4.46ms
+     75%   10.18ms
+     90%   13.01ms
+     99%   17.80ms
+  1608492 requests in 10.02s, 45.01GB read
+Requests/sec: 160583.24
+Transfer/sec:      4.49GB
 ```
