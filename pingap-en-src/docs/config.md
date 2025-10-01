@@ -179,10 +179,12 @@ When setting request headers, you can use the following dynamic variables:
 
 ### Security and Limits
 
-| Parameter              | Default | Description                                                                                |
-| :--------------------- | :------ | :----------------------------------------------------------------------------------------- |
-| `client_max_body_size` |         | The maximum allowed client request body size, e.g., `10mb`. No limit by default.           |
-| `max_processing`       | `0`     | The maximum number of requests this Location can process concurrently. `0` means no limit. |
+| Parameter              | Default | Description                                                                                                 |
+| :--------------------- | :------ | :---------------------------------------------------------------------------------------------------------- |
+| `client_max_body_size` |         | The maximum allowed client request body size, e.g., `10mb`. No limit by default.                            |
+| `max_processing`       | `0`     | The maximum number of requests this Location can process concurrently. `0` means no limit.                  |
+| `max_retries`          |         | The number of times to retry the connection when the upstream fails. 0 means no retry.                      |
+| `max_retry_window`     |         | The window time for retrying the connection when the upstream fails. If exceeded, it means no more retries. |
 
 ## Server Configuration (server.toml)
 

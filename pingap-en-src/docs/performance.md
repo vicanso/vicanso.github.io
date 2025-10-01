@@ -18,6 +18,14 @@ Model name:       Intel(R) Core(TM) i5-13400 @ 4.60GHz
 L3 cache:         20 MiB  
 ```
 
+
+```bash
+ulimit -n 65536
+sudo sysctl -w net.core.somaxconn=65535
+sudo sysctl -w net.ipv4.tcp_tw_reuse=1
+sudo sysctl -w net.ipv4.ip_local_port_range="1024 65535"
+```
+
 ### Nginx（No access log）
 
 Nginx is used only for comparison.
