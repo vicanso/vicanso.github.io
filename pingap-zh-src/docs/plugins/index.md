@@ -41,6 +41,7 @@ description: 了解 Pingap 强大的插件体系，并通过概览列表快速�
 | Request ID 插件             | 为每个进入的请求附加一个唯一的标识符，用于实现分布式链路追踪、日志关联和问题排查，是提升系统可观测性的关键一环。                        | [查看详情](./request-id.md)          |
 | Response Headers 插件       | 在将响应发送给客户端之前，动态地添加、设置、删除、重命名或有条件地设置 HTTP 响应头。用于增强安全、控制缓存和添加自定义元数据。          | [查看详情](./response-headers.md)    |
 | Sub Filter 插件             | 对响应体内容进行实时的查找和替换。支持简单的字符串替换和强大的正则表达式替换，可用于动态修改 HTML、JSON 或其他文本内容。                | [查看详情](./sub-filter.md)          |
+| Traffic Splitting 插件      | 根据指定百分比动态路由流量到不同的上游服务。强大的工具，可用于实现 A/B 测试、渐进式发布和金丝雀发布，支持基于 Cookie 的会话保持。       | [查看详情](./traffic-splitting.md)   |
 | User Agent Restriction 插件 | 通过检查 HTTP User-Agent 请求头，实现对特定客户端、爬虫或扫描器的访问控制。支持强大的正则表达式匹配，可配置黑名单或白名单模式。         | [查看详情](./ua-restriction.md)      |
 
 ### 新插件
