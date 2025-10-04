@@ -38,7 +38,7 @@ This file defines the global behavior, process management, and fundamental perfo
 
 | Parameter               | Default | Description                                                                                                                                                                        |
 | :---------------------- | :------ | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `log_level`             | `INFO`  | The output level for application logs (e.g., `DEBUG`, `INFO`, `WARN`, `ERROR`).                                                                                                    |
+| `log_level`             | `INFO`  | The output level for application logs (e.g., `DEBUG`, `INFO`, `WARN`, `ERROR`), supports dynamic setting of log output level, which takes effect within 30 seconds.                |
 | `log_buffered_size`     |         | The size of the log buffer (e.g., `8kb`). Setting this can improve logging performance under high concurrency. `0` means no buffer is used.                                        |
 | `log_format_json`       | `false` | Whether to format application logs as JSON.                                                                                                                                        |
 | `webhook`               |         | The URL for webhooks, used for sending various event notifications.                                                                                                                |
