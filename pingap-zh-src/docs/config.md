@@ -132,7 +132,7 @@ TLS/HTTPS配置
 | 参数             | 默认值 | 说明                                             |
 | ---------------- | ------ | ------------------------------------------------ |
 | enable_backend_stats | false | 是否启用后端节点状态统计。                     |
-| backend_failure_status_code | 400,500,502,503,504 | 后端节点失败的状态码，多个状态码用逗号分隔。   |
+| backend_failure_status_code | | 后端节点失败的状态码，多个状态码用逗号分隔。   |
 | circuit_break_max_consecutive_failures | 3 | 熔断器最大连续失败次数。                       |
 | circuit_break_max_failure_percent | 50 | 熔断器最大失败率。                             |
 | circuit_break_min_requests_threshold | 10 | 熔断器最小请求数阈值。                         |

@@ -127,7 +127,7 @@ When the backend service is HTTPS, the following parameters need to be configure
 | Parameter             | Default | Description                                             |
 | --------------------- | ------- | ------------------------------------------------------- |
 | `enable_backend_stats` | false   | Whether to enable backend node status statistics.       |
-| `backend_failure_status_code` | 400,500,502,503,504 | The status codes for backend node failure, separated by commas. |
+| `backend_failure_status_code` | | The status codes for backend node failure, separated by commas. |
 | `circuit_break_max_consecutive_failures` | 3 | The maximum number of consecutive failures for circuit breaking. |
 | `circuit_break_max_failure_percent` | 50 | The maximum failure percentage for circuit breaking. |
 | `circuit_break_min_requests_threshold` | 10 | The minimum number of requests threshold for circuit breaking. |
