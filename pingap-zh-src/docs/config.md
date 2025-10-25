@@ -127,6 +127,16 @@ TLS/HTTPS配置
 | verify_cert | true   | 是否校验后端服务的 TLS 证书的有效性(若上游为自签证书可以设置为false)。 |
 | alpn        | H1     | TLS ALPN 协商的协议，如 H2。                                           |
 
+后端节点相关
+
+| 参数             | 默认值 | 说明                                             |
+| ---------------- | ------ | ------------------------------------------------ |
+| enable_backend_stats | false | 是否启用后端节点状态统计。                     |
+| backend_failure_status_code | 400,500,502,503,504 | 后端节点失败的状态码，多个状态码用逗号分隔。   |
+| circuit_break_max_consecutive_failures | 3 | 熔断器最大连续失败次数。                       |
+| circuit_break_max_failure_percent | 50 | 熔断器最大失败率。                             |
+| circuit_break_min_requests_threshold | 10 | 熔断器最小请求数阈值。                         |
+| backend_stats_interval | 60s | 后端节点状态统计的间隔时间。                   |
 
 TCP 底层调优
 

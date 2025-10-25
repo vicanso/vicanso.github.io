@@ -122,6 +122,17 @@ When the backend service is HTTPS, the following parameters need to be configure
 | `verify_cert` | `true`  | Whether to verify the validity of the backend service's TLS certificate (can be set to `false` for self-signed certificates). |
 | `alpn`        | `H1`    | The protocol for TLS ALPN negotiation, such as `H2`.                                                                          |
 
+### Backend Node Related
+
+| Parameter             | Default | Description                                             |
+| --------------------- | ------- | ------------------------------------------------------- |
+| `enable_backend_stats` | false   | Whether to enable backend node status statistics.       |
+| `backend_failure_status_code` | 400,500,502,503,504 | The status codes for backend node failure, separated by commas. |
+| `circuit_break_max_consecutive_failures` | 3 | The maximum number of consecutive failures for circuit breaking. |
+| `circuit_break_max_failure_percent` | 50 | The maximum failure percentage for circuit breaking. |
+| `circuit_break_min_requests_threshold` | 10 | The minimum number of requests threshold for circuit breaking. |
+| `backend_stats_interval` | 60s | The interval for backend node status statistics. |
+
 ### Low-Level TCP Tuning
 
 ❗ **Note**: It is recommended to keep the default values unless you are very clear about the effects of these parameters.
