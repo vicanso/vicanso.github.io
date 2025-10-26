@@ -136,6 +136,8 @@ TLS/HTTPS配置
 | circuit_break_max_consecutive_failures | 3 | 熔断器最大连续失败次数。                       |
 | circuit_break_max_failure_percent | 50 | 熔断器最大失败率。                             |
 | circuit_break_min_requests_threshold | 10 | 熔断器最小请求数阈值。                         |
+| circuit_break_half_open_consecutive_success_threshold | 5 | 熔断器半开状态连续成功次数阈值。                 |
+| circuit_break_open_duration | 10s | 熔断器打开状态持续时间。                       |
 | backend_stats_interval | 60s | 后端节点状态统计的间隔时间。                   |
 
 TCP 底层调优

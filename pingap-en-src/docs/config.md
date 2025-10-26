@@ -131,6 +131,8 @@ When the backend service is HTTPS, the following parameters need to be configure
 | `circuit_break_max_consecutive_failures` | 3 | The maximum number of consecutive failures for circuit breaking. |
 | `circuit_break_max_failure_percent` | 50 | The maximum failure percentage for circuit breaking. |
 | `circuit_break_min_requests_threshold` | 10 | The minimum number of requests threshold for circuit breaking. |
+| `circuit_break_half_open_consecutive_success_threshold` | 5 | The number of consecutive successes required to transition from the half-open state to the closed state.                 |
+| `circuit_break_open_duration` | 10s | The duration for the circuit breaker to be in the open state.                       |
 | `backend_stats_interval` | 60s | The interval for backend node status statistics. |
 
 ### Low-Level TCP Tuning
