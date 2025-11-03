@@ -42,6 +42,9 @@ Configuration is done in the `plugin.compression.toml` file.
 | `gzip_level` | Integer | No       | `0`          | Gzip compression level. Range `1` - `9`. `0` disables Gzip.      |
 | `br_level`   | Integer | No       | `0`          | Brotli compression level. Range `1` - `11`. `0` disables Brotli. |
 | `zstd_level` | Integer | No       | `0`          | Zstd compression level. Range `1` - `22`. `0` disables Zstd.     |
+| `min_length` | Integer | No       | `0`          | Minimum compression length. When the response body length is less than this value, it will not be compressed, only used in `upstream` mode.         |
+| `decompression` | Boolean | No       | `false`          | Whether to enable decompression. When `true`, `Pingap` will automatically decompress the compressed data for clients that do not accept compressed data.         |
+
 
 💡 **How to choose a compression level?**
 * Lower levels (e.g., Gzip: `1-3`, Brotli: `1-4`) consume less CPU but have lower compression ratios.
