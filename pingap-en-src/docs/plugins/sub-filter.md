@@ -37,8 +37,9 @@ Configuration is done in the `plugin.sub-filter.toml` file.
 
 | Parameter | Type             | Required | Description                                                                                                                                                |
 | :-------- | :--------------- | :------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `path`    | String           | **Yes**  | **(Required)** A regular expression to match the request's URL **path**. Only responses to requests with a matching path will be processed by this plugin. |
+| `path`    | String           | **No**  | **(Optional)** A regular expression to match the request's URL **path**. Only responses to requests with a matching path will be processed by this plugin. If not set, it matches all paths. |
 | `filters` | Array of Strings | **Yes**  | **(Required)** A list containing one or more **filter rules**. The rules are executed sequentially in the order they appear in the list.                   |
+| `status_codes` | Array of Numbers | **No**   | **(Optional)** A list of HTTP status codes to filter the responses. Only responses with matching status codes will be processed by this plugin. |
 
 ### Filter Rule (`filters`) Syntax
 
