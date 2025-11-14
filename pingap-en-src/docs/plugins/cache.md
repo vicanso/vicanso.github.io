@@ -47,7 +47,7 @@ Configuration is done in the `plugin.cache.toml` file.
 
 The `directory` parameter supports two formats:
 
--   `memory`: Memory cache, using memory as the cache backend. It supports an LRU eviction mechanism and is the default if not configured. The format is `memory://?max_size=100MB`. If `max_size` is not specified, it defaults to `256MB`. If set to `max_size=10`, it will initialize the memory cache using `10%` of available memory.
+-   `memory`: Memory cache, using memory as the cache backend. It supports an LRU eviction mechanism and is the default if not configured. The format is `memory://?max_size=100MB`. If `max_size` is not specified, it defaults to 1/4 of available memory. If set to `max_size=10`, it will initialize the memory cache using `10%` of available memory.
 -   `file`: File cache, using files as the cache backend. It supports an LRU eviction mechanism and is the default if a path is provided. The format is `/var/cache/pingap/articles?levels=1:2&inactive=7d&reading_max=1000&writing_max=500&cache_max=100&cache_file_max_size=1MB`. The parameters are as follows:
 
 | Parameter           | Type            | Default | Description                                                                                                                                                                                                                                                                            |

@@ -50,7 +50,7 @@ description: 通过缓存上游服务的响应，大幅提升高频访问接口�
 
 directory支持两种形式方式：
 
-- `memory`: 内存缓存，使用内存作为缓存后端，支持LRU驱逐机制，不配置则是内存缓存。格式为`memory://?max_size=100MB`，如果`max_size`不指定则为`256MB`，若设置为`max_size=10`则表示使用可用内存的`10%`初始化内存缓存
+- `memory`: 内存缓存，使用内存作为缓存后端，支持LRU驱逐机制，不配置则是内存缓存。格式为`memory://?max_size=100MB`，如果`max_size`不指定则为可用内存的1/4，若设置为`max_size=10`则表示使用可用内存的`10%`初始化内存缓存
 - `file`: 文件缓存，使用文件作为缓存后端，可配置热点数据的内存LRU。格式为`/var/cache/pingap/articles?levels=1:2&inactive=7d&reading_max=1000&writing_max=500&cache_max=100&cache_file_max_size=1MB`，参数说明如下：
 
 | 参数 (Parameter)    | 类型 (Type)     | 默认值 (Default) | 说明                                                                                                                                                 |
